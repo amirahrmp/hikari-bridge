@@ -13,7 +13,7 @@ class CreateRegistrationHikariKidzClubTable extends Migration
      */
     public function up()
     {
-        Schema::create('registrations', function (Blueprint $table) {
+        Schema::create('registration_hikari_kidz_clubs', function (Blueprint $table) {
             $table->id();
             $table->string('full_name');
             $table->string('nickname');

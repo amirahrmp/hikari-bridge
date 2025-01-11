@@ -172,3 +172,8 @@ use App\Http\Controllers\RegistrationHikariKidzClubController;
 
 Route::get('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'create'])->name('registerkidzclub.create');
 Route::post('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'store'])->name('registerkidzclub.store');
+
+use App\Http\Controllers\RegistrationHikariKidzDaycareController;
+
+Route::get('/registerkidzdaycare', [RegistrationHikariKidzDaycareController::class, 'create'])->name('registerkidzdaycare.create');
+Route::post('/registerkidzdaycare', [RegistrationHikariKidzDaycareController::class, 'store'])->name('registerkidzdaycare.store');
