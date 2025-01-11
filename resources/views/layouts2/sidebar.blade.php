@@ -1,0 +1,119 @@
+<div class="sidebar" data-color="green" data-background-color="white" data-image="../assets/img/sidebar-1.jpg">
+  <!--
+    Tip 1: You can change the color of the sidebar using: data-color="purple | azure | green | orange | danger"
+
+    Tip 2: you can also add an image using data-image tag
+-->
+  <div class="logo"><a href="#" class="simple-text logo-normal">
+    <img src="{{asset('AdminLTE')}}/dist/img/hikari_logo2.png" alt="Hikari Bridge Logo" class="brand-image" style="width: auto; height: 70px;">
+    </a>
+  </div>
+
+  <div class="sidebar-wrapper">
+    <ul class="nav">
+      <li class="nav-item @yield('dashboard_select')">
+        <a class="nav-link" href="/">
+          <i class="material-icons">dashboard</i>
+          <p>Dashboard</p>
+        </a>
+      </li>
+      <li class="nav-item @yield('profil_select')">
+        <a class="nav-link" href="{{url('profil')}}">
+          <i class="material-icons">person</i>
+          <p>Profile</p>
+        </a>
+      </li>
+      @if(Session::get('role')=='teacher')
+      <li class="nav-item ">
+        <a class="nav-link" href="./tables.html">
+          <i class="fa fa-book"></i>
+          <p>Kursus Saya</p>
+        </a>
+      </li>
+      <li class="nav-item @yield('jadwal_kursus_select')">
+        <a class="nav-link" href="#" onclick="submitJadwalKursus()">
+            <i class="fa fa-list"></i>
+            <p>Jadwal Kursus</p>
+        </a>
+        <form id="jadwal-kursus-form" action="{{ url('jadwal-kursus-teacher') }}" method="POST" style="display: none;">
+            @csrf
+            <input type="hidden" name="email" value="{{ Auth::user()->email }}">
+        </form>
+      </li> 
+      <li class="nav-item ">
+        <a class="nav-link" href="./tables.html">
+          <i class="material-icons">content_paste</i>
+          <p>Presensi Siswa</p>
+        </a>
+      </li>
+      <li class="nav-item @yield('riwayat_presensi_select')">
+        <a class="nav-link" href="#" onclick="submitRiwayatPresensi()">
+            <i class="fa fa-calendar"></i>
+            <p>Riwayat Presensi</p>
+        </a>
+        <form id="riwayat-presensi-form" action="{{ url('riwayat_presensi-teacher') }}" method="POST" style="display: none;">
+            @csrf
+            <input type="hidden" name="email" value="{{ Auth::user()->email }}">
+        </form>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./tables.html">
+          <i class="fa fa-dollar"></i>
+          <p>Gaji Saya</p>
+        </a>
+      </li>
+      @else
+      <li class="nav-item ">
+        <a class="nav-link" href="./tables.html">
+          <i class="material-icons">content_paste</i>
+          <p>Daftar Kursus</p>
+        </a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./typography.html">
+          <i class="material-icons">library_books</i>
+          <p>Kursus Terdaftar</p>
+        </a>
+      </li>
+      <li class="nav-item @yield('jadwal_kursus_select')">
+        <a class="nav-link" href="#" onclick="submitJadwalKursus()">
+            <i class="material-icons">library_books</i>
+            <p>Jadwal Kursus</p>
+        </a>
+        <form id="jadwal-kursus-form" action="{{ url('jadwal-kursus') }}" method="POST" style="display: none;">
+            @csrf
+            <input type="hidden" name="email" value="{{ Auth::user()->email }}">
+        </form>
+      </li> 
+      <li class="nav-item ">
+        <a class="nav-link" href="./icons.html">
+          <i class="material-icons">money</i>
+          <p>Tagihan</p>
+        </a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./map.html">
+          <i class="material-icons">library_books</i>
+          <p>Riwayat Pembayaran</p>
+        </a>
+      </li>
+      <li class="nav-item ">
+        <a class="nav-link" href="./notifications.html">
+          <i class="material-icons">library_books</i>
+          <p>E-Learning</p>
+        </a>
+      </li>
+      @endif
+    </ul>
+  </div>
+</div>
+<script>
+  function submitJadwalKursus() {
+      document.getElementById('jadwal-kursus-form').submit();
+  }
+</script>
+<script>
+  function submitRiwayatPresensi() {
+      document.getElementById('riwayat-presensi-form').submit();
+  }
+</script>
