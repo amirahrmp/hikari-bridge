@@ -167,13 +167,84 @@ Route::get('grafik/viewPenjualanBlnBerjalan', [App\Http\Controllers\GrafikContro
 Route::get('fullcalendar', [\App\Http\Controllers\FullcalendarController::class, 'index'])->name('fullcalendar');
 require __DIR__.'/auth.php';
 
-
+//registerkidzclub
 use App\Http\Controllers\RegistrationHikariKidzClubController;
 
 Route::get('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'create'])->name('registerkidzclub.create');
 Route::post('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'store'])->name('registerkidzclub.store');
 
+//registerkidzdaycare
 use App\Http\Controllers\RegistrationHikariKidzDaycareController;
-
+use App\Http\Controllers\PaketController;
 Route::get('/registerkidzdaycare', [RegistrationHikariKidzDaycareController::class, 'create'])->name('registerkidzdaycare.create');
 Route::post('/registerkidzdaycare', [RegistrationHikariKidzDaycareController::class, 'store'])->name('registerkidzdaycare.store');
+// Route baru untuk ambil data paket berdasarkan tipe
+Route::get('/get-paket-by-tipe/{tipe}', [PaketController::class, 'getByTipe']);
+Route::get('/paket/{id}', [PaketController::class, 'getPaketById']);
+//register hikari quran
+use App\Http\Controllers\RegistrationHikariQuranController;
+
+Route::get('/registerquran', [RegistrationHikariQuranController::class, 'create'])->name('registerquran.create');
+Route::post('/registerquran', [RegistrationHikariQuranController::class, 'store'])->name('registerquran.store');
+
+//daftar kursus
+use App\Http\Controllers\DaftarKursusController;
+
+Route::get('/daftarkursus', [DaftarKursusController::class, 'create'])->name('daftarkursus.index');
+Route::post('/daftarkursus', [DaftarKursusController::class, 'store'])->name('daftarkursus.store');
+
+//riwayatpendaftaran
+use App\Http\Controllers\RiwayatPendaftaranController;
+Route::get('/riwayatpendaftaran', [RiwayatPendaftaranController::class, 'index'])->name('riwayat.pendaftaran');
+
+//tagihanpembayaran
+use App\Http\Controllers\TagihanPembayaranController;
+Route::get('/tagihanpembayaran', [TagihanPembayaranController::class, 'index'])->name('tagihan.pembayaran');
+
+// route ke master data paket
+Route::resource('paket', App\Http\Controllers\PaketController::class);
+Route::post('paket', [App\Http\Controllers\PaketController::class, 'store'])->name('paket.store')->middleware(['auth']);
+Route::post('/upload-paket-excel', [App\Http\Controllers\PaketController::class, 'uploadExcel'])->name('paket.upload');
+Route::put('/paket/{id}/update', [App\Http\Controllers\PaketController::class, 'update'])->name('paket.update')->middleware(['auth']);
+Route::get('/delete-paket/{id}', [App\Http\Controllers\PaketController::class, 'destroy'])->name('paket.destroy')->middleware(['auth']);
+
+// route ke master data pengasuh
+Route::resource('pengasuh', App\Http\Controllers\PengasuhController::class);
+Route::post('pengasuh', [App\Http\Controllers\PengasuhController::class, 'store'])->name('pengasuh.store')->middleware(['auth']);
+Route::post('/upload-pengasuh-excel', [App\Http\Controllers\PengasuhController::class, 'uploadExcel'])->name('pengasuh.upload');
+Route::put('/pengasuh/{id}/update', [App\Http\Controllers\PengasuhController::class, 'update'])->name('pengasuh.update')->middleware(['auth']);
+Route::get('/delete-pengasuh/{id}', [App\Http\Controllers\PengasuhController::class, 'destroy'])->name('pengasuh.destroy')->middleware(['auth']);
+
+// route ke master data peserta hikari kidz
+Route::resource('peserta_hikari_kidz', App\Http\Controllers\PesertaHikariKidzController::class);
+Route::post('peserta_hikari_kidz', [App\Http\Controllers\PesertaHikariKidzController::class, 'store'])->name('peserta_hikari_kidz.store')->middleware(['auth']);
+Route::post('/upload-peserta_hikari_kidz-excel', [App\Http\Controllers\PesertaHikariKidzController::class, 'uploadExcel'])->name('peserta_hikari_kidz.upload');
+Route::put('/peserta_hikari_kidz/{id}/update', [App\Http\Controllers\PesertaHikariKidzController::class, 'update'])->name('peserta_hikari_kidz.update')->middleware(['auth']);
+Route::get('/delete-peserta_hikari_kidz/{id}', [App\Http\Controllers\PesertaHikariKidzController::class, 'destroy'])->name('peserta_hikari_kidz.destroy')->middleware(['auth']);
+
+// route ke master data hikari kidz
+Route::resource('hikari_kidz', App\Http\Controllers\HikariKidzController::class);
+Route::post('hikari_kidz', [App\Http\Controllers\HikariKidzController::class, 'store'])->name('hikari_kidz.store')->middleware(['auth']);
+Route::post('/upload-hikari_kidz-excel', [App\Http\Controllers\HikariKidzController::class, 'uploadExcel'])->name('hikari_kidz.upload');
+Route::put('/hikari_kidz/{id}/update', [App\Http\Controllers\HikariKidzController::class, 'update'])->name('hikari_kidz.update')->middleware(['auth']);
+Route::get('/delete-hikari_kidz/{id}', [App\Http\Controllers\HikariKidzController::class, 'destroy'])->name('hikari_kidz.destroy')->middleware(['auth']);
+
+// detail hikari kidz
+Route::get('/hikari_kidz/detail', [App\Http\Controllers\DetailHikariKidzController::class, 'show'])->name('hikari_kidz.detail')->middleware(['auth']);
+Route::post('/hikari_kidz/store', [App\Http\Controllers\DetailHikariKidzController::class, 'store'])->name('hikari_kidz.store')->middleware(['auth']);
+Route::patch('ubah-status/{id}', [App\Http\Controllers\DetailHikariKidzController::class, 'ubahStatus'])->name('ubah.status')->middleware(['auth']);
+
+// jadwal hikari kidz
+Route::resource('jadwal_hikari_kidz', App\Http\Controllers\JadwalHikariKidzController::class)->middleware(['auth']);
+Route::post('jadwal_hikari_kidz', [App\Http\Controllers\JadwalHikariKidzController::class, 'store'])->name('jadwal_hikari_kidz.store')->middleware(['auth']);
+Route::put('/jadwal_hikari_kidz/{id}/update', [App\Http\Controllers\JadwalHikariKidzController::class, 'update'])->name('jadwal_hikari_kidz.update')->middleware(['auth']);
+Route::get('/delete-jadwal_hikari_kidz/{id}', [App\Http\Controllers\JadwalHikariKidzController::class, 'destroy'])->name('jadwal_hikari_kidz.destroy')->middleware(['auth']);
+
+// detail jadwal hikari kidz
+Route::get('jadwal_hikari_kidz/{id}/show', [App\Http\Controllers\JadwalHikariKidzController::class, 'show'])->name('jadwal_hikari_kidz.show')->middleware(['auth']);
+Route::post('/jadwal-hikari-kidz/{id}/add-peserta', [App\Http\Controllers\JadwalHikariKidzController::class, 'addPeserta'])->name('jadwal_hikari_kidz.addPeserta')->middleware(['auth']);
+Route::delete('/jadwal-hikari-kidz/{jadwalId}/remove-peserta/{pesertaId}', [App\Http\Controllers\JadwalHikariKidzController::class, 'removePeserta'])->name('jadwal_hikari_kidz.removePeserta')->middleware(['auth']);
+
+// jadwal kursus peserta dan pengasuh
+Route::middleware('auth')->post('/jadwal-hikari-kidz', [App\Http\Controllers\JadwalHikariKidzController::class, 'showByEmail'])->name('jadwal_hikari_kidz.peserta');
+Route::post('jadwal-hikari-kidz-pengasuh', [App\Http\Controllers\JadwalHikariKidzController::class, 'showPengasuhSchedule']);

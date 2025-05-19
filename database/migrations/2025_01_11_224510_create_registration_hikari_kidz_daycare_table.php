@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateRegistrationHikariKidzDaycaresTable extends Migration
+class CreateRegistrationHikariKidzDaycareTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,12 +13,13 @@ class CreateRegistrationHikariKidzDaycaresTable extends Migration
      */
     public function up()
     {
-        Schema::create('hikari_kidz_daycares', function (Blueprint $table) {
+        Schema::create('registration_hikari_kidz_daycares', function (Blueprint $table) {
             $table->id();
             $table->string('full_name', 255);
             $table->string('nickname', 255);
             $table->date('birth_date');
             $table->integer('child_order'); // Anak ke-berapa
+            $table->string('file_upload');
             $table->integer('siblings_count'); // Jumlah saudara
             $table->integer('height_cm'); // Tinggi badan dalam cm
             $table->integer('weight_kg'); // Berat badan dalam kg
@@ -57,4 +58,5 @@ class CreateRegistrationHikariKidzDaycaresTable extends Migration
     {
         Schema::dropIfExists('registration_hikari_kidz_daycares');
     }
+
 }

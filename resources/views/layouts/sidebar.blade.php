@@ -105,6 +105,55 @@
               </p>
             </a>
           </li>
+          <li class="nav-header">HIKARI KIDZ</li>
+          <li class="nav-item">
+            <a href="{{ url('paket') }}" class="nav-link @yield('paket_select')">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Paket
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('pengasuh') }}" class="nav-link @yield('pengasuh_select')">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Pengasuh
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('peserta_hikari_kidz') }}" class="nav-link @yield('peserta_hikari_kidz_select')">
+              <i class="nav-icon fas fa-list-alt"></i>
+              <p>
+                Peserta Hikari Kidz
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('hikari_kidz') }}" class="nav-link @yield('hikari_kidz_select')">
+              <i class="nav-icon fas fa-list-alt"></i>
+              <p>
+                Data Hikari Kidz
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('hikari_kidz/detail') }}" class="nav-link @yield('detail_hikari_kidz_select')">
+              <i class="nav-icon fas fa-list-alt"></i>
+              <p>
+                Detail Peserta Hikari Kidz
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('jadwal_hikari_kidz')}}" class="nav-link @yield('jadwal_hikari_kidz_select')">
+              <i class="nav-icon far fa-calendar-alt"></i>
+              <p>
+                Jadwal Hikari Kidz
+              </p>
+            </a>
+          </li>
           <li class="nav-header">PENCATATAN</li>
           <li class="nav-item">
             <a href="{{ url('presensi_staf') }}" class="nav-link @yield('presensi_staf_select')">

@@ -63,16 +63,16 @@
         </a>
       </li>
       @else
-      <li class="nav-item ">
-        <a class="nav-link" href="./tables.html">
-          <i class="material-icons">content_paste</i>
+      <li class="nav-item @yield('daftar_kursus_select')">
+        <a class="nav-link" href="{{ route('daftarkursus.index') }}">
+          <i class="material-icons">person</i>
           <p>Daftar Kursus</p>
         </a>
       </li>
-      <li class="nav-item ">
-        <a class="nav-link" href="./typography.html">
+      <li class="nav-item @yield('riwayat_select')">
+        <a class="nav-link" href="riwayatpendaftaran">
           <i class="material-icons">library_books</i>
-          <p>Kursus Terdaftar</p>
+          <p>Riwayat Pendaftaran</p>
         </a>
       </li>
       <li class="nav-item @yield('jadwal_kursus_select')">
@@ -85,10 +85,10 @@
             <input type="hidden" name="email" value="{{ Auth::user()->email }}">
         </form>
       </li> 
-      <li class="nav-item ">
-        <a class="nav-link" href="./icons.html">
+      <li class="nav-item @yield('tagihan_select')">
+        <a class="nav-link" href="tagihanpembayaran">
           <i class="material-icons">money</i>
-          <p>Tagihan</p>
+          <p>Tagihan Pembayaran</p>
         </a>
       </li>
       <li class="nav-item ">

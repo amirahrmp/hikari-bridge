@@ -41,6 +41,7 @@ class JadwalKursusController extends Controller
             'waktu' => 'required',
             'tipe_kursus' => 'required|in:online,offline',
         ]);
+        
 
         JadwalKursus::create($validated);
 
