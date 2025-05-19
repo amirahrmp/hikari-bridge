@@ -41,4 +41,9 @@ class RegistrationHikariKidzDaycare extends Model
         'reason_for_choosing',
         'information_source',
     ];
+
+    public function paket()
+    {
+        return $this->belongsTo(Paket::class, 'package_type', 'id_paket');
+    }
 }

@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PesertaHikariKidz;
 use App\Http\Requests\StorePesertaHikariKidzRequest;
 use App\Http\Requests\UpdatePesertaHikariKidzRequest;
+use Illuminate\Support\Facades\Storage;  // <<--- tambahkan ini
 use Illuminate\Http\Request;
 use App\Imports\PesertaHikariKidzImport;
 use Maatwebsite\Excel\Facades\Excel;
@@ -31,27 +32,36 @@ class PesertaHikariKidzController extends Controller
         // Validasi data input
         $request->validate([
             'id_anak' => 'required|numeric',
-            'nama_anak' => 'required',
-            'nama_ortu' => 'required',
-            'alamat' => 'required',
-            'jk' => 'required',
-            'telp' => 'required|numeric|digits_between:5,15',
-            'email' => 'required|email',
-            'tmp_lahir' => 'required',
-            'tgl_lahir' => 'required|date',
+            'full_name' => 'required|string|max:255',
+            'nickname' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'parent_name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'whatsapp_number' => 'required|numeric|digits_between:5,15',
+            'tipe' => 'required|string|max:255',
+            'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         // Membuat Data Anak Peserta Hikari Kidz baru
         $peserta_hikari_kidz = new PesertaHikariKidz();
         $peserta_hikari_kidz->id_anak = $request->input('id_anak');
-        $peserta_hikari_kidz->nama_anak = $request->input('nama_anak');
-        $peserta_hikari_kidz->nama_ortu = $request->input('nama_ortu');
-        $peserta_hikari_kidz->alamat = $request->input('alamat');
-        $peserta_hikari_kidz->jk = $request->input('jk');
-        $peserta_hikari_kidz->telp = $request->input('telp');
-        $peserta_hikari_kidz->email = $request->input('email');
-        $peserta_hikari_kidz->tmp_lahir = $request->input('tmp_lahir');
-        $peserta_hikari_kidz->tgl_lahir = $request->input('tgl_lahir');
+        $peserta_hikari_kidz->full_name = $request->input('full_name');
+        $peserta_hikari_kidz->nickname = $request->input('nickname');
+        $peserta_hikari_kidz->birth_date = $request->input('birth_date');
+        $peserta_hikari_kidz->parent_name = $request->input('parent_name');
+        $peserta_hikari_kidz->address = $request->input('address');
+        $peserta_hikari_kidz->whatsapp_number = $request->input('whatsapp_number');
+        $peserta_hikari_kidz->tipe = $request->input('tipe');
+        $peserta_hikari_kidz->file_upload = $request->input('file_upload');
+
+        // Proses file upload
+        if ($request->hasFile('file_upload')) {
+            $file = $request->file('file_upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('uploads/peserta', $filename); // tersimpan di storage/app/public/uploads
+            $peserta_hikari_kidz->file_upload = $filename;
+        }
+
         $peserta_hikari_kidz->save();
 
         // Menampilkan notifikasi sukses
@@ -87,30 +97,45 @@ class PesertaHikariKidzController extends Controller
     {
         $request->validate([
             'id_anak' => 'required|numeric',
-            'nama_anak' => 'required',
-            'nama_ortu' => 'required',
-            'alamat' => 'required',
-            'jk' => 'required',
-            'telp' => 'required|numeric|digits_between:5,15',
-            'email' => 'required|email',
-            'tmp_lahir' => 'required',
-            'tgl_lahir' => 'required|date',
+            'full_name' => 'required|string|max:255',
+            'nickname' => 'required|string|max:255',
+            'birth_date' => 'required|date',
+            'parent_name' => 'required|string|max:255',
+            'address' => 'required|string|max:255',
+            'whatsapp_number' => 'required|numeric|digits_between:5,15',
+            'tipe' => 'required|string|max:255',
+            'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
         // Cari peserta hikarikidz berdasarkan ID
         $peserta_hikari_kidz = PesertaHikariKidz::findOrFail($id);
 
         // Update data peserta_hikari_kidz
-        $peserta_hikari_kidz->id_anak = $request->input('id_anak');
-        $peserta_hikari_kidz->nama_anak = $request->input('nama_anak');
-        $peserta_hikari_kidz->nama_ortu = $request->input('nama_ortu');
-        $peserta_hikari_kidz->alamat = $request->input('alamat');
-        $peserta_hikari_kidz->jk = $request->input('jk');
-        $peserta_hikari_kidz->telp = $request->input('telp');
-        $peserta_hikari_kidz->email = $request->input('email');
-        $peserta_hikari_kidz->tmp_lahir = $request->input('tmp_lahir');
-        $peserta_hikari_kidz->tgl_lahir = $request->input('tgl_lahir');
-        
+       $peserta_hikari_kidz->id_anak = $request->input('id_anak');
+        $peserta_hikari_kidz->full_name = $request->input('full_name');
+        $peserta_hikari_kidz->nickname = $request->input('nickname');
+        $peserta_hikari_kidz->birth_date = $request->input('birth_date');
+        $peserta_hikari_kidz->parent_name = $request->input('parent_name');
+        $peserta_hikari_kidz->address = $request->input('address');
+        $peserta_hikari_kidz->whatsapp_number = $request->input('whatsapp_number');
+        $peserta_hikari_kidz->tipe = $request->input('tipe');
+        $peserta_hikari_kidz->file_upload = $request->input('file_upload');
+         // ✔️ Cek apakah ada file baru diupload
+        if ($request->hasFile('file_upload')) {
+            // Hapus file lama jika ada
+            if ($peserta_hikari_kidz->file_upload && Storage::exists('uploads/peserta' . $peserta_hikari_kidz->file_upload)) {
+                Storage::delete('uploads/peserta' . $peserta_hikari_kidz->file_upload);
+            }
+
+            $file = $request->file('file_upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->storeAs('public/uploads', $filename);
+            $peserta_hikari_kidz->file_upload = $filename;
+             } else {
+            // Kalau tidak ada upload file baru, tetap pakai file lama
+            $validatedData['file_upload'] = $peserta_hikari_kidz->file_upload;
+            }
+
         // Simpan perubahan
         $peserta_hikari_kidz->save();  // Hanya satu kali save, karena sudah memodifikasi data
 
@@ -146,4 +171,5 @@ class PesertaHikariKidzController extends Controller
         // Tampilkan view dengan data peserta dan hikarikidz yang diikuti
         return view('peserta_hikari_kidz.detail', compact('peserta'));
     }
+
 }

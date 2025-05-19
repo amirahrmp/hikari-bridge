@@ -183,12 +183,6 @@
       <input type="number" class="form-control" id="mother_whatsapp" name="mother_whatsapp" placeholder="Masukkan nomor WhatsApp ibu" maxlength="15">
     </div>
 
-    <!-- Address -->
-    <!-- <div class="mb-3">
-      <label for="address" class="form-label"style="color: black;">Alamat</label>
-      <input type="text" class="form-control" id="address" name="address" placeholder="Masukkan Alamat Lengkap" maxlength="255">
-    </div> -->
-
     <div class="mb-3">
       <label for="address" class="form-label"style="color: black;">Alamat</label>
       <textarea class="form-control" id="address" name="address" rows="4" placeholder="Masukkan alamat lengkap"></textarea>
@@ -211,46 +205,24 @@
       </div>
     </div>
 
-                     <!-- Pilihan Tipe Paket (Radio Button) -->
-                     <div class="form-group">
+    <!-- Pilihan Tipe Paket (Radio Button) -->
+    <div class="form-group">
     <label for="package_type" style="color: black;">Pilihan Tipe Paket</label><br>
     @foreach ($paket as $p)
         <div class="form-check">
-            <input class="form-check-input" type="radio" name="package_type" id="package_{{ $p->id_paket }}" value="{{ $p->id_paket }}">
+            <input class="" type="radio" name="package_type" id="package_{{ $p->id_paket }}" value="{{ $p->id_paket }}">
             <label class="form-check-label" for="package_{{ $p->id_paket }}">
                 {{ $p->nama_paket }}
             </label>
         </div>
     @endforeach
-</div>
-
-    <!-- Tampilkan Rincian Paket -->
-    <!-- <div id="paket-detail" style="margin-top: 15px; background: #f5f5f5; padding: 10px; border-radius: 5px;">
-      <p><strong>Rincian Biaya:</strong></p>
-      <p>Uang Pendaftaran: <span id="u_pendaftaran">-</span></p>
-      <p>Uang Pangkal: <span id="u_pangkal">-</span></p>
-      <p>Uang Kegiatan: <span id="u_kegiatan">-</span></p>
-      <p>Uang SPP: <span id="u_spp">-</span></p>
-      <p>Uang Makan: <span id="u_makan">-</span></p>
-    </div> -->
-
-    <!-- Hidden input untuk dikirim -->
-    <input type="hidden" name="u_pendaftaran" id="u_pendaftaran_input">
-    <input type="hidden" name="u_pangkal" id="u_pangkal_input">
-    <input type="hidden" name="u_kegiatan" id="u_kegiatan_input">
-    <input type="hidden" name="u_spp" id="u_spp_input">
-    <input type="hidden" name="u_makan" id="u_makan_input">
+    </div>
 
     <!-- Medical History -->
     <div class="mb-3">
       <label for="medical_history" class="form-label"style="color: black;">Riwayat Kesehatan<p><i>Contoh Pengisian:<p>- Memiliki riwayat penyakit asma</p><p>- Alergi terhadap ikan tongkol dan alergi dingin</p><p>Apabila tidak memiliki riwayat penyakit tertentu, isi dengan tanda (-)</p></i></p></label>
       <input type="text" class="form-control" id="medical_history" name="medical_history" placeholder="Masukkan riwayat kesehatan (opsional)" maxlength="255">
     </div>
-
-    <!-- <div class="mb-3">
-      <label for="medical_history" class="form-label">Riwayat Kesehatan<p><i>Contoh Pengisian:<p>- Memiliki riwayat penyakit asma</p><p>- Alergi terhadap ikan tongkol dan alergi dingin</p><p>Apabila tidak memiliki riwayat penyakit tertentu, isi dengan tanda (-)</p></i></p></label>
-      <textarea class="form-control" id="medical_history" name="medical_history" rows="3" placeholder="Masukkan riwayat kesehatan (opsional)"></textarea>
-    </div> -->
 
     <!-- kebiasaan makan -->
     <div class="form-group">
@@ -274,40 +246,24 @@
       <label for="favorite_food" class="form-label"style="color: black;">Makanan Kesukaan</label>
       <input type="text" class="form-control" id="favorite_food" name="favorite_food" placeholder="Masukkan Makanan Kesukaan" maxlength="255">
     </div>
-    <!-- <div class="mb-3">
-      <label for="favorite_food" class="form-label">Masukkan Makanan Kesukaan</label>
-      <textarea class="form-control" id="favorite_food" name="favorite_food" rows="3" placeholder="Masukkan Makanan Kesukaan"></textarea>
-    </div> -->
 
     <!-- Minuman Kesukaan -->
     <div class="mb-3">
       <label for="favorite_drink" class="form-label"style="color: black;">Minuman Kesukaan</label>
       <input type="text" class="form-control" id="favorite_drink" name="favorite_drink" placeholder="Masukkan Minuman Kesukaan" maxlength="255">
     </div>
-    <!-- <div class="mb-3">
-      <label for="favorite_drink" class="form-label">Masukkan Minuman Kesukaan</label>
-      <textarea class="form-control" id="favorite_drink" name="favorite_drink" rows="3" placeholder="Masukkan Minuman Kesukaan"></textarea>
-    </div> -->
 
     <!-- Mainan Kesukaan -->
     <div class="mb-3">
       <label for="favorite_toy" class="form-label"style="color: black;">Mainan Kesukaan</label>
       <input type="text" class="form-control" id="favorite_toy" name="favorite_toy" placeholder="Masukkan Mainan Kesukaan" maxlength="255">
     </div>
-    <!-- <div class="mb-3">
-      <label for="favorite_toy" class="form-label">Masukkan Mainan Kesukaan</label>
-      <textarea class="form-control" id="favorite_toy" name="favorite_toy" rows="3" placeholder="Masukkan Mainan Kesukaan"></textarea>
-    </div> -->
 
      <!-- Kebiasaan Tertentu -->
      <div class="mb-3">
       <label for="specific_habits" class="form-label"style="color: black;">Kebiasaan Tertentu Calon Siswa<p><i>Contoh Pengisian:<p>- Tidur dengan boneka panda</p><p>Apabila tidak ada kebiasaan tertentu, isi dengan tanda strip (-)</p></i></p></label>
       <input type="text" class="form-control" id="specific_habits" name="specific_habits" placeholder="Masukkan Kebiasaan Tertentu" maxlength="255">
     </div>
-     <!-- <div class="mb-3">
-      <label for="specific_habits" class="form-label"style="color: black;">Kebiasaan Tertentu Calon Siswa<p><i>Contoh Pengisian:<p>- Tidur dengan boneka panda</p><p>Apabila tidak ada kebiasaan tertentu, isi dengan tanda strip (-)</p></i></p></label>
-      <textarea class="form-control" id="specific_habits" name="specific_habits" rows="3" placeholder="Masukkan Kebiasaan Tertentu"></textarea>
-    </div> -->
 
     <!-- asuhan -->
     <div class="form-group">
@@ -449,31 +405,5 @@
   </form>
 </div>
 
-<!-- SCRIPT AJAX -->
-<script>
-document.querySelectorAll('.tipe-paket').forEach(function(radio) {
-    radio.addEventListener('change', function () {
-        let tipe = this.value;
-        fetch(`/get-paket-by-tipe/${tipe}`)
-        .then(res => res.json())
-        .then(data => {
-            if (data) {
-                document.getElementById('u_pendaftaran').textContent = 'Rp ' + data.u_pendaftaran;
-                document.getElementById('u_pangkal').textContent = 'Rp ' + data.u_pangkal;
-                document.getElementById('u_kegiatan').textContent = 'Rp ' + (data.u_kegiatan ?? 0);
-                document.getElementById('u_spp').textContent = 'Rp ' + (data.u_spp ?? 0);
-                document.getElementById('u_makan').textContent = 'Rp ' + data.u_makan;
-
-                // isi hidden input
-                document.getElementById('u_pendaftaran_input').value = data.u_pendaftaran;
-                document.getElementById('u_pangkal_input').value = data.u_pangkal;
-                document.getElementById('u_kegiatan_input').value = data.u_kegiatan;
-                document.getElementById('u_spp_input').value = data.u_spp;
-                document.getElementById('u_makan_input').value = data.u_makan;
-            }
-        });
-    });
-});
-</script>
 
 @endsection

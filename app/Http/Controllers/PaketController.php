@@ -135,10 +135,10 @@ class PaketController extends Controller
         return response()->json($paket);
     }
     public function getPaketById($id)
-{
-    $paket = Paket::find($id);
-    return response()->json($paket);
-}
+    {
+        $paket = Paket::find($id);
+        return response()->json($paket);
+    }
     /**
      * Remove the specified resource from storage.
      */

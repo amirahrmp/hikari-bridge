@@ -110,7 +110,23 @@
             <a href="{{ url('paket') }}" class="nav-link @yield('paket_select')">
               <i class="nav-icon fas fa-users"></i>
               <p>
-                Paket
+                Paket Daycare
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('paket_hkc') }}" class="nav-link @yield('paket_hkc_select')">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Paket HKC
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
+            <a href="{{ url('paket_hq') }}" class="nav-link @yield('paket_hq_select')">
+              <i class="nav-icon fas fa-users"></i>
+              <p>
+                Paket Quran
               </p>
             </a>
           </li>

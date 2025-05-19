@@ -28,5 +28,10 @@ class RegistrationHikariKidzClub extends Model
         'promotor'
     ];
     
-    
+    public function getPaketHkc()
+    {
+        return PaketHkc::where('member', $this->member)
+                       ->where('kelas', $this->kelas)
+                       ->first();
+    }
 }

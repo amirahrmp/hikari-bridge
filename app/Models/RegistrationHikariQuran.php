@@ -14,14 +14,21 @@ class RegistrationHikariQuran extends Model
 
     protected $fillable = [
         'full_name',
+        'nickname',
         'birth_date',
         'file_upload',
         'parent_name',
         'whatsapp_number',
         'address',
-        'education',
+        'kelas',
+        'tipe',
         'sumberinfo',
         'promotor',
     ];
+
+    public function pakethq()
+    {
+        return $this->belongsTo(PaketHq::class, 'kelas', 'kelas'); // 'kelas' adalah foreign key di registration_hikari_quran, 'id' adalah primary key di paket_hq
+    }
 }
 

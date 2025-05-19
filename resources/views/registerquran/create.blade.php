@@ -30,6 +30,14 @@
       <div class="error" id="error-full_name"></div>
     </div>
 
+    <!-- NickName -->
+    <div class="mb-3">
+      <label for="nickname" class="form-label"style="color: black;">Nama Panggilan</label>
+      <input type="text" class="form-control" id="nickname" name="nickname" placeholder="Masukkan nama panggilan" required maxlength="255">
+      <div class="error" id="error-nickname"></div>
+    </div>
+
+
     <!-- Birth Date -->
     <div class="mb-3">
       <label for="birth_date" class="form-label"style="color: black;">Tanggal Lahir</label>
@@ -65,23 +73,32 @@
       <div class="error" id="error-address"></div>
     </div>
 
-    <!-- kelas -->
+    <!-- Pilihan Kelas (Radio Button) -->
     <div class="form-group">
-      <label for="education"style="color: black;">Pilihan Kelas</label>
+    <label for="kelas" style="color: black;">Pilihan Kelas</label><br>
+    @foreach ($pakethq as $p)
         <div class="form-check">
-          <input type="radio" name="education" id="kids" value="kids">
-          <label class="form-check-label" for="kids"style="color: black;">Private Kids</label>
+            <input class="" type="radio" name="kelas" id="kids{{ $p->id_pakethq }}" value="{{ $p->id_pakethq }}">
+            <label class="form-check-label" for="kids{{ $p->id_pakethq }}">
+                {{ $p->kelas }}
+            </label>
+        </div>
+    @endforeach
+    </div>
+
+    <!-- tipe -->
+    <div class="form-group">
+      <label for="tipe"style="color: black;">Tipe Kelas</label>
+        <div class="form-check">
+          <input type="radio" name="tipe" id="online" value="online">
+          <label class="form-check-label" for="online"style="color: black;">Online</label>
         </div>
         <div class="form-check">
-          <input type="radio" name="education" id="teens" value="teens">
-          <label class="form-check-label" for="teens"style="color: black;">Private Teens</label>
-        </div>
-        <div class="form-check">
-          <input type="radio" name="education" id="dewasa" value="dewasa">
-          <label class="form-check-label" for="dewasa"style="color: black;">Private Dewasa</label>
+          <input type="radio" name="tipe" id="offline" value="offline">
+          <label class="form-check-label" for="offline"style="color: black;">Offline</label>
         </div>
     </div>
-    <br>
+    <br> 
 
     <!-- Sumber Informasi Program HKC -->
     <div class="form-group">

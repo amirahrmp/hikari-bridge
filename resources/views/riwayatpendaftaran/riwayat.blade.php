@@ -44,6 +44,8 @@
                                       Hikari Kidz Daycare
                                     @elseif($registration instanceof \App\Models\RegistrationHikariQuran)
                                       Hikari Quran
+                                    @elseif($registration instanceof \App\Models\RegistrationProgramHkcw)
+                                      Program Lain HKC Weekend
                                     @endif
                                   </td>
                                   <td>
@@ -52,7 +54,9 @@
                                     @elseif($registration instanceof \App\Models\RegistrationHikariKidzDaycare)
                                       {{ $registration->age_group }}
                                     @elseif($registration instanceof \App\Models\RegistrationHikariQuran)
-                                      {{ $registration->education }}
+                                      {{ $registration->kelas }}
+                                    @elseif($registration instanceof \App\Models\RegistrationProgramHkcw)
+                                      {{ $registration->nama_kegiatan }}
                                     @endif
                                   </td>
                                   <td>

@@ -108,34 +108,30 @@
         </div>
     </div>
 
-    <!-- member -->
+    <!-- Pilihan Tipe Member (Radio Button) -->
     <div class="form-group">
-      <label for="member"style="color: black;">Pilihan Tipe Member</label>
-        <div class="form-check">
-          <input type="radio" name="member" id="tetap" value="tetap">
-          <label class="form-check-label" for="tetap"style="color: black;">Member Tetap</label>
-        </div>
-        <div class="form-check">
-          <input type="radio" name="member" id="harian" value="harian">
-          <label class="form-check-label" for="harian"style="color: black;">Member Harian</label>
-        </div>
+        <label for="member" style="color: black;">Pilihan Tipe Member</label><br>
+        @foreach ($paket_hkc->unique('member') as $p)
+            <div class="form-check">
+                <input type="radio" name="member" id="member{{ $p->member }}" value="{{ $p->member }}">
+                <label class="form-check-label" for="member{{ $p->member }}">
+                    {{ ucfirst($p->member) }}
+                </label>
+            </div>
+        @endforeach
     </div>
 
-    <!-- kelas -->
+    <!-- Pilihan Tipe Kelas (Radio Button) -->
     <div class="form-group">
-      <label for="kelas"style="color: black;">Kelas</label>
-        <div class="form-check">
-          <input type="radio" name="kelas" id="himawari" value="himawari">
-          <label class="form-check-label" for="himawari"style="color: black;">Himawari (4 tahun)</label>
-        </div>
-        <div class="form-check">
-          <input type="radio" name="kelas" id="sakura" value="sakura">
-          <label class="form-check-label" for="sakura"style="color: black;">Sakura (3 tahun)</label>
-        </div>
-        <div class="form-check">
-          <input type="radio" name="kelas" id="bara" value="bara">
-          <label class="form-check-label" for="bara"style="color: black;">Bara (2 tahun)</label>
-        </div>
+        <label for="kelas" style="color: black;">Pilihan Tipe kelas</label><br>
+        @foreach ($paket_hkc->unique('kelas') as $p)
+            <div class="form-check">
+                <input type="radio" name="kelas" id="kelas{{ $p->kelas }}" value="{{ $p->kelas }}">
+                <label class="form-check-label" for="kelas{{ $p->kelas }}">
+                    {{ ucfirst($p->kelas) }}
+                </label>
+            </div>
+        @endforeach
     </div>
 
     <!-- Sumber Informasi Program HKC -->

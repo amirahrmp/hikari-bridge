@@ -60,6 +60,13 @@ class RegistrationHikariKidzDaycareController extends Controller
             $paket = Paket::find($request->package_type); // Menemukan paket berdasarkan ID
             if ($paket) {
                 $validatedData['package_type'] = $paket->nama_paket; // Menyimpan nama paket yang dipilih
+                // Menghitung total bayar
+                $total_bayar =  $paket->u_pendaftaran + 
+                                $paket->u_pangkal + 
+                                $paket->u_kegiatan + 
+                                $paket->u_spp + 
+                                $paket->u_makan;
+                $validatedData['total_bayar'] = $total_bayar; // Menyimpan total bayar ke validatedData
             }
         }
 

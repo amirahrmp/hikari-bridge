@@ -51,14 +51,14 @@
                                                 <thead>
                                                     <tr>
                                                         <th>ID Anak</th>
-                                                        <th>Nama</th>
-                                                        <th>Nama Ortu</th>                                                      
-                                                        <th>JK</th>
-                                                        <th>Telp</th>
-                                                        <th>Email</th> 
-                                                        <th>Tempat Lahir</th> 
+                                                        <th>Nama Lengkap</th>
+                                                        <th>Nama Panggilan</th>                                                      
                                                         <th>Tanggal Lahir</th>
-                                                        <th>Alamat</th>
+                                                        <th>Nama Orang Tua</th>
+                                                        <th>Alamat</th> 
+                                                        <th>No Telp</th> 
+                                                        <th>Tipe</th>
+                                                        <th>Foto Anak</th>
                                                         <th>Action</th>
                                                     </tr>
                                                 </thead>
@@ -66,14 +66,14 @@
                                                 @foreach($peserta_hikari_kidz as $p)
                                                     <tr>
                                                         <td>{{ $p->id_anak }}</td>
-                                                        <td>{{ $p->nama_anak }}</td>
-                                                        <td>{{ $p->nama_ortu }}</td>
-                                                        <td>{{ $p->jk }}</td>
-                                                        <td>{{ $p->telp }}</td>
-                                                        <td>{{ $p->email }}</td>
-                                                        <td>{{ $p->tmp_lahir }}</td>
-                                                        <td>{{ $p->tgl_lahir }}</td>
-                                                        <td>{{ $p->alamat }}</td>
+                                                        <td>{{ $p->full_name }}</td>
+                                                        <td>{{ $p->nickname }}</td>
+                                                        <td>{{ $p->birth_date }}</td>
+                                                        <td>{{ $p->parent_name }}</td>
+                                                        <td>{{ $p->address }}</td>
+                                                        <td>{{ $p->whatsapp_number }}</td>
+                                                        <td>{{ $p->tipe }}</td>
+                                                        <td>{{ $p->file_upload }}</td>
                                                         <td>
                                                             <button class="btn-sm btn-warning d-inline-block" data-toggle="modal" data-target="#editModal{{ $p->id }}">
                                                                 <i class="fa fa-edit"></i>
@@ -93,7 +93,7 @@
                                                                         <span aria-hidden="true">&times;</span>
                                                                     </button>
                                                                 </div>
-                                                                <form action="{{ route('peserta_hikari_kidz.update', $p->id) }}" method="post">
+                                                                <form action="{{ route('peserta_hikari_kidz.update', $p->id) }}" method="post" enctype="multipart/form-data">
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <div class="modal-body">
@@ -107,68 +107,65 @@
                                                                         </div>
                                                                                                                                         
                                                                         <div class="mb-3">
-                                                                            <label for="nama_anak" class="form-label">Nama:</label>
-                                                                            <input type="text" class="form-control @error('nama_anak') is-invalid @enderror" id="nama_anak" name="nama_anak" value="{{ old('nama_anak', $p->nama_anak) }}" maxlength="50" required>
-                                                                            @error('nama_anak')
+                                                                            <label for="full_name" class="form-label">Nama Lengkap:</label>
+                                                                            <input type="text" class="form-control @error('full_name') is-invalid @enderror" id="full_name" name="full_name" value="{{ old('full_name', $p->full_name) }}" maxlength="50" required>
+                                                                            @error('full_name')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
 
                                                                         <div class="mb-3">
-                                                                            <label for="nama_ortu" class="form-label">Nama Ortu:</label>
-                                                                            <input type="text" class="form-control @error('nama_ortu') is-invalid @enderror" id="nama_ortu" name="nama_ortu" value="{{ old('nama_ortu', $p->nama_ortu) }}" maxlength="50" required>
-                                                                            @error('nama_ortu')
+                                                                            <label for="nickname" class="form-label">Nama Panggilan:</label>
+                                                                            <input type="text" class="form-control @error('nickname') is-invalid @enderror" id="nickname" name="nickname" value="{{ old('nickname', $p->nickname) }}" maxlength="50" required>
+                                                                            @error('nickname')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     
                                                                         <div class="mb-3">
-                                                                            <label for="alamat" class="form-label">Alamat:</label>
-                                                                            <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" maxlength="100" required>{{ old('alamat', $p->alamat) }}</textarea>
-                                                                            @error('alamat')
+                                                                            <label for="birth_date" class="form-label">Tanggal Lahir:</label>
+                                                                            <input type="date" class="form-control @error('birth_date') is-invalid @enderror" id="birth_date" name="birth_date" value="{{ old('birth_date', $p->birth_date) }}" required>
+                                                                            @error('birth_date')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     
                                                                         <div class="mb-3">
-                                                                            <label for="jk" class="form-label">Jenis Kelamin:</label>
-                                                                            <select name="jk" id="jk" class="form-control @error('jk') is-invalid @enderror">
-                                                                                <option value="L" {{ $p->jk == 'L' ? 'selected' : '' }}>Laki-Laki</option>
-                                                                                <option value="P" {{ $p->jk == 'P' ? 'selected' : '' }}>Perempuan</option>
-                                                                            </select>
-                                                                            @error('jk')
+                                                                            <label for="parent_name" class="form-label">Nama Orang Tua:</label>
+                                                                            <input type="text" class="form-control @error('parent_name') is-invalid @enderror" id="parent_name" name="parent_name" value="{{ old('parent_name', $p->parent_name) }}" maxlength="50" required>
+                                                                            @error('parent_name')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     
                                                                         <div class="mb-3">
-                                                                            <label for="telp" class="form-label">Telp:</label>
-                                                                            <input type="text" class="form-control @error('telp') is-invalid @enderror" id="telp" name="telp" value="{{ old('telp', $p->telp) }}" maxlength="15" required pattern="\d{5,15}">
-                                                                            @error('telp')
+                                                                            <label for="address" class="form-label">Alamat:</label>
+                                                                            <input type="address" class="form-control @error('address') is-invalid @enderror" id="address" name="address" value="{{ old('address', $p->address) }}" maxlength="50" required>
+                                                                            @error('address')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
                                                                     
                                                                         <div class="mb-3">
-                                                                            <label for="email" class="form-label">Email:</label>
-                                                                            <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" value="{{ old('email', $p->email) }}" maxlength="50" required>
-                                                                            @error('email')
+                                                                            <label for="whatsapp_number" class="form-label">No Telp:</label>
+                                                                            <input type="number" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp_number" name="whatsapp_number" value="{{ old('whatsapp_number', $p->whatsapp_number) }}" maxlength="15" required pattern="\d{5,15}">
+                                                                            @error('whatsapp_number')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
 
                                                                         <div class="mb-3">
-                                                                            <label for="tmp_lahir" class="form-label">Tempat Lahir:</label>
-                                                                            <input type="tmp_lahir" class="form-control @error('tmp_lahir') is-invalid @enderror" id="tmp_lahir" name="tmp_lahir" value="{{ old('tmp_lahir', $p->tmp_lahir) }}" maxlength="50" required>
-                                                                            @error('tmp_lahir')
+                                                                            <label for="tipe" class="form-label">Tipe:</label>
+                                                                            <input type="tipe" class="form-control @error('tipe') is-invalid @enderror" id="tipe" name="tipe" value="{{ old('tipe', $p->tipe) }}" maxlength="50" required>
+                                                                            @error('tipe')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
-                                                                    
+
                                                                         <div class="mb-3">
-                                                                            <label for="tgl_lahir" class="form-label">Tanggal Lahir:</label>
-                                                                            <input type="date" class="form-control @error('tgl_lahir') is-invalid @enderror" id="tgl_lahir" name="tgl_lahir" value="{{ old('tgl_lahir', $p->tgl_lahir) }}" required>
-                                                                            @error('tgl_lahir')
+                                                                            <label for="file_upload" class="form-label">Foto Peserta Anak:</label>
+                                                                            <input type="file" class="form-control @error('file_upload') is-invalid @enderror" id="file_upload" name="file_upload" maxlength="50" accept=".jpg,.jpeg,.png">
+                                                                            @error('file_upload')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
@@ -196,7 +193,7 @@
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <form action="{{ route('peserta_hikari_kidz.store') }}" method="post">
+                                                    <form action="{{ route('peserta_hikari_kidz.store') }}" method="post" enctype="multipart/form-data">
                                                         @csrf
                                                         <div class="modal-body">
                                                             <div class="mb-3">
@@ -208,70 +205,68 @@
                                                             </div>
                                                                                                     
                                                             <div class="mb-3">
-                                                                <label for="nama_anak" class="form-label">Nama:</label>
-                                                                <input type="text" class="form-control @error('nama_anak') is-invalid @enderror" id="nama_anak" name="nama_anak" maxlength="50" required>
-                                                                @error('nama_anak')
+                                                                <label for="full_name" class="form-label">Nama Lengkap:</label>
+                                                                <input type="text" class="form-control @error('full_name') is-invalid @enderror" id="full_name" name="full_name" maxlength="50" required>
+                                                                @error('full_name')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
 
                                                             <div class="mb-3">
-                                                                <label for="nama_ortu" class="form-label">Nama Ortu:</label>
-                                                                <input type="text" class="form-control @error('nama_ortu') is-invalid @enderror" id="nama_ortu" name="nama_ortu" maxlength="50" required>
-                                                                @error('nama_ortu')
+                                                                <label for="nickname" class="form-label">Nama Panggilan:</label>
+                                                                <input type="text" class="form-control @error('nickname') is-invalid @enderror" id="nickname" name="nickname" maxlength="50" required>
+                                                                @error('nickname')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
                                                     
                                                             <div class="mb-3">
-                                                                <label for="alamat" class="form-label">Alamat:</label>
-                                                                <textarea class="form-control @error('alamat') is-invalid @enderror" id="alamat" name="alamat" rows="3" maxlength="100" required></textarea>
-                                                                @error('alamat')
+                                                                <label for="birth_date" class="form-label">Tanggal Lahir:</label>
+                                                                <input type="date" class="form-control @error('birth_date') is-invalid @enderror" id="birth_date" name="birth_date" required>
+                                                                @error('birth_date')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
                                                     
                                                             <div class="mb-3">
-                                                                <label for="jk" class="form-label">Jenis Kelamin:</label>
-                                                                <select name="jk" id="jk" class="form-control @error('jk') is-invalid @enderror">
-                                                                    <option value="L">Laki-Laki</option>
-                                                                    <option value="P">Perempuan</option>
-                                                                </select>
-                                                                @error('jk')
+                                                                <label for="parent_name" class="form-label">Nama Orang Tua:</label>
+                                                                <input type="parent_name" class="form-control @error('parent_name') is-invalid @enderror" id="parent_name" name="parent_name" maxlength="50" required>
+                                                                @error('parent_name')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
                                                     
                                                             <div class="mb-3">
-                                                                <label for="telp" class="form-label">Telp:</label>
-                                                                <input type="text" class="form-control @error('telp') is-invalid @enderror" id="telp" name="telp" maxlength="15" required pattern="\d{5,15}">
-                                                                @error('telp')
+                                                                <label for="address" class="form-label">Alamat:</label>
+                                                                <textarea class="form-control @error('address') is-invalid @enderror" id="address" name="address" rows="3" maxlength="100" required></textarea>
+                                                                @error('address')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
                                                     
                                                             <div class="mb-3">
-                                                                <label for="email" class="form-label">Email:</label>
-                                                                <input type="email" class="form-control @error('email') is-invalid @enderror" id="email" name="email" maxlength="50" required>
-                                                                @error('email')
+                                                                <label for="whatsapp_number" class="form-label">No Telp:</label>
+                                                                <input type="text" class="form-control @error('whatsapp_number') is-invalid @enderror" id="whatsapp_number" name="whatsapp_number" maxlength="15" required pattern="\d{5,15}">
+                                                                @error('whatsapp_number')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
 
                                                             <div class="mb-3">
-                                                                <label for="tmp_lahir" class="form-label">Tempat Lahir:</label>
-                                                                <input type="tmp_lahir" class="form-control @error('tmp_lahir') is-invalid @enderror" id="tmp_lahir" name="tmp_lahir" maxlength="50" required>
-                                                                @error('tmp_lahir')
+                                                                <label for="tipe" class="form-label">Tipe:</label>
+                                                                <input type="tipe" class="form-control @error('tipe') is-invalid @enderror" id="tipe" name="tipe" maxlength="50" required>
+                                                                @error('tipe')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>
-                                                    
+
                                                             <div class="mb-3">
-                                                                <label for="tgl_lahir" class="form-label">Tanggal Lahir:</label>
-                                                                <input type="date" class="form-control @error('tgl_lahir') is-invalid @enderror" id="tgl_lahir" name="tgl_lahir" required>
-                                                                @error('tgl_lahir')
+                                                                <label for="file_upload" class="form-label">Foto Anak:</label>
+                                                                <input type="file" class="form-control @error('file_upload') is-invalid @enderror" id="file_upload" name="file_upload" maxlength="50" accept=".jpg,.jpeg,.png required>
+                                                                @error('file_upload')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
+                                                            
                                                             </div>
                                                         </div>
                                                         <div class="modal-footer">

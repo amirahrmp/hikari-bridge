@@ -13,14 +13,14 @@ class PesertaHikariKidz extends Model
     protected $fillable = [
         'id',
         'id_anak',
-        'nama_anak',
-        'nama_ortu',
-        'alamat',
-        'jk',
-        'telp',
-        'email',
-        'tmp_lahir',
-        'tgl_lahir'
+        'full_name',
+        'nickname',
+        'birth_date',
+        'parent_name',
+        'address',
+        'whatsapp_number',
+        'tipe',
+        'file_upload'
     ];
 
     public function hikarikidz()
