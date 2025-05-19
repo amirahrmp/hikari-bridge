@@ -163,7 +163,7 @@
                                                                         </div>
 
                                                                         <div class="mb-3">
-                                                                            <label for="file_upload" class="form-label">Foto Peserta Anak:</label>
+                                                                            <label for="file_upload" class="form-label">Foto Anak:</label>
                                                                             <input type="file" class="form-control @error('file_upload') is-invalid @enderror" id="file_upload" name="file_upload" maxlength="50" accept=".jpg,.jpeg,.png">
                                                                             @error('file_upload')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>

@@ -56,7 +56,7 @@
                                         </form>
                                         
                                         <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addKursusModal">
-                                            <i class="fa fa-plus"></i> Tambah Data
+                                            <i class="fa fa-plus"></i> Tambah Data Siswa
                                         </button>
                                                     
                                         <div class="table-responsive">
