@@ -79,92 +79,43 @@
 
     <!-- Parent Information -->
     <div class="mb-3">
-      <label for="father_name" class="form-label" style="color: black;">Nama Ayah</label>
-      <input type="text" class="form-control" id="father_name" name="father_name" placeholder="Masukkan nama ayah" maxlength="255">
-    </div>
-
-    <div class="mb-3">
-      <label for="mother_name" class="form-label" style="color: black;">Nama Ibu</label>
-      <input type="text" class="form-control" id="mother_name" name="mother_name" placeholder="Masukkan nama ibu" maxlength="255">
+      <label for="parent_name" class="form-label" style="color: black;">Nama Orang Tua</label>
+      <input type="text" class="form-control" id="parent_name" name="parent_name" placeholder="Masukkan nama ayah" maxlength="255">
     </div>
 
     <!-- Pekerjaan Ayah -->
     <div class="form-group">
-      <label for="father_job" style="color: black;">Pekerjaan Ayah</label>
+      <label for="parent_job" style="color: black;">Pekerjaan Orang Tua</label>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="karyawan" value="karyawan">
+        <input class="" type="radio" name="parent_job" id="karyawan" value="karyawan">
         <label class="form-check-label" for="karyawan"style="color: black;">Karyawan Swasta</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="wiraswasta" value="wiraswasta">
+        <input class="" type="radio" name="parent_job" id="wiraswasta" value="wiraswasta">
         <label class="form-check-label" for="wiraswasta"style="color: black;">Wiraswasta</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="pegawai_negri" value="pegawai_negri">
+        <input class="" type="radio" name="parent_job" id="pegawai_negri" value="pegawai_negri">
         <label class="form-check-label" for="pegawai_negri"style="color: black;">Pegawai Negri</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="bumn" value="bumn">
+        <input class="" type="radio" name="parent_job" id="bumn" value="bumn">
         <label class="form-check-label" for="bumn"style="color: black;">BUMN</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="dosen/pengajar" value="dosen/pengajar">
+        <input class="" type="radio" name="parent_job" id="dosen/pengajar" value="dosen/pengajar">
         <label class="form-check-label" for="dosen/pengajar"style="color: black;">Dosen/Pengajar</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="apoteker" value="apoteker">
+        <input class="" type="radio" name="parent_job" id="apoteker" value="apoteker">
         <label class="form-check-label" for="apoteker"style="color: black;">Apoteker</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="perawat" value="perawat">
+        <input class="" type="radio" name="parent_job" id="perawat" value="perawat">
         <label class="form-check-label" for="perawat"style="color: black;">Perawat</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="father_job" id="other" value="other">
-        <label class="form-check-label" for="other"style="color: black;">
-          Other: 
-          <input type="text" id="otherText" name="otherText" style="border: none; border-bottom: 1px solid black; outline: none;" placeholder="Tulis di sini">
-        </label>
-      </div>
-    </div>
-
-    <!-- Pekerjaan Ibu -->
-    <div class="form-group">
-      <label for="mother_job" style="color: black;">Pekerjaan Ibu</label>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="irt" value="irt">
-        <label class="form-check-label" for="irt"style="color: black;">Ibu Rumah Tangga</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="karyawan" value="karyawan">
-        <label class="form-check-label" for="karyawan"style="color: black;">Karyawan Swasta</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="wiraswasta" value="wiraswasta">
-        <label class="form-check-label" for="wiraswasta"style="color: black;">Wiraswasta</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="pegawai_negri" value="pegawai_negri">
-        <label class="form-check-label" for="pegawai_negri"style="color: black;">Pegawai Negri</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="bumn" value="bumn">
-        <label class="form-check-label" for="bumn"style="color: black;">BUMN</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="dosen/pengajar" value="dosen/pengajar">
-        <label class="form-check-label" for="dosen/pengajar"style="color: black;">Dosen/Pengajar</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="apoteker" value="apoteker">
-        <label class="form-check-label" for="apoteker"style="color: black;">Apoteker</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="perawat" value="perawat">
-        <label class="form-check-label" for="perawat"style="color: black;">Perawat</label>
-      </div>
-      <div class="form-check">
-        <input class="" type="radio" name="mother_job" id="other" value="other">
+        <input class="" type="radio" name="parent_job" id="other" value="other">
         <label class="form-check-label" for="other"style="color: black;">
           Other: 
           <input type="text" id="otherText" name="otherText" style="border: none; border-bottom: 1px solid black; outline: none;" placeholder="Tulis di sini">
@@ -174,13 +125,8 @@
 
     <!-- WhatsApp Numbers -->
     <div class="mb-3">
-      <label for="father_whatsapp" class="form-label"style="color: black;">Nomor WhatsApp Ayah</label>
-      <input type="number" class="form-control" id="father_whatsapp" name="father_whatsapp" placeholder="Masukkan nomor WhatsApp ayah" maxlength="15">
-    </div>
-
-    <div class="mb-3">
-      <label for="mother_whatsapp" class="form-label"style="color: black;">Nomor WhatsApp Ibu</label>
-      <input type="number" class="form-control" id="mother_whatsapp" name="mother_whatsapp" placeholder="Masukkan nomor WhatsApp ibu" maxlength="15">
+      <label for="whatsapp_number" class="form-label"style="color: black;">Nomor WhatsApp</label>
+      <input type="number" class="form-control" id="whatsapp_number" name="whatsapp_number" placeholder="Masukkan nomor WhatsApp ayah" maxlength="15">
     </div>
 
     <div class="mb-3">

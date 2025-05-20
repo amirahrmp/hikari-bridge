@@ -23,12 +23,9 @@ class CreateRegistrationHikariKidzDaycareTable extends Migration
             $table->integer('siblings_count'); // Jumlah saudara
             $table->integer('height_cm'); // Tinggi badan dalam cm
             $table->integer('weight_kg'); // Berat badan dalam kg
-            $table->string('father_name', 255);
-            $table->string('mother_name', 255);
-            $table->string('father_job', 255);
-            $table->string('mother_job', 255);
-            $table->string('father_whatsapp', 15);
-            $table->string('mother_whatsapp', 15);
+            $table->string('parent_name', 255);
+            $table->string('parent_job', 255);
+            $table->string('whatsapp_number', 15);
             $table->text('address');
             $table->string('age_group', 50);
             $table->string('package_type', 50);

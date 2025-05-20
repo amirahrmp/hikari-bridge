@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use App\Models\PaketHq;
 use Illuminate\Http\Request;
 use App\Models\RegistrationHikariQuran;
+use App\Models\PesertaHikariKidz;
 
 class RegistrationHikariQuranController extends Controller
 {
@@ -62,7 +63,20 @@ class RegistrationHikariQuranController extends Controller
         }
 
         // Menyimpan data pendaftaran ke dalam database
-        RegistrationHikariQuran::create($validatedData);
+        $registration = RegistrationHikariQuran::create($validatedData);
+
+        // ⏬ Tambahkan peserta ke tabel peserta_hikari_kidz
+        PesertaHikariKidz::create([
+            'id_anak' => $registration->id,
+            'full_name' => $registration->full_name,
+            'nickname' => $registration->nickname,
+            'birth_date' => $registration->birth_date,
+            'parent_name' => $registration->parent_name,
+            'address' => $registration->address,
+            'whatsapp_number' => $registration->whatsapp_number,
+            'tipe' => 'HQ',
+            'file_upload' => $registration->file_upload,
+        ]);
 
         // Redirect kembali ke form dengan pesan sukses
         return redirect()->route('registerquran.create')->with('success', 'Data berhasil disimpan!');

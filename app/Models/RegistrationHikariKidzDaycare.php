@@ -19,12 +19,9 @@ class RegistrationHikariKidzDaycare extends Model
         'siblings_count',
         'height_cm',
         'weight_kg',
-        'father_name',
-        'mother_name',
-        'father_job',
-        'mother_job',
-        'father_whatsapp',
-        'mother_whatsapp',
+        'parent_name',
+        'parent_job',
+        'whatsapp_number',
         'address',
         'age_group',
         'package_type',
@@ -45,5 +42,10 @@ class RegistrationHikariKidzDaycare extends Model
     public function paket()
     {
         return $this->belongsTo(Paket::class, 'package_type', 'id_paket');
+    }
+
+    public function peserta()
+    {
+        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id');
     }
 }

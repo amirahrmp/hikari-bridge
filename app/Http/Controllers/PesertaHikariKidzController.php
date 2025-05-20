@@ -31,7 +31,7 @@ class PesertaHikariKidzController extends Controller
     {
         // Validasi data input
         $request->validate([
-            'id_anak' => 'required|numeric',
+            //'id_anak' => 'required|numeric',
             'full_name' => 'required|string|max:255',
             'nickname' => 'required|string|max:255',
             'birth_date' => 'required|date',
@@ -44,7 +44,8 @@ class PesertaHikariKidzController extends Controller
 
         // Membuat Data Anak Peserta Hikari Kidz baru
         $peserta_hikari_kidz = new PesertaHikariKidz();
-        $peserta_hikari_kidz->id_anak = $request->input('id_anak');
+        //$peserta_hikari_kidz->id_anak = $request->input('id_anak');
+        $peserta_hikari_kidz->id_anak = uniqid(); // ✔️ menghasilkan string unik seperti "646fc9e97d45c"
         $peserta_hikari_kidz->full_name = $request->input('full_name');
         $peserta_hikari_kidz->nickname = $request->input('nickname');
         $peserta_hikari_kidz->birth_date = $request->input('birth_date');
@@ -111,7 +112,7 @@ class PesertaHikariKidzController extends Controller
         $peserta_hikari_kidz = PesertaHikariKidz::findOrFail($id);
 
         // Update data peserta_hikari_kidz
-       $peserta_hikari_kidz->id_anak = $request->input('id_anak');
+        $peserta_hikari_kidz->id_anak = $request->input('id_anak');
         $peserta_hikari_kidz->full_name = $request->input('full_name');
         $peserta_hikari_kidz->nickname = $request->input('nickname');
         $peserta_hikari_kidz->birth_date = $request->input('birth_date');

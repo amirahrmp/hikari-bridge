@@ -30,5 +30,10 @@ class RegistrationHikariQuran extends Model
     {
         return $this->belongsTo(PaketHq::class, 'kelas', 'kelas'); // 'kelas' adalah foreign key di registration_hikari_quran, 'id' adalah primary key di paket_hq
     }
+
+    public function peserta()
+    {
+        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id');
+    }
 }
 

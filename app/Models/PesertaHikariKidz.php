@@ -35,4 +35,9 @@ class PesertaHikariKidz extends Model
         return $this->belongsToMany(JadwalHikariKidz::class, 'detail_jadwal_hikari_kidz', 'id_anak', 'id_jadwal_hikari_kidz')
                     ->withTimestamps();
     }
+
+    public function registration()
+    {
+        return $this->belongsTo(RegistrationHikariKidzClub::class, 'id_anak', 'id_anak');
+    }
 }

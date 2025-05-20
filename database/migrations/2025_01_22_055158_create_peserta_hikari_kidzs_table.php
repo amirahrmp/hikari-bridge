@@ -15,7 +15,7 @@ class CreatePesertaHikariKidzsTable extends Migration
     {
         Schema::create('peserta_hikari_kidz', function (Blueprint $table) {
             $table->Increments('id');
-            $table->string('id_anak', 10)->unique();
+            $table->id('id_anak', 10)->unique();
             $table->string('full_name', 255);
             $table->string('nickname', 255);
             $table->date('birth_date');

@@ -73,22 +73,32 @@ class RegistrationHikariKidzClubController extends Controller
 
         // Buang information_source_other agar tidak ikut di-insert
         unset($validatedData['information_source_other']);
-        // Simpan data ke database
-        $registration = RegistrationHikariKidzClub::create($validatedData);
 
+        // ⏬ Cek apakah anak sudah ada di tabel peserta
+        $peserta = PesertaHikariKidz::where('full_name', $validatedData['full_name'])
+            ->where('birth_date', $validatedData['birth_date'])
+            ->where('parent_name', $validatedData['parent_name'])
+            ->first();
 
-        // ⏬ Tambahkan peserta ke tabel peserta_hikari_kidz
-        PesertaHikariKidz::create([
-            'id_anak' => $registration->id,
-            'full_name' => $registration->full_name,
-            'nickname' => $registration->nickname,
-            'birth_date' => $registration->birth_date,
-            'parent_name' => $registration->parent_name,
-            'address' => $registration->address,
-            'whatsapp_number' => $registration->whatsapp_number,
-            'tipe' => 'HKC',
-            'file_upload' => $registration->file_upload,
-        ]);
+        // ⏬ Kalau belum ada, buat data anak baru
+        if (!$peserta) {
+            $peserta = PesertaHikariKidz::create([
+                'id_anak' => uniqid(), // Tambahkan ini
+                'full_name' => $validatedData['full_name'],
+                'nickname' => $validatedData['nickname'],
+                'birth_date' => $validatedData['birth_date'],
+                'parent_name' => $validatedData['parent_name'],
+                'address' => $validatedData['address'],
+                'whatsapp_number' => $validatedData['whatsapp_number'],
+                'tipe' => 'HKC',
+                'file_upload' => $validatedData['file_upload'],
+            ]);
+        }
+
+        // Simpan data pendaftaran ke registration_hikari_kidz_clubs
+        $registration = new RegistrationHikariKidzClub($validatedData);
+        $registration->id_anak = $peserta->id_anak;
+        $registration->save();
 
         // Redirect kembali dengan pesan sukses
         return redirect()->route('registerkidzclub.create')->with('success', 'Data berhasil disimpan!');

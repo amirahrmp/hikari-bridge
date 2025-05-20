@@ -12,6 +12,7 @@ class RegistrationHikariKidzClub extends Model
     protected $table = 'registration_hikari_kidz_clubs'; // Specify the table name if it's different from the pluralized model name.
 
     protected $fillable = [
+        'id_anak',
         'full_name', 
         'nickname', 
         'birth_date', 
@@ -34,4 +35,10 @@ class RegistrationHikariKidzClub extends Model
                        ->where('kelas', $this->kelas)
                        ->first();
     }
+
+    public function peserta()
+    {
+        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id_anak');
+    }
+
 }

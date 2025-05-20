@@ -5,6 +5,7 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\RegistrationHikariKidzDaycare;
 use App\Models\Paket;
+use App\Models\PesertaHikariKidz;
 
 class RegistrationHikariKidzDaycareController extends Controller
 {
@@ -25,12 +26,9 @@ class RegistrationHikariKidzDaycareController extends Controller
             'siblings_count' => 'nullable|integer',
             'height_cm' => 'nullable|integer',
             'weight_kg' => 'nullable|integer',
-            'father_name' => 'nullable|string|max:255',
-            'mother_name' => 'nullable|string|max:255',
-            'father_job' => 'nullable|string|max:255',
-            'mother_job' => 'nullable|string|max:255',
-            'father_whatsapp' => 'nullable|string|max:15',
-            'mother_whatsapp' => 'nullable|string|max:15',
+            'parent_name' => 'nullable|string|max:255',
+            'parent_job' => 'nullable|string|max:255',
+            'whatsapp_number' => 'nullable|string|max:15',
             'address' => 'nullable|string',
             'age_group' => 'nullable|string|max:50',
             'package_type' => 'nullable|string|max:50',
@@ -82,7 +80,20 @@ class RegistrationHikariKidzDaycareController extends Controller
         $validatedData['caretaker'] = json_encode($validatedData['caretaker']);
         $validatedData['reason_for_choosing'] = json_encode($validatedData['reason_for_choosing']);
         
-        RegistrationHikariKidzDaycare::create($validatedData);
+        $registration = RegistrationHikariKidzDaycare::create($validatedData);
+
+        // ⏬ Tambahkan peserta ke tabel peserta_hikari_kidz
+        PesertaHikariKidz::create([
+            'id_anak' => $registration->id,
+            'full_name' => $registration->full_name,
+            'nickname' => $registration->nickname,
+            'birth_date' => $registration->birth_date,
+            'parent_name' => $registration->parent_name,
+            'address' => $registration->address,
+            'whatsapp_number' => $registration->whatsapp_number,
+            'tipe' => 'HKD',
+            'file_upload' => $registration->file_upload,
+        ]);
 
         return redirect()->route('registerkidzdaycare.create')->with('success', 'Data berhasil disimpan!');
     }
