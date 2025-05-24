@@ -38,14 +38,17 @@ class PesertaHikariKidzController extends Controller
             'parent_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'whatsapp_number' => 'required|numeric|digits_between:5,15',
-            'tipe' => 'required|string|max:255',
+            'tipe' => 'required',
             'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
+         // Buat ID anak otomatis (ambil nilai max lalu +1)
+        $lastIdAnak = PesertaHikariKidz::max('id_anak');
+        $newIdAnak = $lastIdAnak ? $lastIdAnak + 1 : 1;
+
         // Membuat Data Anak Peserta Hikari Kidz baru
         $peserta_hikari_kidz = new PesertaHikariKidz();
-        //$peserta_hikari_kidz->id_anak = $request->input('id_anak');
-        $peserta_hikari_kidz->id_anak = uniqid(); // ✔️ menghasilkan string unik seperti "646fc9e97d45c"
+        $peserta_hikari_kidz->id_anak = $newIdAnak;
         $peserta_hikari_kidz->full_name = $request->input('full_name');
         $peserta_hikari_kidz->nickname = $request->input('nickname');
         $peserta_hikari_kidz->birth_date = $request->input('birth_date');
@@ -53,7 +56,6 @@ class PesertaHikariKidzController extends Controller
         $peserta_hikari_kidz->address = $request->input('address');
         $peserta_hikari_kidz->whatsapp_number = $request->input('whatsapp_number');
         $peserta_hikari_kidz->tipe = $request->input('tipe');
-        $peserta_hikari_kidz->file_upload = $request->input('file_upload');
 
         // Proses file upload
         if ($request->hasFile('file_upload')) {
@@ -97,14 +99,14 @@ class PesertaHikariKidzController extends Controller
     public function update(Request $request, $id)
     {
         $request->validate([
-            'id_anak' => 'required|numeric',
+            //'id_anak' => 'required|numeric',
             'full_name' => 'required|string|max:255',
             'nickname' => 'required|string|max:255',
             'birth_date' => 'required|date',
             'parent_name' => 'required|string|max:255',
             'address' => 'required|string|max:255',
             'whatsapp_number' => 'required|numeric|digits_between:5,15',
-            'tipe' => 'required|string|max:255',
+            'tipe' => 'required',
             'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
 
@@ -112,7 +114,7 @@ class PesertaHikariKidzController extends Controller
         $peserta_hikari_kidz = PesertaHikariKidz::findOrFail($id);
 
         // Update data peserta_hikari_kidz
-        $peserta_hikari_kidz->id_anak = $request->input('id_anak');
+        //$peserta_hikari_kidz->id_anak = $request->input('id_anak');
         $peserta_hikari_kidz->full_name = $request->input('full_name');
         $peserta_hikari_kidz->nickname = $request->input('nickname');
         $peserta_hikari_kidz->birth_date = $request->input('birth_date');

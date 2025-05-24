@@ -271,6 +271,14 @@ Route::get('jadwal_hikari_kidz/{id}/show', [App\Http\Controllers\JadwalHikariKid
 Route::post('/jadwal-hikari-kidz/{id}/add-peserta', [App\Http\Controllers\JadwalHikariKidzController::class, 'addPeserta'])->name('jadwal_hikari_kidz.addPeserta')->middleware(['auth']);
 Route::delete('/jadwal-hikari-kidz/{jadwalId}/remove-peserta/{pesertaId}', [App\Http\Controllers\JadwalHikariKidzController::class, 'removePeserta'])->name('jadwal_hikari_kidz.removePeserta')->middleware(['auth']);
 
+// route ke master data jadwal makan daycare
+Route::middleware(['auth'])->group(function () {
+    Route::resource('jadwal_makan_daycare', App\Http\Controllers\JadwalMakanDaycareController::class);
+    Route::post('/upload-jadwal_makan_daycare-excel', [App\Http\Controllers\JadwalMakanDaycareController::class, 'uploadExcel'])->name('jadwal_makan_daycare.upload');
+    Route::get('/delete-jadwal_makan_daycare/{id}', [App\Http\Controllers\JadwalMakanDaycareController::class, 'destroy'])->name('jadwal_makan_daycare.destroy')->middleware(['auth']);
+    Route::get('/jadwal_makan_daycare_user', [App\Http\Controllers\JadwalMakanDaycareController::class, 'userView'])->name('jadwal_makan_daycare_user');
+});
+
 // jadwal kursus peserta dan pengasuh
 Route::middleware('auth')->post('/jadwal-hikari-kidz', [App\Http\Controllers\JadwalHikariKidzController::class, 'showByEmail'])->name('jadwal_hikari_kidz.peserta');
 Route::post('jadwal-hikari-kidz-pengasuh', [App\Http\Controllers\JadwalHikariKidzController::class, 'showPengasuhSchedule']);

@@ -14,8 +14,7 @@ class CreatePesertaHikariKidzsTable extends Migration
     public function up()
     {
         Schema::create('peserta_hikari_kidz', function (Blueprint $table) {
-            $table->Increments('id');
-            $table->id('id_anak', 10)->unique();
+            $table->increments('id_anak'); // Ini akan auto increment mulai dari 1
             $table->string('full_name', 255);
             $table->string('nickname', 255);
             $table->date('birth_date');

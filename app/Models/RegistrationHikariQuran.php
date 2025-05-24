@@ -13,6 +13,7 @@ class RegistrationHikariQuran extends Model
     protected $table = 'registration_hikari_quran';  // tanpa 's' di akhir
 
     protected $fillable = [
+        'id_anak',
         'full_name',
         'nickname',
         'birth_date',
@@ -33,7 +34,7 @@ class RegistrationHikariQuran extends Model
 
     public function peserta()
     {
-        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id');
+        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id_anak');
     }
 }
 

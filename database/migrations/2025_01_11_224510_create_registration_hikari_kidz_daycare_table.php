@@ -14,7 +14,8 @@ class CreateRegistrationHikariKidzDaycareTable extends Migration
     public function up()
     {
         Schema::create('registration_hikari_kidz_daycares', function (Blueprint $table) {
-            $table->id();
+            $table->Increments('id');
+            $table->bigInteger('id_anak', 20)->unique()->nullable();
             $table->string('full_name', 255);
             $table->string('nickname', 255);
             $table->date('birth_date');

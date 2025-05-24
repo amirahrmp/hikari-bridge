@@ -170,6 +170,14 @@
               </p>
             </a>
           </li>
+          <li class="nav-item">
+            <a href="{{ url('jadwal_makan_daycare')}}" class="nav-link @yield('jadwal_makan_daycare_select')">
+              <i class="nav-icon far fa-calendar-alt"></i>
+              <p>
+                Jadwal Makan Daycare
+              </p>
+            </a>
+          </li>
           <li class="nav-header">PENCATATAN</li>
           <li class="nav-item">
             <a href="{{ url('presensi_staf') }}" class="nav-link @yield('presensi_staf_select')">

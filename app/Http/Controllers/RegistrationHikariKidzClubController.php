@@ -82,8 +82,13 @@ class RegistrationHikariKidzClubController extends Controller
 
         // ⏬ Kalau belum ada, buat data anak baru
         if (!$peserta) {
+            // Ambil ID anak terakhir dan tambah 1
+            $lastIdAnak = PesertaHikariKidz::max('id_anak');
+            $newIdAnak = $lastIdAnak ? $lastIdAnak + 1 : 1;
+
+        // ⏬ Kalau belum ada, buat data anak baru
             $peserta = PesertaHikariKidz::create([
-                'id_anak' => uniqid(), // Tambahkan ini
+                'id_anak' => $newIdAnak, // Tambahkan ini
                 'full_name' => $validatedData['full_name'],
                 'nickname' => $validatedData['nickname'],
                 'birth_date' => $validatedData['birth_date'],

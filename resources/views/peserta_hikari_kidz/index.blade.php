@@ -156,7 +156,11 @@
 
                                                                         <div class="mb-3">
                                                                             <label for="tipe" class="form-label">Tipe:</label>
-                                                                            <input type="tipe" class="form-control @error('tipe') is-invalid @enderror" id="tipe" name="tipe" value="{{ old('tipe', $p->tipe) }}" maxlength="50" required>
+                                                                            <select name="tipe" id="tipe" class="form-control @error('tipe') is-invalid @enderror">
+                                                                                <option value="HKD" {{ $p->tipe == 'HKD' ? 'selected' : '' }}>HKD</option>
+                                                                                <option value="HKC" {{ $p->tipe == 'HKC' ? 'selected' : '' }}>HKC</option>
+                                                                                <option value="HQ" {{ $p->tipe == 'HQ' ? 'selected' : '' }}>HQ</option>
+                                                                            </select>
                                                                             @error('tipe')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
@@ -254,7 +258,11 @@
 
                                                             <div class="mb-3">
                                                                 <label for="tipe" class="form-label">Tipe:</label>
-                                                                <input type="tipe" class="form-control @error('tipe') is-invalid @enderror" id="tipe" name="tipe" maxlength="50" required>
+                                                                <select name="tipe" id="tipe" class="form-control @error('tipe') is-invalid @enderror">
+                                                                    <option value="HKD">HKD</option>
+                                                                    <option value="HKC">HKC</option>
+                                                                    <option value="HQ">HQ</option>
+                                                                </select>
                                                                 @error('tipe')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
@@ -262,7 +270,7 @@
 
                                                             <div class="mb-3">
                                                                 <label for="file_upload" class="form-label">Foto Anak:</label>
-                                                                <input type="file" class="form-control @error('file_upload') is-invalid @enderror" id="file_upload" name="file_upload" maxlength="50" accept=".jpg,.jpeg,.png required>
+                                                                <input type="file" class="form-control @error('file_upload') is-invalid @enderror" id="file_upload" name="file_upload" accept=".jpg,.jpeg,.png" required>
                                                                 @error('file_upload')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror

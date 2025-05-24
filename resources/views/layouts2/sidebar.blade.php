@@ -91,6 +91,12 @@
           <p>Tagihan Pembayaran</p>
         </a>
       </li>
+      <li class="nav-item @yield('jadwal_makan_daycare_user_select')">
+    <a class="nav-link" href="{{ route('jadwal_makan_daycare_user') }}">
+        <i class="material-icons">library_books</i>
+        <p>Jadwal Makan Daycare</p>
+    </a>
+</li>
       <li class="nav-item ">
         <a class="nav-link" href="./map.html">
           <i class="material-icons">library_books</i>

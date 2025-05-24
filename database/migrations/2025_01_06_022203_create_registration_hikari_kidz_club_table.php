@@ -15,7 +15,7 @@ class CreateRegistrationHikariKidzClubTable extends Migration
     {
         Schema::create('registration_hikari_kidz_clubs', function (Blueprint $table) {
             $table->Increments('id');
-            $table->string('id_anak', 20)->unique();
+            $table->bigInteger('id_anak', 20)->unique()->nullable();
             $table->string('full_name', 255);
             $table->string('nickname', 255);
             $table->date('birth_date');

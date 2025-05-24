@@ -11,6 +11,7 @@ class RegistrationHikariKidzDaycare extends Model
 
     protected $table = 'registration_hikari_kidz_daycares';  // Pastikan nama tabelnya benar    
     protected $fillable = [
+        'id_anak',
         'full_name',
         'nickname',
         'birth_date',
@@ -46,6 +47,6 @@ class RegistrationHikariKidzDaycare extends Model
 
     public function peserta()
     {
-        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id');
+        return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id_anak');
     }
 }
