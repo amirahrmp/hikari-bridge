@@ -9,7 +9,8 @@ class RegistrationHikariKidzDaycare extends Model
 {
     use HasFactory;
 
-    protected $table = 'registration_hikari_kidz_daycares';  // Pastikan nama tabelnya benar    
+    protected $table = 'registration_hikari_kidz_daycares';
+
     protected $fillable = [
         'id_anak',
         'full_name',
@@ -37,7 +38,8 @@ class RegistrationHikariKidzDaycare extends Model
         'trial_date',
         'start_date',
         'reason_for_choosing',
-        'information_source',
+        'information_source'
+      // jangan lupa tambah ini jika ingin diisi
     ];
 
     public function paket()

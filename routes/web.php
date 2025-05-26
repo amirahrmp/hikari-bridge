@@ -283,8 +283,19 @@ Route::middleware(['auth'])->group(function () {
 Route::middleware('auth')->post('/jadwal-hikari-kidz', [App\Http\Controllers\JadwalHikariKidzController::class, 'showByEmail'])->name('jadwal_hikari_kidz.peserta');
 Route::post('jadwal-hikari-kidz-pengasuh', [App\Http\Controllers\JadwalHikariKidzController::class, 'showPengasuhSchedule']);
 
+use App\Http\Controllers\PaymentController;
 
-// route pembayaran 
-use App\Http\Controllers\PembayaranController;
+Route::get('/payment', [PaymentController::class, 'index'])->name('payment.index');
+Route::get('/payment/create', [PaymentController::class, 'create'])->name('payment.create');
+Route::post('/payment', [PaymentController::class, 'store'])->name('payment.store');
 
-Route::get('/pembayaran', [PembayaranController::class, 'create'])->name('pembayaran.create');
+
+// route absensi daycare
+Route::get('/absensi_daycare/store-jam-datang', [App\Http\Controllers\AbsensiDaycareController::class, 'createJamDatang']);
+Route::post('/absensi_daycare/store-jam-datang', [App\Http\Controllers\AbsensiDaycareController::class, 'storeJamDatang'])->name('absensi_daycare.store_jam_datang');
+Route::get('/absensi_daycare/store-jam-pulang', [App\Http\Controllers\AbsensiDaycareController::class, 'createJamPulang']);
+Route::post('/absensi_daycare/store-jam-pulang', [App\Http\Controllers\AbsensiDaycareController::class, 'storeJamPulang'])->name('absensi_daycare.store_jam_pulang');
+Route::get('/get-program-anak/{id}', [App\Http\Controllers\AbsensiDaycareController::class, 'getProgramAnak']);
+Route::get('/absensi_daycare/riwayat_absensi', [App\Http\Controllers\AbsensiDaycareController::class, 'riwayat_absensi'])->name('absensi_daycare.riwayat_absensi');
+
+

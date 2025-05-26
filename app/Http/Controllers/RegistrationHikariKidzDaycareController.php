@@ -12,13 +12,14 @@ class RegistrationHikariKidzDaycareController extends Controller
     public function create()
     {
         $paket = Paket::all();
-        return view('registerkidzdaycare.create ',['paket' => $paket]);
+        return view('registerkidzdaycare.create', ['paket' => $paket]);
     }
 
     public function store(Request $request)
-    {   
+    {
+        // Validasi input
         $validatedData = $request->validate([
-            'full_name' => 'nullable|string|max:255', 
+            'full_name' => 'nullable|string|max:255',
             'nickname' => 'nullable|string|max:255',
             'birth_date' => 'nullable|date',
             'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
@@ -44,57 +45,57 @@ class RegistrationHikariKidzDaycareController extends Controller
             'start_date' => 'nullable|date',
             'reason_for_choosing' => 'nullable|array',
             'information_source' => 'nullable|string|max:255',
-    
         ]);
 
-        // Proses file upload
+        // Upload file
         if ($request->hasFile('file_upload')) {
             $file = $request->file('file_upload');
             $filename = time() . '_' . $file->getClientOriginalName();
-            $file->move(public_path('uploads/daycare'), $filename);
+            $file->move(public_path('uploads/kidzdaycare'), $filename);
             $validatedData['file_upload'] = $filename;
         }
-        if ($request->package_type) {
-            $paket = Paket::find($request->package_type); // Menemukan paket berdasarkan ID
+
+        // Ambil paket dan hitung total_bayar
+        if (!empty($request->package_type)) {
+            $paket = Paket::where('id_paket', $request->package_type)->first();
             if ($paket) {
-                $validatedData['package_type'] = $paket->nama_paket; // Menyimpan nama paket yang dipilih
-                // Menghitung total bayar
-                $total_bayar =  $paket->u_pendaftaran + 
-                                $paket->u_pangkal + 
-                                $paket->u_kegiatan + 
-                                $paket->u_spp + 
-                                $paket->u_makan;
-                $validatedData['total_bayar'] = $total_bayar; // Menyimpan total bayar ke validatedData
+                $validatedData['package_type'] = $paket->id_paket;
+                $total_bayar = ($paket->u_pendaftaran ?? 0) +
+                               ($paket->u_pangkal ?? 0) +
+                               ($paket->u_kegiatan ?? 0) +
+                               ($paket->u_spp ?? 0) +
+                               ($paket->u_makan ?? 0);
+                $validatedData['total_bayar'] = $total_bayar;
+            } else {
+                $validatedData['total_bayar'] = 0;
             }
+        } else {
+            $validatedData['total_bayar'] = 0;
         }
 
-        $information_source = $request->input('information_source');
-        if ($information_source[0] == 'other') {
+        // Penanganan informasi sumber dan caretaker
+        if (is_array($validatedData['information_source'] ?? null) && count($validatedData['information_source']) > 0 && $validatedData['information_source'][0] == 'other') {
             $validatedData['information_source'] = $request->input('information_source_other');
         }
-        
-        $caretaker = $request->input('caretaker');
-        if($caretaker[0] == "other"){
-            $validatedData['caretaker'] = $request->input('caretaker_other');  
-        } 
-        $validatedData['caretaker'] = json_encode($validatedData['caretaker']);
-        $validatedData['reason_for_choosing'] = json_encode($validatedData['reason_for_choosing']);
-        
-        // ⏬ Cek apakah anak sudah ada di tabel peserta
+        if (is_array($validatedData['caretaker'] ?? null) && count($validatedData['caretaker']) > 0 && $validatedData['caretaker'][0] == 'other') {
+            $validatedData['caretaker'] = $request->input('caretaker_other');
+        } else {
+            $validatedData['caretaker'] = json_encode($validatedData['caretaker'] ?? []);
+        }
+        $validatedData['reason_for_choosing'] = json_encode($validatedData['reason_for_choosing'] ?? []);
+
+        // Cek peserta
         $peserta = PesertaHikariKidz::where('full_name', $validatedData['full_name'])
             ->where('birth_date', $validatedData['birth_date'])
             ->where('parent_name', $validatedData['parent_name'])
             ->first();
 
-        // ⏬ Kalau belum ada, buat data anak baru
         if (!$peserta) {
-            // Ambil ID anak terakhir dan tambah 1
             $lastIdAnak = PesertaHikariKidz::max('id_anak');
             $newIdAnak = $lastIdAnak ? $lastIdAnak + 1 : 1;
 
-        // ⏬ Kalau belum ada, buat data anak baru
             $peserta = PesertaHikariKidz::create([
-                'id_anak' => $newIdAnak, // Tambahkan ini
+                'id_anak' => $newIdAnak,
                 'full_name' => $validatedData['full_name'],
                 'nickname' => $validatedData['nickname'],
                 'birth_date' => $validatedData['birth_date'],
@@ -106,13 +107,11 @@ class RegistrationHikariKidzDaycareController extends Controller
             ]);
         }
 
-        // ⏬ Simpan data registrasi ke tabel RegistrationHikariKidzDaycare
+        // Simpan registrasi
         $registration = new RegistrationHikariKidzDaycare($validatedData);
         $registration->id_anak = $peserta->id_anak;
         $registration->save();
 
-
         return redirect()->route('registerkidzdaycare.create')->with('success', 'Data berhasil disimpan!');
     }
 }
-

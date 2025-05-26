@@ -30,11 +30,13 @@ class RegistrationHikariKidzClub extends Model
     ];
     
     public function getPaketHkc()
-    {
-        return PaketHkc::where('member', $this->member)
-                       ->where('kelas', $this->kelas)
-                       ->first();
-    }
+{
+    return PaketHkc::whereRaw('LOWER(TRIM(member)) = ?', [strtolower(trim($this->member))])
+                   ->whereRaw('LOWER(TRIM(kelas)) = ?', [strtolower(trim($this->kelas))])
+                   ->first();
+            
+}
+
 
     public function peserta()
     {

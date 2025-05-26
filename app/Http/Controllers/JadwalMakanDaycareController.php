@@ -79,7 +79,7 @@ class JadwalMakanDaycareController extends Controller
     public function userView()
 {
     $jadwalMakanDaycare = JadwalMakanDaycare::all();
-    return view('jadwal_makan_daycare_user', [
+    return view('jadwal_makan_daycare_user.index', [
         'jadwal_makan_daycare_user' => $jadwalMakanDaycare
     ]);
 }

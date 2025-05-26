@@ -180,6 +180,24 @@
           </li>
           <li class="nav-header">PENCATATAN</li>
           <li class="nav-item">
+            <a href="{{ route('absensi_daycare.store_jam_datang') }}" class="nav-link @yield('jam_datang_select')">
+                <i class="nav-icon fas fa-sign-in-alt"></i>
+                <p>Jam Datang Daycare</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('absensi_daycare.store_jam_pulang') }}" class="nav-link @yield('jam_pulang_select')">
+                <i class="nav-icon fas fa-sign-out-alt"></i>
+                <p>Jam Pulang Daycare</p>
+            </a>
+        </li>
+        <li class="nav-item">
+            <a href="{{ route('absensi_daycare.riwayat_absensi') }}" class="nav-link @yield('riwayat_absensi_select')">
+                <i class="nav-icon fas fa-sign-out-alt"></i>
+                <p>Riwayat Absensi Daycare</p>
+            </a>
+        </li>
+          <li class="nav-item">
             <a href="{{ url('presensi_staf') }}" class="nav-link @yield('presensi_staf_select')">
               <i class="nav-icon fas fa-table"></i>
               <p>

@@ -14,8 +14,8 @@ class CreateRegistrationHikariQuransTable extends Migration
     public function up()
     {
         Schema::create('registration_hikari_quran', function (Blueprint $table) {
-            $table->Increments('id');
-            $table->bigInteger('id_anak', 20)->unique()->nullable();
+            $table->id(); // Ini sudah auto_increment dan primary key
+            $table->unsignedBigInteger('id_anak')->nullable(); // ini cukup tanpa auto_increment
             $table->string('full_name'); 
             $table->string('nickname', 255);
             $table->date('birth_date');

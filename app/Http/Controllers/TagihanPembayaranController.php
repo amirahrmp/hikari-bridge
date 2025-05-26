@@ -12,11 +12,12 @@ class TagihanPembayaranController extends Controller
     public function index()
     {
         // Mengambil data pendaftaran dari ketiga model
-        $registrations = collect(); // Koleksi kosong
+        $registrations = collect();
 
-        $registrations = $registrations->merge(RegistrationHikariKidzClub::all());
-        $registrations = $registrations->merge(RegistrationHikariKidzDaycare::all());
-        $registrations = $registrations->merge(RegistrationHikariQuran::all());
+$registrations = $registrations->merge(RegistrationHikariKidzClub::all());
+$registrations = $registrations->merge(RegistrationHikariKidzDaycare::with('paket')->get());
+$registrations = $registrations->merge(RegistrationHikariQuran::with('pakethq')->get());
+
 
         // Mengirim data ke view di folder riwayatpendaftaran
         return view('tagihan_pembayaran.tagihan', compact('registrations'));

@@ -138,15 +138,15 @@
     <div class="form-group">
       <label for="age_group"style="color: black;">Kelompok Usia Calon Siswa</label>
       <div class="form-check">
-        <input class="" type="radio" name="age_group" id="<1tahun" value="<1tahun">
+        <input class="" type="radio" name="age_group" id="<1tahun" value="6 - 11 Bulan">
         <label class="form-check-label" for="<1tahun"style="color: black;"style="color: black;">6 - 11 Bulan</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="age_group" id=">1tahun" value=">1tahun">
+        <input class="" type="radio" name="age_group" id=">1tahun" value="1 - 5 Tahun">
         <label class="form-check-label" for=">1tahun"style="color: black;"style="color: black;">1 - 5 Tahun</label>
       </div>
       <div class="form-check">
-        <input class="" type="radio" name="age_group" id=">5tahun" value=">5tahun">
+        <input class="" type="radio" name="age_group" id=">5tahun" value="> 5 Tahun">
         <label class="form-check-label" for=">5tahun"style="color: black;"style="color: black;">> 5 Tahun</label>
       </div>
     </div>
