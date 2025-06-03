@@ -5,13 +5,12 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
-class JadwalHikariKidz extends Model
+class JadwalHkc extends Model
 {
     use HasFactory;
-
-    protected $table = 'jadwal_hikari_kidz';
+    protected $table = 'jadwal_hkc';
     protected $fillable = [
-        'tipe_daycare',   // baru
+        'kelas',   // baru
         'waktu_mulai',    // 09:00
         'waktu_selesai',  // 09:20
         'kegiatan',       // Book Corner, Ibadah Corner, dll

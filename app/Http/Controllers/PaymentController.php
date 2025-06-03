@@ -49,14 +49,21 @@ class PaymentController extends Controller
 
 public function store(Request $request)
 {
-    $request->validate([
+   $validatedData =  $request->validate([
         'registration_id' => 'required|integer',
         'registration_type' => 'required|string',
         'komponen' => 'required|array',
         'komponen.*' => 'string',
         'jumlah' => 'required|numeric',
-        'bukti_transfer' => 'nullable|image|max:2048',
+        'bukti_transfer' =>  'required|file|mimes:jpg,jpeg,png|max:2048',
     ]);
+
+     if ($request->hasFile('file_upload')) {
+            $file = $request->file('file_upload');
+            $filename = time() . '_' . $file->getClientOriginalName();
+            $file->move(public_path('uploads/buktipembayaran'), $filename);
+            $validatedData['bukti_transfer'] = $filename;
+        }
 
     // Validasi komponen wajib "Uang Pendaftaran"
     if (!in_array('Uang Pendaftaran', $request->komponen)) {
@@ -107,10 +114,7 @@ public function store(Request $request)
     }
 
     // Upload bukti transfer (satu file untuk semua komponen)
-    $path = null;
-    if ($request->hasFile('bukti_transfer')) {
-        $path = $request->file('bukti_transfer')->store('bukti_transfer', 'public');
-    }
+
 
     // Simpan pembayaran per komponen
     foreach ($request->komponen as $komponen) {
@@ -121,7 +125,7 @@ public function store(Request $request)
             'registration_type' => $request->registration_type,
             'komponen' => $komponen,
             'jumlah' => $jumlah,
-            'bukti_transfer' => $path,
+            'bukti_transfer' =>  $validatedData['bukti_transfer'],
         ]);
     }
 

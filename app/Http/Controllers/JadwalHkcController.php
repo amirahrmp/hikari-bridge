@@ -2,12 +2,12 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\JadwalHikariKidz;
-use App\Http\Requests\StoreJadwalHikariKidzRequest;
-use App\Http\Requests\UpdateJadwalHikariKidzRequest;
+use App\Models\JadwalHkc;
+use App\Http\Requests\StoreJadwalHkcRequest;
+use App\Http\Requests\UpdateJadwalHkcRequest;
 use Illuminate\Http\Request;
 
-class JadwalHikariKidzController extends Controller
+class JadwalHkcController extends Controller
 {
     /**
      * Display a listing of the resource.
@@ -16,34 +16,34 @@ class JadwalHikariKidzController extends Controller
      */
     public function index(Request $request)
     {
-       $query = JadwalHikariKidz::query();
+       $query = JadwalHkc::query();
 
-    if ($request->has('tipe_daycare') && $request->tipe_daycare != '') {
-        $query->where('tipe_daycare', $request->tipe_daycare);
+    if ($request->has('kelas') && $request->kelas != '') {
+        $query->where('kelas', $request->kelas);
     }
 
-    $jadwalhikarikidz = $query->get();
+    $jadwalhkc = $query->get();
 
-        return view('jadwal_hikari_kidz.index', compact('jadwalhikarikidz'));
+        return view('jadwal_hkc.index', compact('jadwalhkc'));
     }
 
     public function store(Request $request)
     {
         $request->validate([
-            'tipe_daycare' => 'required',
+            'kelas' => 'required',
             'waktu_mulai' => 'required',
             'waktu_selesai' => 'required',
             'kegiatan' => 'required',
         ]);
 
-        JadwalHikariKidz::create($request->all());
+        JadwalHkc::create($request->all());
 
         return redirect()->back()->with('success', 'Jadwal berhasil ditambahkan.');
     }
 
     public function update(Request $request, $id)
     {
-        $jadwal = JadwalHikariKidz::findOrFail($id);
+        $jadwal = JadwalHkc::findOrFail($id);
         $jadwal->update($request->all());
 
         return redirect()->back()->with('success', 'Jadwal berhasil diubah.');
@@ -51,7 +51,7 @@ class JadwalHikariKidzController extends Controller
 
     public function destroy($id)
     {
-        JadwalHikariKidz::findOrFail($id)->delete();
+        JadwalHkc::findOrFail($id)->delete();
         return redirect()->back()->with('success', 'Jadwal berhasil dihapus.');
     }
 }

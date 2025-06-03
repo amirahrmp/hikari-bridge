@@ -51,6 +51,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>ID Anak</th>
+                                                        <th>Status</th>
                                                         <th>Nama Lengkap</th>
                                                         <th>Nama Panggilan</th>                                                      
                                                         <th>Tanggal Lahir</th>
@@ -66,6 +67,11 @@
                                                 @foreach($peserta_hikari_kidz as $p)
                                                     <tr>
                                                         <td>{{ $p->id_anak }}</td>
+                                                        <td>
+                                                            <span class="badge {{ $p->status == 'Aktif' ? 'badge-success' : 'badge-danger' }}">
+                                                                {{ $p->status }}
+                                                            </span>
+                                                        </td>
                                                         <td>{{ $p->full_name }}</td>
                                                         <td>{{ $p->nickname }}</td>
                                                         <td>{{ $p->birth_date }}</td>
@@ -102,6 +108,18 @@
                                                                             <label for="id_anak" class="form-label">ID Anak:</label>
                                                                             <input type="text" class="form-control @error('id_anak') is-invalid @enderror" id="id_anak" name="id_anak" value="{{ old('id_anak', $p->id_anak) }}" maxlength="10" required pattern="\d{1,10}">
                                                                             @error('id_anak')
+                                                                                <div class="invalid-feedback">{{ $message }}</div>
+                                                                            @enderror
+                                                                        </div>
+
+                                                                        <div class="mb-3">
+                                                                            <label for="status" class="form-label">Status:</label>
+                                                                            <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
+                                                                                <option value="Aktif" {{ old('status', $p->status) == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                                                                <option value="Nonaktif" {{ old('status', $p->status) == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                                                                <option value="Pending" {{ old('status', $p->status) == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                                                            </select>
+                                                                            @error('status')
                                                                                 <div class="invalid-feedback">{{ $message }}</div>
                                                                             @enderror
                                                                         </div>
@@ -204,6 +222,18 @@
                                                                 <label for="id_anak" class="form-label">ID Anak:</label>
                                                                 <input type="text" class="form-control @error('id_anak') is-invalid @enderror" id="id_anak" name="id_anak" maxlength="10" required pattern="\d{1,10}">
                                                                 @error('id_anak')
+                                                                    <div class="invalid-feedback">{{ $message }}</div>
+                                                                @enderror
+                                                            </div>
+
+                                                            <div class="mb-3">
+                                                                <label for="status" class="form-label">Status:</label>
+                                                                <select class="form-control @error('status') is-invalid @enderror" id="status" name="status" required>
+                                                                    <option value="Aktif" {{ old('status') == 'Aktif' ? 'selected' : '' }}>Aktif</option>
+                                                                    <option value="Nonaktif" {{ old('status') == 'Nonaktif' ? 'selected' : '' }}>Nonaktif</option>
+                                                                    <option value="Pending" {{ old('status') == 'Pending' ? 'selected' : '' }}>Pending</option>
+                                                                </select>
+                                                                @error('status')
                                                                     <div class="invalid-feedback">{{ $message }}</div>
                                                                 @enderror
                                                             </div>

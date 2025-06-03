@@ -32,6 +32,7 @@ class PesertaHikariKidzController extends Controller
         // Validasi data input
         $request->validate([
             //'id_anak' => 'required|numeric',
+            'status' => 'required',
             'full_name' => 'required|string|max:255',
             'nickname' => 'required|string|max:255',
             'birth_date' => 'required|date',
@@ -49,6 +50,7 @@ class PesertaHikariKidzController extends Controller
         // Membuat Data Anak Peserta Hikari Kidz baru
         $peserta_hikari_kidz = new PesertaHikariKidz();
         $peserta_hikari_kidz->id_anak = $newIdAnak;
+        $peserta_hikari_kidz->status = $request->input('status');
         $peserta_hikari_kidz->full_name = $request->input('full_name');
         $peserta_hikari_kidz->nickname = $request->input('nickname');
         $peserta_hikari_kidz->birth_date = $request->input('birth_date');
@@ -100,6 +102,7 @@ class PesertaHikariKidzController extends Controller
     {
         $request->validate([
             //'id_anak' => 'required|numeric',
+            'status' => 'required',
             'full_name' => 'required|string|max:255',
             'nickname' => 'required|string|max:255',
             'birth_date' => 'required|date',
@@ -115,6 +118,7 @@ class PesertaHikariKidzController extends Controller
 
         // Update data peserta_hikari_kidz
         //$peserta_hikari_kidz->id_anak = $request->input('id_anak');
+        $peserta_hikari_kidz->status = $request->input('status');
         $peserta_hikari_kidz->full_name = $request->input('full_name');
         $peserta_hikari_kidz->nickname = $request->input('nickname');
         $peserta_hikari_kidz->birth_date = $request->input('birth_date');

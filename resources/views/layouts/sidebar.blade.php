@@ -163,10 +163,18 @@
             </a>
           </li>
           <li class="nav-item">
+            <a href="{{ url('jadwal_hkc')}}" class="nav-link @yield('jadwal_hkc_select')">
+              <i class="nav-icon far fa-calendar-alt"></i>
+              <p>
+                Jadwal Kegiatan HKC
+              </p>
+            </a>
+          </li>
+          <li class="nav-item">
             <a href="{{ url('jadwal_hikari_kidz')}}" class="nav-link @yield('jadwal_hikari_kidz_select')">
               <i class="nav-icon far fa-calendar-alt"></i>
               <p>
-                Jadwal Hikari Kidz
+                Jadwal Kegiatan Daycare
               </p>
             </a>
           </li>

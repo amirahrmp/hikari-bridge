@@ -261,10 +261,18 @@ Route::post('/hikari_kidz/store', [App\Http\Controllers\DetailHikariKidzControll
 Route::patch('ubah-status/{id}', [App\Http\Controllers\DetailHikariKidzController::class, 'ubahStatus'])->name('ubah.status')->middleware(['auth']);
 
 // jadwal hikari kidz
-Route::resource('jadwal_hikari_kidz', App\Http\Controllers\JadwalHikariKidzController::class)->middleware(['auth']);
+Route::resource('jadwal_hikari_kidz', App\Http\Controllers\JadwalHikariKidzController::class);
 Route::post('jadwal_hikari_kidz', [App\Http\Controllers\JadwalHikariKidzController::class, 'store'])->name('jadwal_hikari_kidz.store')->middleware(['auth']);
+Route::post('/upload-jadwal_hikari_kidz-excel', [App\Http\Controllers\JadwalHikariKidzController::class, 'uploadExcel'])->name('jadwal_hikari_kidz.upload');
 Route::put('/jadwal_hikari_kidz/{id}/update', [App\Http\Controllers\JadwalHikariKidzController::class, 'update'])->name('jadwal_hikari_kidz.update')->middleware(['auth']);
 Route::get('/delete-jadwal_hikari_kidz/{id}', [App\Http\Controllers\JadwalHikariKidzController::class, 'destroy'])->name('jadwal_hikari_kidz.destroy')->middleware(['auth']);
+
+// jadwal hikari kidz
+Route::resource('jadwal_hkc', App\Http\Controllers\JadwalHkcController::class);
+Route::post('jadwal_hkc', [App\Http\Controllers\JadwalHkcController::class, 'store'])->name('jadwal_hkc.store')->middleware(['auth']);
+Route::post('/upload-jadwal_hkc-excel', [App\Http\Controllers\JadwalHkcController::class, 'uploadExcel'])->name('jadwal_hkc.upload');
+Route::put('/jadwal_hkc/{id}/update', [App\Http\Controllers\JadwalHkcController::class, 'update'])->name('jadwal_hkc.update')->middleware(['auth']);
+Route::get('/delete-jadwal_hkc/{id}', [App\Http\Controllers\JadwalHkcController::class, 'destroy'])->name('jadwal_hkc.destroy')->middleware(['auth']);
 
 // detail jadwal hikari kidz
 Route::get('jadwal_hikari_kidz/{id}/show', [App\Http\Controllers\JadwalHikariKidzController::class, 'show'])->name('jadwal_hikari_kidz.show')->middleware(['auth']);
@@ -297,5 +305,7 @@ Route::get('/absensi_daycare/store-jam-pulang', [App\Http\Controllers\AbsensiDay
 Route::post('/absensi_daycare/store-jam-pulang', [App\Http\Controllers\AbsensiDaycareController::class, 'storeJamPulang'])->name('absensi_daycare.store_jam_pulang');
 Route::get('/get-program-anak/{id}', [App\Http\Controllers\AbsensiDaycareController::class, 'getProgramAnak']);
 Route::get('/absensi_daycare/riwayat_absensi', [App\Http\Controllers\AbsensiDaycareController::class, 'riwayat_absensi'])->name('absensi_daycare.riwayat_absensi');
+Route::get('/absensi-daycare/riwayat', [App\Http\Controllers\AbsensiDaycareController::class, 'riwayat_absensi'])->name('absensi_daycare.riwayat');
+
 
 

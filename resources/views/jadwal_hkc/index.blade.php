@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
-@section('jadwal_hikari_kidz_select','active')
-@section('title', 'Jadwal Hikari Kidz Daycare')
+@section('jadwal_hkc_select','active')
+@section('title', 'Jadwal Hikari Kidz Club')
 
 
 @section('content')
@@ -12,12 +12,12 @@
       <div class="container-fluid">
         <div class="row mb-2">
           <div class="col-sm-6">
-            <h1 class="m-0">Jadwal Hikari Kidz Daycare</h1>
+            <h1 class="m-0">Jadwal Hikari Kidz Club</h1>
           </div><!-- /.col -->
           <div class="col-sm-6">
             <ol class="breadcrumb float-sm-right">
                 <li class="breadcrumb-item">Master Data</a></li>
-              <li class="breadcrumb-item"><a href="#">Jadwal Hikari Kidz Daycare</a></li>
+              <li class="breadcrumb-item"><a href="#">Jadwal Hikari Kidz Club</a></li>
             </ol>
           </div><!-- /.col -->
         </div><!-- /.row -->
@@ -40,20 +40,20 @@
                             <div class="col-lg-12">
                                 <div class="card">
                                     <div class="card-body p-0">
-                                      <form method="GET" action="{{ route('jadwal_hikari_kidz.index') }}" class="mb-3">
+                                      <form method="GET" action="{{ route('jadwal_hkc.index') }}" class="mb-3">
                                         <div class="row">
                                             <div class="col-md-4">
-                                                <select name="tipe_daycare" class="form-control" onchange="this.form.submit()">
-                                                    <option value="">-- Pilih Tipe Daycare --</option>
-                                                    <option value="Half Day" {{ request()->get('tipe_daycare') == 'Half Day' ? 'selected' : '' }}>Half Day</option>
-                                                    <option value="Full Day" {{ request()->get('tipe_daycare') == 'Full Day' ? 'selected' : '' }}>Full Day</option>
-                                                    <option value="Full Day Long Hours" {{ request()->get('tipe_daycare') == 'Full Day Long Hours' ? 'selected' : '' }}>Full Day Long Hours</option>
+                                                <select name="kelas" class="form-control" onchange="this.form.submit()">
+                                                    <option value="">-- Pilih Kelas --</option>
+                                                    <option value="Bara" {{ request()->get('kelas') == 'Bara' ? 'selected' : '' }}>Bara</option>
+                                                    <option value="Sakura" {{ request()->get('kelas') == 'Sakura' ? 'selected' : '' }}>Sakura</option>
+                                                    <option value="Himawari" {{ request()->get('kelas') == 'Himawari' ? 'selected' : '' }}>Himawari</option>
                                                 </select>
                                             </div>
                                         </div>
                                     </form>
 
-                                        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addJadwalHikariKidzModal">
+                                        <button class="btn btn-primary mb-3" data-toggle="modal" data-target="#addJadwalHkcModal">
                                             <i class="fa fa-plus"></i> Tambah Data
                                         </button>
                                         <button class="btn btn-success mb-3" data-toggle="modal" data-target="#uploadExcelModal">
@@ -65,7 +65,7 @@
                                                 <thead>
                                                     <tr>
                                                         <th>No</th>
-                                                        <th>Tipe Daycare</th>
+                                                        <th>Kelas</th>
                                                         <th>Waktu Mulai</th>
                                                         <th>Waktu Selesai</th>
                                                         <th>Kegiatan</th>
@@ -73,10 +73,10 @@
                                                     </tr>
                                                 </thead>
                                                 <tbody>
-                                                @foreach ($jadwalhikarikidz as $item)
+                                                @foreach ($jadwalhkc as $item)
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
-                                                    <td>{{ ucfirst($item->tipe_daycare) }}</td>
+                                                    <td>{{ ucfirst($item->kelas) }}</td>
                                                     <td>{{ $item->waktu_mulai }}</td>
                                                     <td>{{ $item->waktu_selesai }}</td>
                                                     <td>{{ $item->kegiatan }}</td>
@@ -84,7 +84,7 @@
                                                             <button class="btn-sm btn-warning d-inline-block" data-toggle="modal" data-target="#editModal{{ $item->id }}">
                                                                 <i class="fa fa-edit"></i>
                                                             </button>
-                                                            <button href="{{ URL::to('delete-jadwal_hikari_kidz/'.$item->id) }}" class="btn-sm btn-danger" id="delete">
+                                                            <button href="{{ URL::to('delete-jadwal_hkc/'.$item->id) }}" class="btn-sm btn-danger" id="delete">
                                                                 <i class="fa fa-trash"></i>
                                                             </button>                                                      
                                                         </td>
@@ -99,17 +99,17 @@
                                                                         <span aria-hidden="true">&times;</span>
                                                                     </button>
                                                                 </div>
-                                                                <form action="{{ route('jadwal_hikari_kidz.update', $item->id) }}" method="post">
+                                                                <form action="{{ route('jadwal_hkc.update', $item->id) }}" method="post">
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <div class="modal-body">
                                                                         
                                                                         <div class="form-group">
                                                                             <label>Tipe Daycare</label>
-                                                                            <select name="tipe_daycare" class="form-control" required>
-                                                                            <option value="Half Day" {{ $item->tipe_daycare == 'Half Day' ? 'selected' : '' }}>Half Day</option>
-                                                                            <option value="Full Day" {{ $item->tipe_daycare == 'Full Day' ? 'selected' : '' }}>Full Day</option>
-                                                                            <option value="Full Day Long Hours" {{ $item->tipe_daycare == 'Full Day Long Hours' ? 'selected' : '' }}>Full Day Long Hours</option>
+                                                                            <select name="kelas" class="form-control" required>
+                                                                            <option value="Bara" {{ $item->kelas == 'Bara' ? 'selected' : '' }}>Bara</option>
+                                                                            <option value="Sakura" {{ $item->kelas == 'Sakura' ? 'selected' : '' }}>Sakura</option>
+                                                                            <option value="Himawari" {{ $item->kelas == 'Himawari' ? 'selected' : '' }}>Himawari</option>
                                                                             </select>
                                                                         <div class="form-group">
                                                                             <label>Waktu Mulai</label>
@@ -138,25 +138,25 @@
                                         </div>
 
                                         <!-- Modal Tambah Data -->
-                                        <div class="modal fade" id="addJadwalHikariKidzModal" tabindex="-1" aria-labelledby="addJadwalHikariKidzModalLabel" aria-hidden="true">
+                                        <div class="modal fade" id="addJadwalHkcModal" tabindex="-1" aria-labelledby="addJadwalHkcModalLabel" aria-hidden="true">
                                             <div class="modal-dialog modal-default">
                                                 <div class="modal-content">
                                                     <div class="modal-header">
-                                                        <h5 class="modal-title" id="addJadwalHikariKidzModalLabel">Tambah Data Jadwal Hikari Kidz Daycare</h5>
+                                                        <h5 class="modal-title" id="addJadwalHkcModalLabel">Tambah Data Jadwal Hikari Kidz Club </h5>
                                                         <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                             <span aria-hidden="true">&times;</span>
                                                         </button>
                                                     </div>
-                                                    <form action="{{ route('jadwal_hikari_kidz.store') }}" method="post">
+                                                    <form action="{{ route('jadwal_hkc.store') }}" method="post">
                                                         @csrf
                                                         <div class="modal-body">
                                                         <div class="form-group">
-                                                    <label>Tipe Daycare</label>
-                                                    <select name="tipe_daycare" class="form-control" required>
+                                                    <label>Tipe Kelas</label>
+                                                    <select name="kelas" class="form-control" required>
                                                         <option value="">-- Pilih Tipe --</option>
-                                                        <option value="Half Day">Half Day</option>
-                                                        <option value="Full Day">Full Day</option>
-                                                        <option value="Full Day Long Hours">Full Day Long Hours</option>
+                                                        <option value="Bara">Bara</option>
+                                                        <option value="Sakura">Sakura</option>
+                                                        <option value="Himawari">Himawari</option>
                                                     </select>
                                                     </div>
                                                     <div class="form-group">
@@ -192,7 +192,7 @@
                                                         </button>
                                                     </div>
                                                     <div class="modal-body">
-                                                        <form action="{{ route('jadwal_hikari_kidz.upload') }}" method="POST" enctype="multipart/form-data">
+                                                        <form action="{{ route('jadwal_hkc.upload') }}" method="POST" enctype="multipart/form-data">
                                                             @csrf
                                                             <div class="form-group">
                                                                 <label for="excel_file">Pilih File Excel</label>

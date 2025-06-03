@@ -13,6 +13,7 @@ class PesertaHikariKidz extends Model
     protected $fillable = [
         'id',
         'id_anak',
+        'status',
         'full_name',
         'nickname',
         'birth_date',

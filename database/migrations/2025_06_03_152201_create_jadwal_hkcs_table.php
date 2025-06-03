@@ -4,7 +4,7 @@ use Illuminate\Database\Migrations\Migration;
 use Illuminate\Database\Schema\Blueprint;
 use Illuminate\Support\Facades\Schema;
 
-class CreateJadwalHikariKidzsTable extends Migration
+class CreateJadwalHKCSTable extends Migration
 {
     /**
      * Run the migrations.
@@ -13,9 +13,9 @@ class CreateJadwalHikariKidzsTable extends Migration
      */
     public function up()
     {
-        Schema::create('jadwal_hikari_kidz', function (Blueprint $table) {
+        Schema::create('jadwal_hkc', function (Blueprint $table) {
             $table->id();
-            $table->string('tipe_daycare')->nullable(); // hanya diisi jika program = Daycare
+            $table->string('kelas')->nullable(); 
             $table->time('waktu_mulai');
             $table->time('waktu_selesai');
             $table->string('kegiatan');
@@ -31,6 +31,6 @@ class CreateJadwalHikariKidzsTable extends Migration
      */
     public function down()
     {
-        Schema::dropIfExists('jadwal_hikari_kidz');
+        Schema::dropIfExists('jadwal_hkc');
     }
 }
