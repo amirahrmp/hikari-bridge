@@ -66,7 +66,7 @@
       <li class="nav-item @yield('daftar_kursus_select')">
         <a class="nav-link" href="{{ route('daftarkursus.index') }}">
           <i class="material-icons">person</i>
-          <p>Daftar Kursus</p>
+          <p>Daftar Program Hikari Kidz</p>
         </a>
       </li>
       <li class="nav-item @yield('riwayat_select')">
@@ -75,32 +75,54 @@
           <p>Riwayat Pendaftaran</p>
         </a>
       </li>
-      <li class="nav-item @yield('jadwal_kursus_select')">
-        <a class="nav-link" href="#" onclick="submitJadwalKursus()">
-            <i class="material-icons">library_books</i>
-            <p>Jadwal Kursus</p>
+      <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#pembayaran" aria-expanded="false">
+          <i class="fa fa-clipboard"></i>
+          <p>Pembayaran
+            <b class="caret"></b>
+          </p>
         </a>
-        <form id="jadwal-kursus-form" action="{{ url('jadwal-kursus') }}" method="POST" style="display: none;">
-            @csrf
-            <input type="hidden" name="email" value="{{ Auth::user()->email }}">
-        </form>
-      </li> 
-      <li class="nav-item @yield('tagihan_select')">
-        <a class="nav-link" href="tagihanpembayaran">
-          <i class="material-icons">money</i>
-          <p>Tagihan Pembayaran</p>
+        <div class="collapse" id="pembayaran">
+          <ul class="nav pl-4">
+            <li class="nav-item @yield('tagihan_select')">
+              <a class="nav-link" href="tagihanpembayaran">
+                <i class="material-icons">money</i>
+                <p>Daftar Baru</p>
+              </a>
+            </li>
+            <li class="nav-item @yield('pembayaran_spp_select')">
+              <a class="nav-link" href="pembayaranspp">
+                <i class="material-icons">money</i>
+                <p>SPP Bulanan</p>
+              </a>
+            </li>
+           <li class="nav-item @yield('pembayaran_kegiatan_tambahan_user_select')">
+              <a class="nav-link" href="{{ route('pembayaran_kegiatan_tambahan_user.index', ['id_anak' => Auth::user()->id_anak ?? '1']) }}">
+                  <i class="material-icons">money</i>
+                  <p>Kegiatan Lainnya</p>
+              </a>
+          </li>
+          </ul>
+        </div>
+      </li>
+
+
+      <li class="nav-item @yield('riwayat_pembayaran_select')"> <!-- Tambahkan ini untuk highlight aktif -->
+        <a class="nav-link" href="{{ route('payment.index') }}">
+          <i class="material-icons">library_books</i>
+          <p>Riwayat Pembayaran</p>
         </a>
       </li>
       <li class="nav-item @yield('jadwal_makan_daycare_user_select')">
-    <a class="nav-link" href="{{ route('jadwal_makan_daycare_user') }}">
-        <i class="material-icons">library_books</i>
-        <p>Jadwal Makan Daycare</p>
-    </a>
-</li>
-      <li class="nav-item ">
-        <a class="nav-link" href="./map.html">
-          <i class="material-icons">library_books</i>
-          <p>Riwayat Pembayaran</p>
+        <a class="nav-link" href="{{ route('jadwal_makan_daycare_user') }}">
+            <i class="material-icons">library_books</i>
+            <p>Jadwal Makan Daycare</p>
+        </a>
+      </li>
+      <li class="nav-item @yield('jadwal_hkc_user_select')">
+        <a class="nav-link" href="{{ route('jadwal_hkc_user') }}">
+            <i class="material-icons">library_books</i>
+            <p>Jadwal Kegiatan HKC</p>
         </a>
       </li>
       <li class="nav-item ">

@@ -4,16 +4,27 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\RegistrationHikariKidzClub;
+use App\Models\RegistrationHikariKidzDaycare;
+use App\Models\RegistrationProgramHkcw;
 
 class PesertaHikariKidz extends Model
 {
     use HasFactory;
     protected $table = 'peserta_hikari_kidz';
+
+     protected $primaryKey = 'id_anak';
+
+    public $incrementing = false; // jika id_anak bukan auto-increment
+
+    protected $keyType = 'string'; // jika string. Kalau integer, gunakan 'int'
+
     // list kolom yang bisa diisi
     protected $fillable = [
         'id',
         'id_anak',
         'status',
+        'status_keaktifan',
         'full_name',
         'nickname',
         'birth_date',
@@ -40,5 +51,11 @@ class PesertaHikariKidz extends Model
     public function registration()
     {
         return $this->belongsTo(RegistrationHikariKidzClub::class, 'id_anak', 'id_anak');
+    }
+
+    public function getFotoPathAttribute()
+    {
+        $folder = strtolower($this->tipe); // hkc, hkd, hq
+        return asset("storage/uploads/{$folder}/{$this->file_upload}");
     }
 }

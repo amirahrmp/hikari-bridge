@@ -122,7 +122,7 @@
                               <td><a href="{{ route('pembayaran.create') }}" class="btn btn-primary mt-3">Bayar Sekarang</a></td>
                             </tr>
                             @endforeach
-                          </tbody>
+                          </tbody> 
                         </table>
                       </div>
                     </div>

@@ -15,6 +15,8 @@ class CreateJadwalMakanDaycaresTable extends Migration
     {
         Schema::create('jadwal_makan_daycare', function (Blueprint $table) {
             $table->Increments('id');
+            $table->integer('bulan')->after('id');
+            $table->integer('pekan')->after('bulan');
             $table->string('hari', 20);
             $table->string('snack_pagi', 255);
             $table->string('makan_siang', 255); 

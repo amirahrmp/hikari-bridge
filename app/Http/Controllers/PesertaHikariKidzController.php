@@ -2,81 +2,87 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PesertaHikariKidz;
-use App\Http\Requests\StorePesertaHikariKidzRequest;
-use App\Http\Requests\UpdatePesertaHikariKidzRequest;
-use Illuminate\Support\Facades\Storage;  // <<--- tambahkan ini
 use Illuminate\Http\Request;
+use Illuminate\Support\Facades\DB;
+use Illuminate\Support\Facades\Storage;
+use App\Models\PesertaHikariKidz;
+use App\Models\ProgramLain;
 use App\Imports\PesertaHikariKidzImport;
 use Maatwebsite\Excel\Facades\Excel;
+use Illuminate\Support\Facades\Log;
+use Illuminate\Support\Str;
 
 class PesertaHikariKidzController extends Controller
 {
-    /**
-     * Display a listing of the resource.
-     *
-     * @return \Illuminate\Http\Response
-     */
     public function index()
     {
-        $peserta_hikari_kidz = PesertaHikariKidz::all();
-        return view('peserta_hikari_kidz.index',
-                    [
-                        'peserta_hikari_kidz' => $peserta_hikari_kidz
-                    ]
-                  );
+        $peserta_hikari_kidz = PesertaHikariKidz::orderByRaw('CAST(id_anak AS UNSIGNED) ASC')->get();
+        return view('peserta_hikari_kidz.index', compact('peserta_hikari_kidz'));
     }
 
-    public function store(Request $request)
+    public function ubahStatus(Request $request, $id)
     {
-        // Validasi data input
-        $request->validate([
-            //'id_anak' => 'required|numeric',
-            'status' => 'required',
-            'full_name' => 'required|string|max:255',
-            'nickname' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'parent_name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'whatsapp_number' => 'required|numeric|digits_between:5,15',
-            'tipe' => 'required',
-            'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
-        ]);
+        $peserta = PesertaHikariKidz::where('id_anak', $id)->firstOrFail();
 
-         // Buat ID anak otomatis (ambil nilai max lalu +1)
-        $lastIdAnak = PesertaHikariKidz::max('id_anak');
-        $newIdAnak = $lastIdAnak ? $lastIdAnak + 1 : 1;
+        // Toggle status antara Menunggu ↔ Terverifikasi
+        $peserta->status = ($peserta->status === 'Terverifikasi') ? 'Menunggu' : 'Terverifikasi';
+        $peserta->save();
 
-        // Membuat Data Anak Peserta Hikari Kidz baru
-        $peserta_hikari_kidz = new PesertaHikariKidz();
-        $peserta_hikari_kidz->id_anak = $newIdAnak;
-        $peserta_hikari_kidz->status = $request->input('status');
-        $peserta_hikari_kidz->full_name = $request->input('full_name');
-        $peserta_hikari_kidz->nickname = $request->input('nickname');
-        $peserta_hikari_kidz->birth_date = $request->input('birth_date');
-        $peserta_hikari_kidz->parent_name = $request->input('parent_name');
-        $peserta_hikari_kidz->address = $request->input('address');
-        $peserta_hikari_kidz->whatsapp_number = $request->input('whatsapp_number');
-        $peserta_hikari_kidz->tipe = $request->input('tipe');
+        return redirect()->back()->with('success', 'Status peserta berhasil diperbarui.');
+    }
 
-        // Proses file upload
-        if ($request->hasFile('file_upload')) {
-            $file = $request->file('file_upload');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('uploads/peserta', $filename); // tersimpan di storage/app/public/uploads
-            $peserta_hikari_kidz->file_upload = $filename;
+      public function generateParticipantVCard($id_anak)
+    {
+        // 1. Cari data peserta berdasarkan ID
+        $peserta = PesertaHikariKidz::findOrFail($id_anak);
+
+        // 2. Siapkan data untuk vCard
+        // Kita gunakan nama orang tua, dan tambahkan nama panggilan anak agar mudah dikenali
+        $contactName = $peserta->parent_name . ' (Wali ' . $peserta->nickname . ')';
+
+        // Gunakan fungsi format nomor WA yang sudah Anda miliki
+        $phoneNumber = $this->formatNomorWhatsapp($peserta->whatsapp_number);
+
+        // Validasi jika nomor WA kosong setelah diformat
+        if (empty($phoneNumber)) {
+            return redirect()->back()->with('error', 'Nomor WhatsApp peserta tidak valid atau kosong.');
         }
+        // AYANGGGG BUTTUUTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
 
-        $peserta_hikari_kidz->save();
+        // 3. Buat konten vCard secara dinamis
+        $vcard = "BEGIN:VCARD\n";
+        $vcard .= "VERSION:3.0\n";
+        $vcard .= "FN:" . $contactName . "\n";
+        $vcard .= "ORG:Peserta Hikari Kidz\n"; // Bisa diisi nama lembaga Anda
+        $vcard .= "TEL;TYPE=CELL:" . $phoneNumber . "\n";
+        $vcard .= "END:VCARD";
 
-        // Menampilkan notifikasi sukses
-        $notification = array(
-            'message' => 'Data Anak Peserta Hikari Kidz berhasil ditambahkan!',
-            'alert-type' => 'success'
-        );
+        // 4. Siapkan nama file yang akan diunduh
+        $fileName = 'Kontak-' . Str::slug($peserta->nickname) . '.vcf';
+        // 5. Siapkan headers untuk download
+        $headers = [
+            'Content-Type' => 'text/vcard; charset=utf-8',
+            'Content-Disposition' => 'attachment; filename="' . $fileName . '"',
+        ];
 
-        // Redirect ke halaman peserta hikarikidz dengan pesan sukses
-        return redirect()->route('peserta_hikari_kidz.index')->with($notification);
+        return response($vcard, 200, $headers);
+    }
+
+    public function destroy(PesertaHikariKidz $id)
+    {
+        $id->delete();
+        $notification=array
+            (
+                'message'=>'Data paket berhasil dihapus!',
+                'alert-type'=>'info'
+            );
+        return redirect()->back()->with($notification);
+    }
+
+    public function show($id)
+    {
+        $peserta = PesertaHikariKidz::where('id_anak', $id)->firstOrFail();
+        return view('peserta_hikari_kidz.detail', compact('peserta'));
     }
 
     public function uploadExcel(Request $request)
@@ -85,98 +91,149 @@ class PesertaHikariKidzController extends Controller
             'excel_file' => 'required|mimes:xlsx,xls'
         ]);
 
-        $file = $request->file('excel_file');
+        Excel::import(new PesertaHikariKidzImport, $request->file('excel_file'));
 
-        // Mengimpor data ke dalam database
-        Excel::import(new PesertaHikariKidzImport, $file);
-
-        $notification = array(
-            'message' => 'Data Anak Peserta Hikari Kidz berhasil ditambahkan!',
+        return redirect()->back()->with([
+            'message' => 'Data Anak Peserta Hikari Kidz berhasil ditambahkan dari Excel!',
             'alert-type' => 'success'
-        );
-
-        return redirect()->back()->with($notification);
-    }
-
-    public function update(Request $request, $id)
-    {
-        $request->validate([
-            //'id_anak' => 'required|numeric',
-            'status' => 'required',
-            'full_name' => 'required|string|max:255',
-            'nickname' => 'required|string|max:255',
-            'birth_date' => 'required|date',
-            'parent_name' => 'required|string|max:255',
-            'address' => 'required|string|max:255',
-            'whatsapp_number' => 'required|numeric|digits_between:5,15',
-            'tipe' => 'required',
-            'file_upload' => 'required|file|mimes:jpg,jpeg,png|max:2048',
         ]);
-
-        // Cari peserta hikarikidz berdasarkan ID
-        $peserta_hikari_kidz = PesertaHikariKidz::findOrFail($id);
-
-        // Update data peserta_hikari_kidz
-        //$peserta_hikari_kidz->id_anak = $request->input('id_anak');
-        $peserta_hikari_kidz->status = $request->input('status');
-        $peserta_hikari_kidz->full_name = $request->input('full_name');
-        $peserta_hikari_kidz->nickname = $request->input('nickname');
-        $peserta_hikari_kidz->birth_date = $request->input('birth_date');
-        $peserta_hikari_kidz->parent_name = $request->input('parent_name');
-        $peserta_hikari_kidz->address = $request->input('address');
-        $peserta_hikari_kidz->whatsapp_number = $request->input('whatsapp_number');
-        $peserta_hikari_kidz->tipe = $request->input('tipe');
-        $peserta_hikari_kidz->file_upload = $request->input('file_upload');
-         // ✔️ Cek apakah ada file baru diupload
-        if ($request->hasFile('file_upload')) {
-            // Hapus file lama jika ada
-            if ($peserta_hikari_kidz->file_upload && Storage::exists('uploads/peserta' . $peserta_hikari_kidz->file_upload)) {
-                Storage::delete('uploads/peserta' . $peserta_hikari_kidz->file_upload);
-            }
-
-            $file = $request->file('file_upload');
-            $filename = time() . '_' . $file->getClientOriginalName();
-            $file->storeAs('public/uploads', $filename);
-            $peserta_hikari_kidz->file_upload = $filename;
-             } else {
-            // Kalau tidak ada upload file baru, tetap pakai file lama
-            $validatedData['file_upload'] = $peserta_hikari_kidz->file_upload;
-            }
-
-        // Simpan perubahan
-        $peserta_hikari_kidz->save();  // Hanya satu kali save, karena sudah memodifikasi data
-
-        // Menampilkan notifikasi sukses
-        $notification = array(
-            'message' => 'Data Anak Peserta Hikari Kidz berhasil diubah!',
-            'alert-type' => 'success'
-        );
-
-        // Redirect kembali ke halaman peserta_hikari_kidz dengan pesan sukses
-        return redirect()->route('peserta_hikari_kidz.index')->with($notification);
     }
 
-    /**
-     * Remove the specified resource from storage.
-     */
-    public function destroy(PesertaHikariKidz $id)
+    public function kirimPesanWhatsapp($id)
     {
-        $id->delete();
-        $notification=array
-            (
-                'message'=>'Data Anak Peserta Hikari Kidz berhasil dihapus!',
-                'alert-type'=>'info'
-            );
-        return redirect()->back()->with($notification);
+        try {
+            $peserta = PesertaHikariKidz::where('id_anak', $id)->firstOrFail();
+            
+            $nomorAsli = $peserta->whatsapp_number;
+            $nomor = $this->formatNomorWhatsapp($peserta->whatsapp_number);
+            
+            // Log untuk debug
+            Log::info("WhatsApp Debug - ID: $id, Nomor Asli: $nomorAsli, Nomor Format: $nomor");
+            
+            $nama = $peserta->full_name;
+            $ortu = $peserta->parent_name;
+
+            $pesan = "Halo $ortu, kami dari Hikari Bridge. Ini informasi terkait pendaftaran/keikutsertaan anak Anda, $nama. Mohon diperhatikan untuk keikutsertaan dalam program Hikari Kidz.";
+            
+            // Gunakan api.whatsapp.com untuk lebih reliable
+            $url = "https://api.whatsapp.com/send?phone=$nomor&text=" . urlencode($pesan);
+            
+            Log::info("WhatsApp URL: $url");
+            
+            return redirect()->away($url);
+            
+        } catch (\Exception $e) {
+            Log::error("WhatsApp Error: " . $e->getMessage());
+            return redirect()->back()->with('error', 'Gagal membuka WhatsApp: ' . $e->getMessage());
+        }
     }
 
-    public function show($id)
+    private function formatNomorWhatsapp($nomor)
     {
-        // Ambil peserta berdasarkan ID dan sertakan hikarikidz yang mereka ikuti
-        $peserta = PesertaHikariKidz::with('hikarikidz')->findOrFail($id);
-
-        // Tampilkan view dengan data peserta dan hikarikidz yang diikuti
-        return view('peserta_hikari_kidz.detail', compact('peserta'));
+        // Hapus semua karakter selain angka
+        $nomor = preg_replace('/[^0-9]/', '', $nomor);
+        
+        // Jika kosong, return kosong
+        if (empty($nomor)) {
+            return '';
+        }
+        
+        // Deteksi apakah sudah format internasional
+        if ($this->isInternationalFormat($nomor)) {
+            return $nomor;
+        }
+        
+        // Jika dimulai dengan 0 (format Indonesia), ganti dengan 62
+        if (substr($nomor, 0, 1) === '0') {
+            return '62' . substr($nomor, 1);
+        }
+        
+        // Jika nomor pendek dan sepertinya Indonesia, tambahkan 62
+        if (strlen($nomor) >= 9 && strlen($nomor) <= 13 && !$this->isInternationalFormat($nomor)) {
+            return '62' . $nomor;
+        }
+        
+        // Return nomor apa adanya jika tidak bisa dideteksi
+        return $nomor;
     }
+    
+    private function isInternationalFormat($nomor)
+    {
+        // Daftar country code yang umum
+        $countryCodes = [
+            '62',   // Indonesia
+            '60',   // Malaysia
+            '65',   // Singapore
+            '66',   // Thailand
+            '63',   // Philippines
+            '84',   // Vietnam
+            '1',    // US/Canada (tapi harus hati-hati, bisa salah)
+            '44',   // UK
+            '91',   // India
+            '86',   // China
+            '81',   // Japan
+            '82',   // South Korea
+            '61',   // Australia
+            '49',   // Germany
+            '33',   // France
+            '39',   // Italy
+            '34',   // Spain
+            '55',   // Brazil
+            '52',   // Mexico
+            '27',   // South Africa
+        ];
+        
+        foreach ($countryCodes as $code) {
+            if (substr($nomor, 0, strlen($code)) === $code) {
+                // Untuk country code 1 digit, pastikan panjang nomor masuk akal
+                if ($code === '1' && strlen($nomor) !== 11) {
+                    continue;
+                }
+                return true;
+            }
+        }
+        
+        return false;
+    }
+    
+    // Helper function untuk generate WhatsApp link di view
+    public static function generateWhatsAppUrl($nomorWhatsapp, $pesan = '')
+    {
+        $controller = new self();
+        $nomor = $controller->formatNomorWhatsapp($nomorWhatsapp);
+        
+        if (empty($pesan)) {
+            return "https://api.whatsapp.com/send?phone=$nomor";
+        }
+        
+        return "https://api.whatsapp.com/send?phone=$nomor&text=" . urlencode($pesan);
+    }
+
+    public function verifikasi()
+    {
+        $peserta_hikari_kidz = PesertaHikariKidz::where('status', 'Terverifikasi')->get();
+        return view('peserta_hikari_kidz.verifikasi', compact('peserta_hikari_kidz'));
+    }
+
+    public function ubahStatusKeaktifan($id, Request $request)
+    {
+        $peserta = PesertaHikariKidz::findOrFail($id);
+        $status = $request->input('status_keaktifan');
+
+        if (!in_array($status, ['Aktif', 'Cuti', 'Tidak Aktif'])) {
+            return back()->with('error', 'Status tidak valid.');
+        }
+
+        $peserta->status_keaktifan = $status;
+        $peserta->save();
+
+        return redirect()->back()->with('success', 'Status keaktifan berhasil diperbarui.');
+    }
+
+    public function programLain()
+    {
+        return $this->hasMany(ProgramLain::class, 'peserta_id');
+    }
+
 
 }

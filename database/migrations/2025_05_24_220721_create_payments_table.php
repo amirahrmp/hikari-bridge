@@ -24,3 +24,20 @@ return new class extends Migration {
         Schema::dropIfExists('payments');
     }
 };
+
+class AddTotalToPaymentsTable extends Migration
+{
+    public function up()
+    {
+        Schema::table('payments', function (Blueprint $table) {
+            $table->integer('jumlah')->after('registration_type')->default(0);
+        });
+    }
+
+    public function down()
+    {
+        Schema::table('payments', function (Blueprint $table) {
+            $table->dropColumn('jumlah');
+        });
+    }
+}

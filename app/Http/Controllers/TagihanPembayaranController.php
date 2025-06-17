@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RegistrationHikariKidzClub;
 use App\Models\RegistrationHikariKidzDaycare;
 use App\Models\RegistrationHikariQuran;
+use App\Http\Controllers\Controller; // <-- Ini yang dibutuhkan
 
 class TagihanPembayaranController extends Controller
 {

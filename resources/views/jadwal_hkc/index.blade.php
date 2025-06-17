@@ -66,8 +66,10 @@
                                                     <tr>
                                                         <th>No</th>
                                                         <th>Kelas</th>
+                                                        <th>Hari</th>
                                                         <th>Waktu Mulai</th>
                                                         <th>Waktu Selesai</th>
+                                                        <th>Tema</th>
                                                         <th>Kegiatan</th>
                                                         <th>Action</th>
                                                     </tr>
@@ -77,8 +79,10 @@
                                                 <tr>
                                                     <td>{{ $loop->iteration }}</td>
                                                     <td>{{ ucfirst($item->kelas) }}</td>
+                                                    <td>{{ $item->hari }}</td>
                                                     <td>{{ $item->waktu_mulai }}</td>
                                                     <td>{{ $item->waktu_selesai }}</td>
+                                                    <td>{{ $item->tema?->tema ?? '-' }}</td> 
                                                     <td>{{ $item->kegiatan }}</td>
                                                     <td>
                                                             <button class="btn-sm btn-warning d-inline-block" data-toggle="modal" data-target="#editModal{{ $item->id }}">
@@ -87,14 +91,14 @@
                                                             <button href="{{ URL::to('delete-jadwal_hkc/'.$item->id) }}" class="btn-sm btn-danger" id="delete">
                                                                 <i class="fa fa-trash"></i>
                                                             </button>                                                      
-                                                        </td>
+                                                    </td>
                                                     </tr>
                                                     <!-- Modal untuk Ubah Data -->
                                                     <div class="modal fade" id="editModal{{ $item->id }}" tabindex="-1" aria-labelledby="editModalLabel{{ $item->id }}" aria-hidden="true">
                                                         <div class="modal-dialog modal-default">
                                                             <div class="modal-content">
                                                                 <div class="modal-header">
-                                                                    <h5 class="modal-title" id="editModalLabel{{ $item->id }}">Ubah Data Jadwal Hikari Kidz Daycare</h5>
+                                                                    <h5 class="modal-title" id="editModalLabel{{ $item->id }}">Ubah Data Jadwal Hikari Kidz Club</h5>
                                                                     <button type="button" class="close" data-dismiss="modal" aria-label="Close">
                                                                         <span aria-hidden="true">&times;</span>
                                                                     </button>
@@ -103,14 +107,18 @@
                                                                     @csrf
                                                                     @method('PUT')
                                                                     <div class="modal-body">
-                                                                        
                                                                         <div class="form-group">
-                                                                            <label>Tipe Daycare</label>
+                                                                            <label>Kelas</label>
                                                                             <select name="kelas" class="form-control" required>
                                                                             <option value="Bara" {{ $item->kelas == 'Bara' ? 'selected' : '' }}>Bara</option>
                                                                             <option value="Sakura" {{ $item->kelas == 'Sakura' ? 'selected' : '' }}>Sakura</option>
                                                                             <option value="Himawari" {{ $item->kelas == 'Himawari' ? 'selected' : '' }}>Himawari</option>
                                                                             </select>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Hari</label>
+                                                                            <input type="text" name="hari" class="form-control" value="{{ $item->hari }}" required>
+                                                                        </div>
                                                                         <div class="form-group">
                                                                             <label>Waktu Mulai</label>
                                                                             <input type="time" name="waktu_mulai" class="form-control" value="{{ $item->waktu_mulai }}" required>
@@ -118,6 +126,17 @@
                                                                         <div class="form-group">
                                                                             <label>Waktu Selesai</label>
                                                                             <input type="time" name="waktu_selesai" class="form-control" value="{{ $item->waktu_selesai }}" required>
+                                                                        </div>
+                                                                        <div class="form-group">
+                                                                            <label>Tema Bulanan</label>
+                                                                            <select name="tema_id" class="form-control">
+                                                                                <option value="">-- Pilih Tema --</option>
+                                                                                @foreach ($temaList as $tema)
+                                                                                    <option value="{{ $tema->id }}" {{ $item->tema_id == $tema->id ? 'selected' : '' }}>
+                                                                                        {{ $tema->bulan }} - {{ $tema->tema }}
+                                                                                    </option>
+                                                                                @endforeach
+                                                                            </select>
                                                                         </div>
                                                                         <div class="form-group">
                                                                             <label>Kegiatan</label>
@@ -150,34 +169,47 @@
                                                     <form action="{{ route('jadwal_hkc.store') }}" method="post">
                                                         @csrf
                                                         <div class="modal-body">
-                                                        <div class="form-group">
-                                                    <label>Tipe Kelas</label>
-                                                    <select name="kelas" class="form-control" required>
-                                                        <option value="">-- Pilih Tipe --</option>
-                                                        <option value="Bara">Bara</option>
-                                                        <option value="Sakura">Sakura</option>
-                                                        <option value="Himawari">Himawari</option>
-                                                    </select>
-                                                    </div>
-                                                    <div class="form-group">
-                                                    <label>Waktu Mulai</label>
-                                                    <input type="time" name="waktu_mulai" class="form-control" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                    <label>Waktu Selesai</label>
-                                                    <input type="time" name="waktu_selesai" class="form-control" required>
-                                                    </div>
-                                                    <div class="form-group">
-                                                    <label>Kegiatan</label>
-                                                    <input type="text" name="kegiatan" class="form-control" required>
-                                                    </div>
+                                                            <div class="form-group">
+                                                                <label>Tipe Kelas</label>
+                                                                    <select name="kelas" class="form-control" required>
+                                                                        <option value="">-- Pilih Tipe --</option>
+                                                                        <option value="Bara">Bara</option>
+                                                                        <option value="Sakura">Sakura</option>
+                                                                        <option value="Himawari">Himawari</option>
+                                                                    </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Hari</label>
+                                                                <input type="text" name="hari" class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Waktu Mulai</label>
+                                                                <input type="time" name="waktu_mulai" class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Waktu Selesai</label>
+                                                                <input type="time" name="waktu_selesai" class="form-control" required>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Tema Bulanan</label>
+                                                                <select name="tema_id" class="form-control">
+                                                                    <option value="">-- Pilih Tema --</option>
+                                                                    @foreach ($temaList as $tema)
+                                                                        <option value="{{ $tema->id }}">{{ $tema->bulan }} - {{ $tema->tema }}</option>
+                                                                    @endforeach
+                                                                </select>
+                                                            </div>
+                                                            <div class="form-group">
+                                                                <label>Kegiatan</label>
+                                                                <input type="text" name="kegiatan" class="form-control" required>
+                                                            </div>
+                                                        </div>
+                                                        <div class="modal-footer">
+                                                            <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
+                                                            <button type="submit" class="btn btn-primary">Simpan</button>
+                                                        </div>
+                                                    </form>
                                                 </div>
-                                                <div class="modal-footer">
-                                                    <button type="button" class="btn btn-secondary" data-dismiss="modal">Tutup</button>
-                                                    <button type="submit" class="btn btn-primary">Simpan</button>
-                                                </div>
-                                                </form>
-                                            </div>
                                             </div>
                                         </div>
 

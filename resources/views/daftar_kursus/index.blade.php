@@ -1,11 +1,12 @@
 @extends('layouts2.master')
 
-@section('title', 'Daftar Kursus')
+@section('title', 'Pendaftaran Program Hikari Kidz')
 
 @section('content')
 <div class="container my-5">
-    <h1 class="text-center mb-4">Daftar Kursus</h1>
+    <h1 class="text-center mb-4">Pendaftaran Program Hikari Kidz</h1>
     <div class="row">
+        <!-- Daycare -->
         <div class="col-md-4 mb-4">
             <div class="card">
                 <img src="{{ asset('img/daycare.jpg') }}" class="card-img-top" alt="Daycare">
@@ -17,6 +18,8 @@
                 </div>
             </div>
         </div>
+
+        <!-- Hikari Kidz Club -->
         <div class="col-md-4 mb-4">
             <div class="card">
                 <img src="{{ asset('img/daycare.jpg') }}" class="card-img-top" alt="Hikari Kidz Club">
@@ -28,6 +31,22 @@
                 </div>
             </div>
         </div>
+
+        <!-- HKC Weekend -->
+        <!-- <div class="col-md-4 mb-4">
+            <div class="card">
+                <img src="{{ asset('img/daycare.jpg') }}" class="card-img-top" alt="Program HKCW">
+                <div class="card-body text-center">
+                    <h5 class="card-title">Program Lain HKC Weekend</h5>
+                    <p class="text-muted">Kategori: Henriz, Kunjungan Gigi, Dll</p>
+                    <p>Kursus membaca dan memahami Al-Quran untuk anak-anak.</p>
+                    <a href="{{ route('registerprogramhkcw.create') }}" class="btn btn-primary mt-3">Daftar</a>
+                </div>
+            </div>
+        </div> -->
+
+        <!-- Jika ingin tambahkan Hikari Quran, buka blok ini -->
+        {{--
         <div class="col-md-4 mb-4">
             <div class="card">
                 <img src="{{ asset('img/daycare.jpg') }}" class="card-img-top" alt="Hikari Quran">
@@ -39,17 +58,7 @@
                 </div>
             </div>
         </div>
-        <div class="col-md-4 mb-4">
-            <div class="card">
-                <img src="{{ asset('img/daycare.jpg') }}" class="card-img-top" alt="Program HKCW">
-                <div class="card-body text-center">
-                    <h5 class="card-title">Program Lain HKC Weekend</h5>
-                    <p class="text-muted">Kategori: Henriz, Kunjungan Gigi, Dll</p>
-                    <p>Kursus membaca dan memahami Al-Quran untuk anak-anak.</p>
-                    <a href="{{ route('registerprogramhkcw.create') }}" class="btn btn-primary mt-3">Daftar</a>
-                </div>
-            </div>
-        </div>
+        --}}
     </div>
 </div>
 @endsection

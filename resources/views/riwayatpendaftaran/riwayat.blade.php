@@ -29,6 +29,7 @@
                                   <th><b>Program</b></th>
                                   <th><b>Tipe Kelas</b></th>
                                   <th><b>Tanggal Pendaftaran</b></th>
+                                  <th><b>Status</b></th>
                                 </tr>
                               </thead>
                               <tbody>

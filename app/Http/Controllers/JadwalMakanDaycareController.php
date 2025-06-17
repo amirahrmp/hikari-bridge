@@ -2,85 +2,144 @@
 
 namespace App\Http\Controllers;
 
+use Illuminate\Http\Request;
 use App\Models\JadwalMakanDaycare;
-use App\Http\Requests\StoreJadwalMakanDaycareRequest;
-use App\Http\Requests\UpdateJadwalMakanDaycareRequest;
+use DateTime; // Pastikan DateTime di-use jika belum
 
 class JadwalMakanDaycareController extends Controller
 {
+    /**
+     * Tampilkan daftar jadwal (admin).
+     */
     public function index()
     {
-        $jadwalMakanDaycare = JadwalMakanDaycare::all();
-        return view('jadwal_makan_daycare.index', [
-            'jadwal_makan_daycare' => $jadwalMakanDaycare
-        ]);
+        $jadwal_makan_daycare = JadwalMakanDaycare::orderBy('bulan')
+            ->orderBy('pekan')
+            ->orderByRaw("FIELD(hari,'Senin','Selasa','Rabu','Kamis','Jumat')")
+            ->get();
+
+        return view('jadwal_makan_daycare.index', compact('jadwal_makan_daycare'));
     }
 
-    public function store(StoreJadwalMakanDaycareRequest $request)
+    /**
+     * Simpan jadwal pekanan baru.
+     */
+    public function store(Request $request)
     {
         $request->validate([
-            'hari' => 'required',
-            'snack_pagi' => 'required',
-            'makan_siang' => 'required',
-            'snack_sore' => 'required',
+            'bulan'              => 'required|integer|min:1|max:12',
+            'pekan'              => 'required|integer|min:1|max:4',
+            'data'               => 'required|array|min:1',
+            'data.*.hari'        => 'required|string|max:50',
+            'data.*.snack_pagi'  => 'nullable|string|max:255',
+            'data.*.makan_siang' => 'nullable|string|max:255',
+            'data.*.snack_sore'  => 'nullable|string|max:255',
+            'data.*.libur'       => 'required|boolean', // Pastikan ini sebagai boolean (0 atau 1)
         ]);
 
-        $jadwal = new JadwalMakanDaycare();
-        $jadwal->hari = $request->input('hari');
-        $jadwal->snack_pagi = $request->input('snack_pagi');
-        $jadwal->makan_siang = $request->input('makan_siang');
-        $jadwal->snack_sore = $request->input('snack_sore');
-        $jadwal->save();
+        $bulan = $request->input('bulan');
+        $pekan = $request->input('pekan');
+        $dataHarian = $request->input('data');
 
-        $notification = [
-            'message' => 'Data Jadwal Makan Daycare berhasil ditambahkan!',
-            'alert-type' => 'success'
-        ];
+        foreach ($dataHarian as $data) {
+            $isLibur = $data['libur'];
 
-        return redirect()->route('jadwal_makan_daycare.index')->with($notification);
+            // Tentukan nilai snack/makan berdasarkan status libur
+            $snackPagi = $isLibur ? 'LIBUR' : ($data['snack_pagi'] ?? null);
+            $makanSiang = $isLibur ? 'LIBUR' : ($data['makan_siang'] ?? null);
+            $snackSore = $isLibur ? 'LIBUR' : ($data['snack_sore'] ?? null);
+
+            JadwalMakanDaycare::create([
+                'bulan'       => $bulan,
+                'pekan'       => $pekan,
+                'hari'        => $data['hari'],
+                'is_libur'    => $isLibur, // Simpan status libur ke database
+                'snack_pagi'  => $snackPagi,
+                'makan_siang' => $makanSiang,
+                'snack_sore'  => $snackSore,
+            ]);
+        }
+
+        return redirect()->route('jadwal_makan_daycare.index')
+            ->with('message', 'Jadwal pekanan berhasil ditambahkan!');
     }
 
-    public function update(UpdateJadwalMakanDaycareRequest $request, JadwalMakanDaycare $jadwal_makan_daycare)
+    /**
+     * Update 1 baris jadwal (per-hari).
+     */
+    public function update(Request $request, JadwalMakanDaycare $jadwal_makan_daycare)
     {
         $request->validate([
-            'hari' => 'required',
-            'snack_pagi' => 'required',
-            'makan_siang' => 'required',
-            'snack_sore' => 'required',
+            'hari'          => 'required|string|max:50',
+            'snack_pagi'    => 'nullable|string|max:255',
+            'makan_siang'   => 'nullable|string|max:255',
+            'snack_sore'    => 'nullable|string|max:255',
+            'is_libur'      => 'required|boolean', // Validasi untuk checkbox libur di modal edit
         ]);
 
-        $jadwal_makan_daycare->hari = $request->hari;
-        $jadwal_makan_daycare->snack_pagi = $request->snack_pagi;
-        $jadwal_makan_daycare->makan_siang = $request->makan_siang;
-        $jadwal_makan_daycare->snack_sore = $request->snack_sore;
-        $jadwal_makan_daycare->save();
+        $isLibur = $request->input('is_libur');
 
-        $notification = [
-            'message' => 'Data Jadwal Makan Daycare berhasil diubah!',
-            'alert-type' => 'success'
-        ];
+        // Tentukan nilai snack/makan berdasarkan status libur dari form edit
+        $snackPagi = $isLibur ? 'LIBUR' : ($request->input('snack_pagi') ?? null);
+        $makanSiang = $isLibur ? 'LIBUR' : ($request->input('makan_siang') ?? null);
+        $snackSore = $isLibur ? 'LIBUR' : ($request->input('snack_sore') ?? null);
 
-        return redirect()->route('jadwal_makan_daycare.index')->with($notification);
+        $jadwal_makan_daycare->update([
+            'hari'          => $request->input('hari'),
+            'is_libur'      => $isLibur, // Update status libur di database
+            'snack_pagi'    => $snackPagi,
+            'makan_siang'   => $makanSiang,
+            'snack_sore'    => $snackSore,
+        ]);
+
+        return redirect()->route('jadwal_makan_daycare.index')
+            ->with('message', 'Baris jadwal berhasil diubah!');
     }
 
+    /**
+     * Hapus 1 baris.
+     */
     public function destroy($id)
     {
-        $jadwal = JadwalMakanDaycare::findOrFail($id);
-        $jadwal->delete();
-
-        $notification = [
-            'message' => 'Data Jadwal Makan Daycare berhasil dihapus!',
-            'alert-type' => 'info'
-        ];
-
-        return redirect()->back()->with($notification);
+        JadwalMakanDaycare::findOrFail($id)->delete();
+        return back()->with('message','Baris jadwal dihapus.');
     }
 
+    /**
+     * Hapus seluruh jadwal berdasarkan bulan & pekan.
+     */
+    public function deleteByPeriode(Request $request)
+    {
+        $request->validate([
+            'bulan' => 'required|integer',
+            'pekan' => 'required|integer',
+        ]);
+
+        JadwalMakanDaycare::where('bulan',$request->bulan)
+            ->where('pekan',$request->pekan)
+            ->delete();
+
+        return back()->with('message','Seluruh jadwal pekan tersebut dihapus!');
+    }
+
+    /**
+     * Tampilan user (read-only).
+     */
+    // app/Http/Controllers/JadwalMakanDaycareController.php
     public function userView()
-{
-    $jadwalMakanDaycare = JadwalMakanDaycare::all();
-    return view('jadwal_makan_daycare_user.index', [
-        'jadwal_makan_daycare_user' => $jadwalMakanDaycare
-    ]);
-}
+    {
+        // Ambil semua jadwal, urutkan agar rapih
+        $jadwal = JadwalMakanDaycare::orderBy('bulan')
+                ->orderBy('pekan')
+                ->orderByRaw("FIELD(hari,'Senin','Selasa','Rabu','Kamis','Jumat')")
+                ->get();
+
+        // Kelompokkan: $grouped[bulan][pekan] = collection
+        $grouped = $jadwal->groupBy(['bulan','pekan']);
+
+        return view('jadwal_makan_daycare_user.index', [
+            'jadwalGrouped' => $grouped   // ← kita kirim yg sudah dikelompokkan
+        ]);
+    }
+
 }

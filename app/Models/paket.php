@@ -12,7 +12,7 @@ class Paket extends Model
     protected $table = 'paket';
 
     protected $fillable = [
-        'id',
+        'id', 
         'id_paket',
         'nama_paket',
         'durasi_jam',

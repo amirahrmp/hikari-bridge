@@ -123,42 +123,16 @@
             </a>
           </li>
           <li class="nav-item">
-            <a href="{{ url('paket_hq') }}" class="nav-link @yield('paket_hq_select')">
-              <i class="nav-icon fas fa-users"></i>
-              <p>
-                Paket Quran
-              </p>
-            </a>
-          </li>
+  <a href="{{ url('kegiatan_tambahan') }}" class="nav-link @yield('kegiatan_tambahan_select')">
+    <i class="nav-icon fas fa-tasks"></i>
+    <p>Kegiatan Tambahan</p>
+  </a>
+</li>
           <li class="nav-item">
-            <a href="{{ url('pengasuh') }}" class="nav-link @yield('pengasuh_select')">
-              <i class="nav-icon fas fa-users"></i>
+            <a href="{{ url('tema_hkc')}}" class="nav-link @yield('tema_hkc_select')">
+              <i class="nav-icon far fa-calendar-alt"></i>
               <p>
-                Pengasuh
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('peserta_hikari_kidz') }}" class="nav-link @yield('peserta_hikari_kidz_select')">
-              <i class="nav-icon fas fa-list-alt"></i>
-              <p>
-                Peserta Hikari Kidz
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('hikari_kidz') }}" class="nav-link @yield('hikari_kidz_select')">
-              <i class="nav-icon fas fa-list-alt"></i>
-              <p>
-                Data Hikari Kidz
-              </p>
-            </a>
-          </li>
-          <li class="nav-item">
-            <a href="{{ url('hikari_kidz/detail') }}" class="nav-link @yield('detail_hikari_kidz_select')">
-              <i class="nav-icon fas fa-list-alt"></i>
-              <p>
-                Detail Peserta Hikari Kidz
+                Tema Kegiatan HKC
               </p>
             </a>
           </li>
@@ -186,19 +160,46 @@
               </p>
             </a>
           </li>
-          <li class="nav-header">PENCATATAN</li>
           <li class="nav-item">
             <a href="{{ route('absensi_daycare.store_jam_datang') }}" class="nav-link @yield('jam_datang_select')">
                 <i class="nav-icon fas fa-sign-in-alt"></i>
                 <p>Jam Datang Daycare</p>
             </a>
-        </li>
-        <li class="nav-item">
-            <a href="{{ route('absensi_daycare.store_jam_pulang') }}" class="nav-link @yield('jam_pulang_select')">
-                <i class="nav-icon fas fa-sign-out-alt"></i>
-                <p>Jam Pulang Daycare</p>
+          </li>
+          <li class="nav-item">
+              <a href="{{ route('absensi_daycare.store_jam_pulang') }}" class="nav-link @yield('jam_pulang_select')">
+                  <i class="nav-icon fas fa-sign-out-alt"></i>
+                  <p>Jam Pulang Daycare</p>
+              </a>
+          </li>
+
+          <li class="nav-header">PENCATATAN</li>
+          <li class="nav-item">
+            <a href="{{ url('peserta_hikari_kidz') }}" class="nav-link @yield('peserta_hikari_kidz_select')">
+              <i class="nav-icon fas fa-list-alt"></i>
+              <p>
+                Riwayat Peserta Hikari Kidz
+              </p>
             </a>
+          </li>
+          <li class="nav-item">
+          <a href="{{ route('admin.pembayaran.index') }}" class="nav-link @yield('pembayaran_admin_select')">
+            <i class="nav-icon fas fa-dollar-sign"></i> {{-- Icon terkait pembayaran/verifikasi --}}
+            <p>
+              Verifikasi Pembayaran
+            </p>
+          </a>
         </li>
+
+          <li class="nav-item">
+            <a href="{{ route('peserta_hikari_kidz.verifikasi') }}" class="nav-link @yield('peserta_hikari_kidz_verifikasi_select')">
+              <i class="nav-icon fas fa-list-alt"></i>
+              <p>
+                Data Peserta Hikari Kidz
+              </p>
+            </a>
+          </li>
+          
         <li class="nav-item">
             <a href="{{ route('absensi_daycare.riwayat_absensi') }}" class="nav-link @yield('riwayat_absensi_select')">
                 <i class="nav-icon fas fa-sign-out-alt"></i>

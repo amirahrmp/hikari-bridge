@@ -11,9 +11,15 @@ class JadwalHkc extends Model
     protected $table = 'jadwal_hkc';
     protected $fillable = [
         'kelas',   // baru
+        'hari',
         'waktu_mulai',    // 09:00
         'waktu_selesai',  // 09:20
+        'tema_id',
         'kegiatan',       // Book Corner, Ibadah Corner, dll
-        'keterangan'      // Optional tambahan seperti (di lapangan)
     ];
+
+    public function tema()
+    {
+        return $this->belongsTo(TemaHkc::class, 'tema_id');
+    }
 }
