@@ -6,9 +6,15 @@ use Illuminate\Http\Request;
 use App\Models\RegistrationHikariKidzDaycare;
 use App\Models\Paket;
 use App\Models\PesertaHikariKidz;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationHikariKidzDaycareController extends Controller
 {
+     public function index()
+    {
+        $registrasi = RegistrationHikariKidzDaycare::where('user_id', Auth::id())->get();
+        return view('registerkidzdaycare.index', compact('registrasi'));
+    }
     public function create()
     {
         $paket = Paket::all();
@@ -96,6 +102,7 @@ class RegistrationHikariKidzDaycareController extends Controller
 
             $peserta = PesertaHikariKidz::create([
                 'id_anak' => $newIdAnak,
+                
                 'full_name' => $validatedData['full_name'],
                 'nickname' => $validatedData['nickname'],
                 'birth_date' => $validatedData['birth_date'],
@@ -110,6 +117,7 @@ class RegistrationHikariKidzDaycareController extends Controller
         // Simpan registrasi
         $registration = new RegistrationHikariKidzDaycare($validatedData);
         $registration->id_anak = $peserta->id_anak;
+        $registration->user_id = Auth::id();
         $registration->save();
 
         return redirect()->route('registerkidzdaycare.create')->with('success', 'Data berhasil disimpan!');

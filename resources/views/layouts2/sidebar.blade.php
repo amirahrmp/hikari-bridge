@@ -24,6 +24,7 @@
         </a>
       </li>
       @if(Session::get('role')=='teacher')
+      {{-- Tampilan untuk Teacher --}}
       <li class="nav-item ">
         <a class="nav-link" href="./tables.html">
           <i class="fa fa-book"></i>
@@ -63,6 +64,7 @@
         </a>
       </li>
       @else
+      {{-- Tampilan untuk selain Teacher (misal: Customer/Admin) --}}
       <li class="nav-item @yield('daftar_kursus_select')">
         <a class="nav-link" href="{{ route('daftarkursus.index') }}">
           <i class="material-icons">person</i>
@@ -70,7 +72,7 @@
         </a>
       </li>
       <li class="nav-item @yield('riwayat_select')">
-        <a class="nav-link" href="riwayatpendaftaran">
+        <a class="nav-link" href="{{ url('riwayatpendaftaran') }}">
           <i class="material-icons">library_books</i>
           <p>Riwayat Pendaftaran</p>
         </a>
@@ -85,29 +87,29 @@
         <div class="collapse" id="pembayaran">
           <ul class="nav pl-4">
             <li class="nav-item @yield('tagihan_select')">
-              <a class="nav-link" href="tagihanpembayaran">
+              <a class="nav-link" href="{{ url('tagihanpembayaran') }}">
                 <i class="material-icons">money</i>
                 <p>Daftar Baru</p>
               </a>
             </li>
-            <li class="nav-item @yield('pembayaran_spp_select')">
-              <a class="nav-link" href="pembayaranspp">
-                <i class="material-icons">money</i>
-                <p>SPP Bulanan</p>
+           <li class="nav-item">
+                <a href="{{ route('spp.bulanan.index') }}" class="nav-link @yield('pembayaran_spp_select')">
+                  <i class="far fa-circle nav-icon"></i>
+                  <p>SPP Bulanan</p>
+                </a>
+              </li>
+            <li class="nav-item @if(Request::routeIs('pembayaran_kegiatan_tambahan_user.index')) active @endif">
+              <a class="nav-link" href="{{ route('pembayaran_kegiatan_tambahan_user.index') }}">
+                  <i class="material-icons">money</i>
+                  <p>Kegiatan Tambahan</p>
               </a>
             </li>
-           <li class="nav-item @yield('pembayaran_kegiatan_tambahan_user_select')">
-              <a class="nav-link" href="{{ route('pembayaran_kegiatan_tambahan_user.index', ['id_anak' => Auth::user()->id_anak ?? '1']) }}">
-                  <i class="material-icons">money</i>
-                  <p>Kegiatan Lainnya</p>
-              </a>
-          </li>
           </ul>
         </div>
       </li>
 
 
-      <li class="nav-item @yield('riwayat_pembayaran_select')"> <!-- Tambahkan ini untuk highlight aktif -->
+      <li class="nav-item @yield('riwayat_pembayaran_select')">
         <a class="nav-link" href="{{ route('payment.index') }}">
           <i class="material-icons">library_books</i>
           <p>Riwayat Pembayaran</p>

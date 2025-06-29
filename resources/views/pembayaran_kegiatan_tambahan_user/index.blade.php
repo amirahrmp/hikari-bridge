@@ -25,7 +25,6 @@
                                                         <tr>
                                                             <th><b>No</b></th>
                                                             <th><b>Nama Peserta</b></th>
-                                                            <th><b>Kelas</b></th>
                                                             <th><b>Nama Kegiatan</b></th>
                                                             <th><b>Biaya Kegiatan</b></th>
                                                             <th><b>Status Pembayaran</b></th>
@@ -36,8 +35,7 @@
                                                         @forelse($kegiatan_tambahan_user as $index => $kegiatan)
                                                         <tr>
                                                             <td>{{ $index + 1 }}</td>
-                                                            <td>{{ $kegiatan->anak->nama_lengkap ?? 'N/A' }}</td>
-                                                            <td>{{ $kegiatan->anak->kelas ?? 'N/A' }}</td>
+                                                            <td>{{ $kegiatan->anak->full_name ?? 'N/A' }}</td> {{-- Perbaiki ini ke full_name --}}
                                                             <td>{{ $kegiatan->nama_kegiatan }}</td>
                                                             <td>Rp{{ number_format($kegiatan->biaya, 0, ',', '.') }}</td>
                                                             <td>
@@ -70,12 +68,12 @@
                                                             <td>
                                                                 <button type="button" class="btn btn-info btn-sm" data-toggle="modal" data-target="#detailModal"
                                                                     data-id="{{ $kegiatan->id }}"
-                                                                    data-nama-anak="{{ $kegiatan->anak->nama_lengkap ?? 'N/A' }}"
+                                                                    data-nama-anak="{{ $kegiatan->anak->full_name ?? 'N/A' }}" {{-- Perbaiki ini ke full_name --}}
                                                                     data-kelas="{{ $kegiatan->anak->kelas ?? 'N/A' }}"
                                                                     data-nama-kegiatan="{{ $kegiatan->nama_kegiatan }}"
                                                                     data-biaya="{{ number_format($kegiatan->biaya, 0, ',', '.') }}"
                                                                     data-status="{{ strtolower($kegiatan->status_pembayaran) }}"
-                                                                    data-bukti-path="{{ $kegiatan->bukti_pembayaran_path ? Storage::url('proof_of_payments/' . $kegiatan->bukti_pembayaran_path) : '' }}"
+                                                                    data-bukti-path="{{ $kegiatan->bukti_pembayaran ? Storage::url('proof_of_payments/' . $kegiatan->bukti_pembayaran) : '' }}"
                                                                     data-payment-method="{{ $kegiatan->payment_method ?? '' }}">
                                                                     Lihat Detail & Unggah Bukti
                                                                 </button>
@@ -83,13 +81,13 @@
                                                         </tr>
                                                         @empty
                                                         <tr>
-                                                            <td colspan="7" class="text-center">Tidak ada tagihan kegiatan tambahan untuk Anda.</td>
+                                                            <td colspan="6" class="text-center">Tidak ada tagihan kegiatan tambahan untuk Anda.</td>
                                                         </tr>
                                                         @endforelse
                                                     </tbody>
                                                     <tfoot>
                                                         <tr>
-                                                            <td colspan="4" class="text-right"><strong>Total Tagihan Belum Lunas:</strong></td>
+                                                            <td colspan="3" class="text-right"><strong>Total Tagihan Belum Lunas:</strong></td>
                                                             <td colspan="3"><strong>Rp{{ number_format($total_tagihan_belum_lunas, 0, ',', '.') }}</strong></td>
                                                         </tr>
                                                     </tfoot>
@@ -190,7 +188,6 @@
 <script>
     $(document).ready(function() {
         // Inisialisasi DataTables
-        // Untuk tampilan user, mungkin tidak perlu semua tombol export, bisa disesuaikan
         $('#datatable').DataTable({
             "paging": true,
             "lengthChange": true,
@@ -199,9 +196,7 @@
             "info": true,
             "autoWidth": false,
             "responsive": true,
-            // "buttons": ["copy", "csv", "excel", "pdf", "print"] // Opsional: hapus tombol jika tidak diperlukan
         });
-        // .buttons().container().appendTo('#datatable_wrapper .col-md-6:eq(0)'); // uncomment if you enable buttons
 
         // Logic untuk mengisi data modal saat tombol "Lihat Detail & Unggah Bukti" diklik
         $('#detailModal').on('show.bs.modal', function (event) {
@@ -217,6 +212,7 @@
 
             var modal = $(this);
             modal.find('#modal-nama-anak').text(namaAnak);
+            // Anda bisa menampilkan kelas jika ada kolomnya di PesertaHikariKidz
             modal.find('#modal-kelas').text(kelas);
             modal.find('#modal-nama-kegiatan').text(namaKegiatan);
             modal.find('#modal-biaya').text(biaya);
@@ -251,7 +247,7 @@
             form[0].reset(); // Reset form input
             $('#bukti_pembayaran').val(''); // Clear file input explicitly
             $('#upload-status-message').hide().text('');
-            $('#btn-submit-proof').prop('disabled', false); // Aktifkan tombol submit
+            $('#btn-submit-proof').prop('disabled', false).html('<i class="fas fa-upload"></i> Unggah Bukti'); // Aktifkan tombol submit
 
             // Tampilkan bukti pembayaran jika sudah ada
             var buktiArea = modal.find('#bukti-pembayaran-area');
@@ -259,8 +255,9 @@
 
             if (buktiPath) {
                 buktiArea.append('<img src="' + buktiPath + '" alt="Bukti Pembayaran" class="img-fluid rounded shadow-sm mt-2" style="max-height: 200px;">');
-                buktiArea.append('<p class="text-muted mt-2"><strong>Metode Pembayaran:</strong> ' + paymentMethod + '</p>');
+                buktiArea.append('<p class="text-muted mt-2"><strong>Metode Pembayaran:</strong> ' + (paymentMethod ? paymentMethod : 'Belum ditentukan') + '</p>');
                 buktiArea.append('<p class="text-success mt-2"><i class="fas fa-check-circle"></i> Bukti telah diunggah dan ' + statusDisplay.toLowerCase() + '.</p>');
+
                 // Disable upload form if already uploaded and waiting or Lunas
                 if (status === 'menunggu verifikasi' || status === 'lunas') {
                     form.find('input, select, button[type="submit"]').prop('disabled', true);
@@ -280,7 +277,6 @@
         });
 
         // Tangani submit form AJAX (opsional, untuk pengalaman yang lebih baik tanpa reload)
-        // Jika Anda ingin menggunakan AJAX, Anda perlu menangani respons di sini
         $('#uploadProofForm').on('submit', function(e) {
             e.preventDefault(); // Mencegah form submit default
 

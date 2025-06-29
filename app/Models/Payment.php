@@ -11,6 +11,7 @@ use App\Models\PaymentComponent;
 
 class Payment extends Model
 {
+    protected $table = 'payments'; // ⬅️ PENTING: tambahkan ini
     protected $fillable = [
         'registration_id',
         'registration_type',
@@ -33,19 +34,31 @@ class Payment extends Model
      * berdasarkan 'registration_type'.
      */
     public function getPesertaAttribute()
+{
+    $userId = auth()->id();
+
+    switch ($this->registration_type) {
+        case 'Hikari Kidz Club':
+            return RegistrationHikariKidzClub::where('id', $this->registration_id)
+                                                         ->where('user_id', $userId)
+                                                         ->first();
+        case 'Hikari Kidz Daycare':
+            return RegistrationHikariKidzDaycare::where('id', $this->registration_id)
+                                                             ->where('user_id', $userId)
+                                                             ->first();
+        case 'Hikari Quran':
+            return RegistrationHikariQuran::where('id', $this->registration_id)
+                                                       ->where('user_id', $userId)
+                                                       ->first();
+        default:
+            return null;
+    }
+}
+
+
+
+    public function user()
     {
-        switch ($this->registration_type) {
-            case 'Hikari Kidz Club':
-                // Pastikan model RegistrationHikariKidzClub sudah ada dan benar
-                return RegistrationHikariKidzClub::find($this->registration_id);
-            case 'Hikari Kidz Daycare':
-                // Pastikan model RegistrationHikariKidzDaycare sudah ada dan benar
-                return RegistrationHikariKidzDaycare::find($this->registration_id);
-            case 'Hikari Quran':
-                // Pastikan model RegistrationHikariQuran sudah ada dan benar
-                return RegistrationHikariQuran::find($this->registration_id);
-            default:
-                return null;
-        }
+        return $this->belongsTo(User::class);
     }
 }

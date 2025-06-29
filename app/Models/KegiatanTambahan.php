@@ -11,6 +11,8 @@ class KegiatanTambahan extends Model
     use HasFactory;
 
     protected $table = 'kegiatan_tambahan';
+    protected $primaryKey = 'id'; // Asumsi 'id' adalah primary key
+    public $incrementing = true; // Asumsi auto-incrementing
     protected $fillable = [
         'id_anak',
         'nama_kegiatan',

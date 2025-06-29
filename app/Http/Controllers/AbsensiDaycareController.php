@@ -48,6 +48,19 @@ class AbsensiDaycareController extends Controller
         return view('absensi_daycare.jam_pulang', compact('peserta'));
     }
 
+    // Mengecek apakah jam datang sudah diisi hari ini untuk anak tertentu
+   public function cekJamDatang($id)
+    {
+        $jamDatang = AbsensiDaycare::where('id_anak', $id)
+            ->whereDate('created_at', Carbon::today())
+            ->value('jam_datang');
+
+        return response()->json([
+            'jam_datang_terisi' => !is_null($jamDatang)
+        ]);
+    }
+
+
     // Simpan jam pulang dan hitung overtime
     public function storeJamPulang(Request $request)
     {
@@ -124,65 +137,64 @@ class AbsensiDaycareController extends Controller
 
         // Riwayat absensi dengan informasi durasi dan overtime
     public function riwayat_absensi(Request $request)
-{
-    $tanggal = $request->input('tanggal'); // format: YYYY-MM-DD
-    $bulan = $request->input('bulan');     // format: YYYY-MM
+    {
+        $tanggal = $request->input('tanggal'); // format: YYYY-MM-DD
+        $bulan = $request->input('bulan');     // format: YYYY-MM
 
-    $query = DB::table('absensi_daycare as a')
-        ->join('peserta_hikari_kidz as p', 'a.id_anak', '=', 'p.id_anak')
-        ->leftJoin('registration_hikari_kidz_daycares as r', 'a.id_anak', '=', 'r.id_anak')
-        ->select('a.*', 'p.full_name', 'r.package_type');
+        $query = DB::table('absensi_daycare as a')
+            ->join('peserta_hikari_kidz as p', 'a.id_anak', '=', 'p.id_anak')
+            ->leftJoin('registration_hikari_kidz_daycares as r', 'a.id_anak', '=', 'r.id_anak')
+            ->select('a.*', 'p.full_name', 'r.package_type');
 
-    if ($tanggal) {
-        $query->whereDate('a.created_at', $tanggal);
-    } elseif ($bulan) {
-        $query->whereYear('a.created_at', Carbon::parse($bulan)->year)
-              ->whereMonth('a.created_at', Carbon::parse($bulan)->month);
-    } else {
-        // Default: hanya hari ini
-        $query->whereDate('a.created_at', Carbon::today());
-    }
-
-    $riwayat = $query->orderByDesc('a.created_at')->get();
-
-    // Tambahan: hitung durasi & overtime
-    foreach ($riwayat as $item) {
-        $jamDatang = $item->jam_datang ? Carbon::parse($item->jam_datang) : null;
-        $jamPulang = $item->jam_pulang ? Carbon::parse($item->jam_pulang) : null;
-
-        $paket = Str::of($item->package_type ?? 'fullday')->lower()->replace(' ', '');
-
-        switch ($paket) {
-            case 'halfday':
-                $maksMenit = 310;
-                break;
-            case 'fullday':
-                $maksMenit = 490;
-                break;
-            case 'fulldaylong':
-                $maksMenit = 670;
-                break;
-            default:
-                $maksMenit = 490;
-        }
-
-        if ($jamDatang && $jamPulang) {
-            $durasiMenit = $jamPulang->diffInMinutes($jamDatang);
-            $item->durasi_hadir = floor($durasiMenit / 60) . ' jam ' . ($durasiMenit % 60) . ' menit';
-
-            $overtimeMenit = max(0, $durasiMenit - $maksMenit);
-            $item->overtime_display = $overtimeMenit > 0
-                ? floor($overtimeMenit / 60) . ' jam ' . ($overtimeMenit % 60) . ' menit'
-                : '-';
+        if ($tanggal) {
+            $query->whereDate('a.created_at', $tanggal);
+        } elseif ($bulan) {
+            $query->whereYear('a.created_at', Carbon::parse($bulan)->year)
+                ->whereMonth('a.created_at', Carbon::parse($bulan)->month);
         } else {
-            $item->durasi_hadir = '-';
-            $item->overtime_display = '-';
+            // Default: hanya hari ini
+            $query->whereDate('a.created_at', Carbon::today());
         }
+
+        $riwayat = $query->orderByDesc('a.created_at')->get();
+
+        // Tambahan: hitung durasi & overtime
+        foreach ($riwayat as $item) {
+            $jamDatang = $item->jam_datang ? Carbon::parse($item->jam_datang) : null;
+            $jamPulang = $item->jam_pulang ? Carbon::parse($item->jam_pulang) : null;
+
+            $paket = Str::of($item->package_type ?? 'fullday')->lower()->replace(' ', '');
+
+            switch ($paket) {
+                case 'halfday':
+                    $maksMenit = 310;
+                    break;
+                case 'fullday':
+                    $maksMenit = 490;
+                    break;
+                case 'fulldaylong':
+                    $maksMenit = 670;
+                    break;
+                default:
+                    $maksMenit = 490;
+            }
+
+            if ($jamDatang && $jamPulang) {
+                $durasiMenit = $jamPulang->diffInMinutes($jamDatang);
+                $item->durasi_hadir = floor($durasiMenit / 60) . ' jam ' . ($durasiMenit % 60) . ' menit';
+
+                $overtimeMenit = max(0, $durasiMenit - $maksMenit);
+                $item->overtime_display = $overtimeMenit > 0
+                    ? floor($overtimeMenit / 60) . ' jam ' . ($overtimeMenit % 60) . ' menit'
+                    : '-';
+            } else {
+                $item->durasi_hadir = '-';
+                $item->overtime_display = '-';
+            }
+        }
+
+        return view('absensi_daycare.riwayat_absensi', compact('riwayat', 'tanggal', 'bulan'));
     }
-
-    return view('absensi_daycare.riwayat_absensi', compact('riwayat', 'tanggal', 'bulan'));
-}
-
 
     // Ambil nama anak untuk autofill
     public function getPackageTypeAnak($id)

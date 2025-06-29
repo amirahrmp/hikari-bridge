@@ -1,7 +1,8 @@
 <?php
 
 use Illuminate\Support\Facades\Route;
-// Pastikan semua controller yang digunakan diimpor di sini
+use Illuminate\Support\Facades\Auth;
+use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DashboardController;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
@@ -43,9 +44,10 @@ use App\Http\Controllers\JadwalMakanDaycareController;
 use App\Http\Controllers\AbsensiDaycareController;
 use App\Http\Controllers\TemaHkcController;
 use App\Http\Controllers\KegiatanTambahanController;
-use App\Http\Controllers\PaymentController; // Pastikan PaymentController diimpor
-
-
+use App\Http\Controllers\PaymentController; 
+use App\Http\Controllers\SppGeneratorController;
+use App\Http\Controllers\SppBulananController;
+use App\Http\Controllers\LaporanKegiatanController;
 /*
 |--------------------------------------------------------------------------
 | Web Routes
@@ -199,12 +201,14 @@ Route::get('fullcalendar', [FullcalendarController::class, 'index'])->name('full
 require __DIR__.'/auth.php';
 
 //registerkidzclub
-Route::get('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'create'])->name('registerkidzclub.create');
+Route::get('/registerkidzclub/index', [RegistrationHikariKidzClubController::class, 'index'])->name('registerkidzclub.index'); // Untuk melihat daftar
+Route::get('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'create'])->name('registerkidzclub.create'); // Untuk membuka form
 Route::post('/registerkidzclub', [RegistrationHikariKidzClubController::class, 'store'])->name('registerkidzclub.store');
 Route::get('/get-paket_hkc-by-member-kelas/{member}/{kelas}', [PaketHkcController::class, 'getByMemberAndKelas']);
 Route::get('/paket_hkc/{id}', [PaketHkcController::class, 'getPaketHkcById']);
 
 //registerkidzdaycare
+Route::get('/registerkidzdaycare/index', [RegistrationHikariKidzDaycareController::class, 'index'])->name('registerkidzdaycare.index');
 Route::get('/registerkidzdaycare', [RegistrationHikariKidzDaycareController::class, 'create'])->name('registerkidzdaycare.create');
 Route::post('/registerkidzdaycare', [RegistrationHikariKidzDaycareController::class, 'store'])->name('registerkidzdaycare.store');
 Route::get('/get-paket-by-tipe/{tipe}', [PaketController::class, 'getByTipe']);
@@ -316,10 +320,10 @@ Route::middleware('auth')->post('/jadwal-hikari-kidz', [JadwalHikariKidzControll
 Route::post('jadwal-hikari-kidz-pengasuh', [JadwalHikariKidzController::class, 'showPengasuhSchedule']);
 
 // route pembayaran (untuk customer)
-Route::prefix('payment')->name('payment.')->group(function () {
-    Route::get('/', [PaymentController::class, 'index'])->name('index'); // Riwayat pembayaran pelanggan
-    Route::get('/create', [PaymentController::class, 'create'])->name('create'); // Form pembayaran
-    Route::post('/', [PaymentController::class, 'store'])->name('store');   // Simpan pembayaran
+Route::prefix('payment')->middleware('auth')->name('payment.')->group(function () {
+    Route::get('/', [PaymentController::class, 'index'])->name('index');
+    Route::get('/create', [PaymentController::class, 'create'])->name('create');
+    Route::post('/', [PaymentController::class, 'store'])->name('store');
 });
 
 
@@ -328,6 +332,7 @@ Route::get('/absensi_daycare/store-jam-datang', [AbsensiDaycareController::class
 Route::post('/absensi_daycare/store-jam-datang', [AbsensiDaycareController::class, 'storeJamDatang'])->name('absensi_daycare.store_jam_datang');
 Route::get('/absensi_daycare/store-jam-pulang', [AbsensiDaycareController::class, 'createJamPulang']);
 Route::post('/absensi_daycare/store-jam-pulang', [AbsensiDaycareController::class, 'storeJamPulang'])->name('absensi_daycare.store_jam_pulang');
+Route::get('/cek-jam-datang/{id}', [AbsensiDaycareController::class, 'cekJamDatang']);
 Route::get('/get-program-anak/{id}', [AbsensiDaycareController::class, 'getProgramAnak']);
 Route::get('/absensi_daycare/riwayat_absensi', [AbsensiDaycareController::class, 'riwayat_absensi'])->name('absensi_daycare.riwayat_absensi');
 Route::get('/absensi-daycare/riwayat', [AbsensiDaycareController::class, 'riwayat_absensi'])->name('absensi_daycare.riwayat');
@@ -350,19 +355,72 @@ Route::middleware(['auth'])->prefix('admin')->name('admin.')->group(function () 
 });
 
 // Route untuk tagihan kegiatan tambahan
-Route::get('peserta/{id_anak}/kegiatan-tambahan-pembayaran', [KegiatanTambahanController::class, 'userIndex'])->name('pembayaran_kegiatan_tambahan_user.index');
-
-// Rute ini juga menampilkan formulir pembayaran spesifik kegiatan
-// Berguna jika Anda ingin membuat link langsung ke sebuah tagihan (misal dari list)
-// Contoh: http://127.0.0.1:8000/kegiatan-tambahan-pembayaran/{id_kegiatan_tambahan}
-Route::get('kegiatan-tambahan-pembayaran/{kegiatanTambahan}', [KegiatanTambahanController::class, 'showPaymentForm'])->name('kegiatan_tambahan.show_payment_form');
-
-
-// Rute untuk proses upload bukti pembayaran
-Route::post('kegiatan-tambahan/{kegiatanTambahan}/upload-bukti', [KegiatanTambahanController::class, 'uploadBuktiPembayaran'])->name('kegiatan_tambahan.upload_bukti');
-
-
-// Rute lainnya untuk admin CRUD (pastikan ini di bawah rute yang lebih spesifik)
+Route::middleware(['auth'])->group(function () {
+    Route::get('/kegiatan-tambahan-pembayaran', [KegiatanTambahanController::class, 'userIndex'])->name('pembayaran_kegiatan_tambahan_user.index');
+    Route::post('kegiatan-tambahan/{kegiatanTambahan}/upload-bukti', [KegiatanTambahanController::class, 'uploadBuktiPembayaran'])->name('kegiatan_tambahan.upload_bukti');
+});
 Route::resource('kegiatan_tambahan', KegiatanTambahanController::class);
 Route::post('kegiatan_tambahan/{kegiatanTambahan}/ubah-status', [KegiatanTambahanController::class, 'ubahStatus'])->name('kegiatan_tambahan.ubah_status');
 Route::post('kegiatan_tambahan/upload', [KegiatanTambahanController::class, 'upload'])->name('kegiatan_tambahan.upload');
+
+
+    Route::get('/pembayaran', [PaymentController::class, 'adminIndex'])->name('pembayaran.index');
+    Route::patch('/pembayaran/{payment}/approve', [PaymentController::class, 'approve'])->name('pembayaran.approve');
+
+Route::middleware(['auth'])->group(function () { // Anda bisa tambahkan middleware 'role:admin' jika perlu
+    
+    // URL: /spp-generator
+    Route::get('/spp-generator', [SppGeneratorController::class, 'index'])->name('spp.generator.index');
+    
+    // URL: /spp-generator/generate
+    Route::post('/spp-generator/generate', [SppGeneratorController::class, 'generate'])->name('spp.generator.generate');
+    
+    // URL: /spp-generator/generate-all
+    Route::post('/spp-generator/generate-all', [SppGeneratorController::class, 'generateAll'])->name('spp.generator.generate_all');
+
+});
+Route::middleware(['auth'])->group(function () {
+
+    Route::get('/spp-bulanan', [SppBulananController::class, 'index'])->name('spp.bulanan.index');
+    Route::get('/spp-bulanan/{tagihanId}/bayar', [SppBulananController::class, 'bayar'])->name('spp.bulanan.bayar');
+    Route::post('/spp-bulanan/{tagihanId}/proses', [SppBulananController::class, 'prosesPembayaran'])->name('spp.bulanan.proses');
+});
+// Route untuk Laporan Kegiatan Daycare (HKD)
+Route::prefix('laporan-kegiatan-daycare')->group(function () {
+    Route::get('/', [LaporanKegiatanController::class, 'index'])->name('laporan_kegiatan.daycare.index');
+    Route::post('/', [LaporanKegiatanController::class, 'store'])->name('laporan_kegiatan.daycare.store');
+    Route::put('/{laporanKegiatan}', [LaporanKegiatanController::class, 'update'])->name('laporan_kegiatan.daycare.update');
+    Route::delete('/{id}', [LaporanKegiatanController::class, 'destroy'])->name('laporan_kegiatan.daycare.destroy');
+
+    // AJAX get data untuk modal edit
+    Route::get('/{laporanKegiatan}/get-data', [LaporanKegiatanController::class, 'edit'])
+        ->name('laporan_kegiatan.daycare.edit');
+});
+
+// --- Rute untuk Laporan HKC (Mengikuti pola HKD) ---
+Route::prefix('laporan-kegiatan')->group(function () {
+
+    // Rute utama untuk menampilkan halaman HKC (termasuk tombol "Tambah" dan daftar laporan)
+    // Akan memuat data laporan HKC dan data peserta HKC untuk form modal
+    Route::get('/hkc', [LaporanKegiatanController::class, 'showHarianKegiatanCetak'])->name('laporan_kegiatan.hkc_list');
+
+    // Rute untuk memproses data dari form CREATE HKC (dari modal)
+    Route::post('/store-hkc', [LaporanKegiatanController::class, 'storeLaporanHkc'])->name('laporan_kegiatan.store.hkc');
+
+    // Rute untuk mendapatkan data laporan HKC (untuk mengisi modal edit via AJAX)
+    Route::get('/{laporanKegiatan}/edit-hkc-data', [LaporanKegiatanController::class, 'editLaporanHkc'])->name('laporan_kegiatan.edit.hkc_data');
+
+    // Rute untuk memperbarui laporan HKC (dari modal edit)
+    Route::put('/{laporanKegiatan}/update-hkc', [LaporanKegiatanController::class, 'updateLaporanHkc'])->name('laporan_kegiatan.update.hkc');
+
+    // Rute untuk menghapus laporan HKC
+    Route::delete('/{id}/destroy-hkc', [LaporanKegiatanController::class, 'destroyLaporanHkc'])->name('laporan_kegiatan.destroy.hkc');
+
+    // Rute untuk melihat laporan HKC spesifik per anak (jika Anda masih ingin fitur ini)
+    // Catatan: Jika diakses, ini juga akan menggunakan view hkc.blade.php
+    Route::get('/hkc/{id_anak}', [LaporanKegiatanController::class, 'showHarianKegiatanCetak'])->name('laporan_kegiatan.hkc_per_anak');
+
+    // Rute untuk dashboard kelas (metode showLaporanHKC Anda) - tetap ada jika dibutuhkan untuk tampilan lain.
+    // Jika ini diakses, modal create/edit tidak akan berfungsi karena data pesertaHKC tidak di-compact.
+    Route::get('/hkc-dashboard-kelas', [LaporanKegiatanController::class, 'showLaporanHKC'])->name('laporan_kegiatan.hkc_dashboard_kelas');
+});

@@ -2,14 +2,19 @@
 
 namespace App\Http\Controllers;
 
-use App\Models\PaketHkc;
-use App\Models\RegistrationProgramHkcw;
 use Illuminate\Http\Request;
+use App\Models\RegistrationProgramHkcw;
+use App\Models\PaketHkc;
+use Illuminate\Support\Facades\Auth;
 use App\Http\Requests\StoreRegistrationProgramHkcwRequest;
-use App\Http\Requests\UpdateRegistrationProgramHkcwRequest;
 
 class RegistrationProgramHkcwController extends Controller
 {
+     public function index()
+    {
+        $registrasi = RegistrationProgramHkcw::where('user_id', Auth::id())->get();
+        return view('registerprogramhkcw.index', compact('registrasi'));
+    }
     public function create()
     {
         // Mengambil semua paket yang tersedia
@@ -17,12 +22,6 @@ class RegistrationProgramHkcwController extends Controller
         return view('registerprogramhkcw.create', ['pakethkc' => $paket_hkc]);
     }
 
-    /**
-     * Store a newly created resource in storage.
-     *
-     * @param  \App\Http\Requests\StoreRegistrationProgramHkcwRequest  $request
-     * @return \Illuminate\Http\Response
-     */
     public function store(StoreRegistrationProgramHkcwRequest $request)
     {
         $validatedData = $request->validate([
@@ -47,6 +46,7 @@ class RegistrationProgramHkcwController extends Controller
 
         $validatedData = $request->validated();
     // Menyimpan data pendaftaran ke dalam database
+        $validatedData['user_id'] = Auth::id(); // Menyimpan ID user yang sedang login
         RegistrationProgramHkcw::create($validatedData);
 
         // Redirect kembali ke form dengan pesan sukses

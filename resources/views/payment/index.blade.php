@@ -1,5 +1,7 @@
 @extends('layouts2.master') {{-- Pastikan ini mengarah ke layout master yang benar --}}
 
+@section('title', 'Riwayat Pembayaran') {{-- Judul halaman --}}
+
 @section('content')
 <div class="container mt-5 mb-5"> {{-- Tambahkan mb-5 untuk margin bawah --}}
     <div class="card shadow-sm border-0">

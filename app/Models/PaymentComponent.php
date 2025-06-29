@@ -14,7 +14,7 @@ class PaymentComponent extends Model
         'payment_id',
         'komponen',
         'jumlah',
-    ];
+    ]; 
 
     /**
      * Relasi ke Payment.

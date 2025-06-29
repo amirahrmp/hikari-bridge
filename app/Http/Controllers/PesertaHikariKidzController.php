@@ -31,7 +31,7 @@ class PesertaHikariKidzController extends Controller
         return redirect()->back()->with('success', 'Status peserta berhasil diperbarui.');
     }
 
-      public function generateParticipantVCard($id_anak)
+    public function generateParticipantVCard($id_anak)
     {
         // 1. Cari data peserta berdasarkan ID
         $peserta = PesertaHikariKidz::findOrFail($id_anak);
@@ -46,8 +46,7 @@ class PesertaHikariKidzController extends Controller
         // Validasi jika nomor WA kosong setelah diformat
         if (empty($phoneNumber)) {
             return redirect()->back()->with('error', 'Nomor WhatsApp peserta tidak valid atau kosong.');
-        }
-        // AYANGGGG BUTTUUTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTTT
+        } // <--- KURUNG PENUTUP YANG HILANG DITAMBAHKAN DI SINI
 
         // 3. Buat konten vCard secara dinamis
         $vcard = "BEGIN:VCARD\n";
@@ -59,6 +58,7 @@ class PesertaHikariKidzController extends Controller
 
         // 4. Siapkan nama file yang akan diunduh
         $fileName = 'Kontak-' . Str::slug($peserta->nickname) . '.vcf';
+        
         // 5. Siapkan headers untuk download
         $headers = [
             'Content-Type' => 'text/vcard; charset=utf-8',
@@ -167,7 +167,7 @@ class PesertaHikariKidzController extends Controller
             '66',   // Thailand
             '63',   // Philippines
             '84',   // Vietnam
-            '1',    // US/Canada (tapi harus hati-hati, bisa salah)
+            '1',    // US/Canada
             '44',   // UK
             '91',   // India
             '86',   // China
@@ -234,6 +234,4 @@ class PesertaHikariKidzController extends Controller
     {
         return $this->hasMany(ProgramLain::class, 'peserta_id');
     }
-
-
 }

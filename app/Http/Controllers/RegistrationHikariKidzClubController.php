@@ -6,6 +6,7 @@ use Illuminate\Http\Request;
 use App\Models\RegistrationHikariKidzClub;
 use App\Models\PaketHkc;
 use App\Models\PesertaHikariKidz;
+use Illuminate\Support\Facades\Auth;
 
 class RegistrationHikariKidzClubController extends Controller
 {
@@ -15,10 +16,14 @@ class RegistrationHikariKidzClubController extends Controller
         return view('registerkidzclub.create', compact('paket_hkc'));
     }
 
+    public function index()
+    {
+        $registrasi = RegistrationHikariKidzClub::where('user_id', Auth::id())->get();
+        return view('registerkidzclub.index', compact('registrasi'));
+    }
+
     public function store(Request $request)
     {
-        
-        // Validasi data
         $validatedData = $request->validate([
             'full_name' => 'required|string|max:255',
             'nickname' => 'required|string|max:255',
@@ -35,8 +40,7 @@ class RegistrationHikariKidzClubController extends Controller
             'information_source_other' => 'nullable|required_if:information_source,other|string|max:255',
             'promotor' => 'required|string|max:255',
         ]);
-        
-        // Proses file upload
+
         if ($request->hasFile('file_upload')) {
             $file = $request->file('file_upload');
             $filename = time() . '_' . $file->getClientOriginalName();
@@ -44,9 +48,6 @@ class RegistrationHikariKidzClubController extends Controller
             $validatedData['file_upload'] = $filename;
         }
 
-
-        // Ambil data paket dan hitung total_bayar
-    if ($request->member && $request->kelas) {
         $paket_hkc = PaketHkc::where('member', $request->member)
                              ->where('kelas', $request->kelas)
                              ->first();
@@ -54,41 +55,30 @@ class RegistrationHikariKidzClubController extends Controller
         if ($paket_hkc) {
             $validatedData['member'] = $paket_hkc->member;
             $validatedData['kelas'] = $paket_hkc->kelas;
-
-            // Hitung total_bayar berdasarkan paket
-            $total_bayar = ($paket_hkc->u_pendaftaran ?? 0) +
-                           ($paket_hkc->u_perlengkapan ?? 0) +
-                           ($paket_hkc->u_sarana ?? 0) +
-                           ($paket_hkc->u_spp ?? 0);
-
-            $validatedData['total_bayar'] = $total_bayar;
-        }
-    }
-
-        // Jika informasi sumber adalah 'other', ganti information_source dengan isi dari information_source_other
-      // Setelah kamu override information_source:
-        if ($request->input('information_source') === 'other') {
-            $validatedData['information_source'] = $request->input('information_source_other');
+            $validatedData['total_bayar'] =
+                ($paket_hkc->u_pendaftaran ?? 0) +
+                ($paket_hkc->u_perlengkapan ?? 0) +
+                ($paket_hkc->u_sarana ?? 0) +
+                ($paket_hkc->u_spp ?? 0);
         }
 
-        // Buang information_source_other agar tidak ikut di-insert
+        if ($request->information_source === 'other') {
+            $validatedData['information_source'] = $request->information_source_other;
+        }
         unset($validatedData['information_source_other']);
 
-        // ⏬ Cek apakah anak sudah ada di tabel peserta
         $peserta = PesertaHikariKidz::where('full_name', $validatedData['full_name'])
             ->where('birth_date', $validatedData['birth_date'])
             ->where('parent_name', $validatedData['parent_name'])
             ->first();
 
-        // ⏬ Kalau belum ada, buat data anak baru
         if (!$peserta) {
-            // Ambil ID anak terakhir dan tambah 1
             $lastIdAnak = PesertaHikariKidz::max('id_anak');
             $newIdAnak = $lastIdAnak ? $lastIdAnak + 1 : 1;
 
-        // ⏬ Kalau belum ada, buat data anak baru
             $peserta = PesertaHikariKidz::create([
-                'id_anak' => $newIdAnak, // Tambahkan ini
+                'id_anak' => $newIdAnak,
+                
                 'full_name' => $validatedData['full_name'],
                 'nickname' => $validatedData['nickname'],
                 'birth_date' => $validatedData['birth_date'],
@@ -100,12 +90,11 @@ class RegistrationHikariKidzClubController extends Controller
             ]);
         }
 
-        // Simpan data pendaftaran ke registration_hikari_kidz_clubs
         $registration = new RegistrationHikariKidzClub($validatedData);
         $registration->id_anak = $peserta->id_anak;
+        $registration->user_id = Auth::id();
         $registration->save();
 
-        // Redirect kembali dengan pesan sukses
         return redirect()->route('registerkidzclub.create')->with('success', 'Data berhasil disimpan!');
     }
 }

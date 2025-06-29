@@ -1,5 +1,7 @@
 @extends('layouts2.master')
 
+@section('title', 'Formulir Pembayaran Pendaftaran')
+
 @section('content')
 <div class="container mt-5 mb-5">
     <div class="card shadow-sm border-0">
@@ -27,7 +29,7 @@
                 </div>
             @endif
 
-            {{-- Data Peserta & Paket - HEADER HIJAU, BODY PUTIH/HITAM --}}
+            {{-- Data Peserta & Paket --}}
             <div class="card mb-4 shadow-sm border-0">
                 <div class="card-header bg-success text-white">
                     <h5 class="mb-0"><i class="fas fa-info-circle me-2"></i>Informasi Pendaftaran</h5>
@@ -47,40 +49,37 @@
             </div>
 
             @php
+                // --- PERSIAPAN VARIABEL ---
                 $komponenList = [];
-                // Pastikan variabel $paket tersedia dan bukan null
                 if ($registration_type === 'Hikari Kidz Daycare') {
                     $komponenList = [
-                        'Uang Pendaftaran' => $paket->u_pendaftaran ?? 0,
-                        'Uang Pangkal' => $paket->u_pangkal ?? 0,
-                        'SPP Bulanan' => $paket->u_spp ?? 0,
-                        'Uang Makan' => $paket->u_makan ?? 0,
+                        'Uang Pendaftaran' => $paket->u_pendaftaran ?? 0, 'Uang Pangkal' => $paket->u_pangkal ?? 0,
+                        'SPP Bulanan' => $paket->u_spp ?? 0, 'Uang Makan' => $paket->u_makan ?? 0,
                         "Uang Kegiatan" => $paket->u_kegiatan ?? 0,
                     ];
                 } elseif ($registration_type === 'Hikari Kidz Club') {
                     $komponenList = [
-                        'Uang Pendaftaran' => $paket->u_pendaftaran ?? 0,
-                        'Uang Perlengkapan' => $paket->u_perlengkapan ?? 0,
-                        'Uang Sarana' => $paket->u_sarana ?? 0,
-                        'SPP Bulanan' => $paket->u_spp ?? 0,
+                        'Uang Pendaftaran' => $paket->u_pendaftaran ?? 0, 'Uang Perlengkapan' => $paket->u_perlengkapan ?? 0,
+                        'Uang Sarana' => $paket->u_sarana ?? 0, 'SPP Bulanan' => $paket->u_spp ?? 0,
                     ];
                 } elseif ($registration_type === 'Hikari Quran') {
                     $komponenList = [
-                        'Uang Pendaftaran' => $paket->u_pendaftaran ?? 0,
-                        'Uang Modul' => $paket->u_modul ?? 0,
+                        'Uang Pendaftaran' => $paket->u_pendaftaran ?? 0, 'Uang Modul' => $paket->u_modul ?? 0,
                         'SPP Bulanan' => $paket->u_spp ?? 0,
                     ];
                 }
 
-                // Tentukan komponen WAJIB berdasarkan registration_type
                 $mandatoryComponents = [];
                 if ($registration_type === 'Hikari Kidz Daycare') {
                     $mandatoryComponents = ['Uang Pendaftaran', 'SPP Bulanan', 'Uang Makan', 'Uang Kegiatan'];
                 } elseif ($registration_type === 'Hikari Kidz Club') {
                     $mandatoryComponents = ['Uang Pendaftaran', 'Uang Perlengkapan', 'Uang Sarana', 'SPP Bulanan'];
-                } else { // Untuk Hikari Quran atau tipe lain
+                } else {
                     $mandatoryComponents = ['Uang Pendaftaran', 'Uang Modul', 'SPP Bulanan'];
                 }
+                
+                $totalUangPangkal = $komponenList['Uang Pangkal'] ?? 0;
+                $uangPangkalRemaining = $totalUangPangkal - $totalUangPangkalPaid;
             @endphp
 
             <form method="POST" action="{{ route('payment.store') }}" enctype="multipart/form-data">
@@ -88,26 +87,21 @@
                 <input type="hidden" name="registration_id" value="{{ $registration_id }}">
                 <input type="hidden" name="registration_type" value="{{ $registration_type }}">
 
-                {{-- Input hidden untuk menyimpan nominal Uang Pangkal total (bukan per cicilan)
-                     Ini dibutuhkan di controller untuk menghitung jumlah per cicilan saat menyimpan komponen. --}}
-                @if(isset($komponenList['Uang Pangkal']) && $komponenList['Uang Pangkal'] > 0)
-                    <input type="hidden" name="uang_pangkal_nominal_full" value="{{ $komponenList['Uang Pangkal'] }}">
+                @if($originalCicilanPlan == 0 && $uangPangkalRemaining > 0)
+                    <input type="hidden" name="uang_pangkal_nominal_full" value="{{ $uangPangkalRemaining }}">
                 @endif
-
 
                 <div class="card mb-4 shadow-sm border-0">
                     <div class="card-header bg-success text-white">
                         <h5 class="mb-0"><i class="fas fa-receipt me-2"></i>Pilih Komponen Pembayaran</h5>
                     </div>
                     <div class="card-body">
-                        <p class="text-muted mb-3"><small>Pembayaran berikut akan otomatis ditambahkan:</small></p>
+                        <p class="text-muted mb-3"><small>Komponen yang sudah lunas tidak akan ditampilkan di sini.</small></p>
                         <div class="row mb-3">
                             <div class="col-12">
                                 <ul class="list-group list-group-flush">
                                     @foreach($mandatoryComponents as $comp)
-                                        {{-- MODIFIKASI DIMULAI DI SINI --}}
-                                        {{-- HANYA TAMPILKAN komponen wajib jika nominalnya > 0 --}}
-                                        @if(isset($komponenList[$comp]) && $komponenList[$comp] > 0)
+                                        @if(isset($komponenList[$comp]) && $komponenList[$comp] > 0 && !in_array($comp, $paidComponents))
                                         <li class="list-group-item d-flex justify-content-between align-items-center py-2 px-0 border-0">
                                             <span>
                                                 <input class="form-check-input me-2" type="checkbox" checked disabled>
@@ -118,31 +112,77 @@
                                             <span class="text-dark fw-bold">
                                                 Rp{{ number_format($komponenList[$comp], 0, ',', '.') }}
                                             </span>
-                                            {{-- Tambahkan input hidden HANYA untuk komponen yang ditampilkan (nominal > 0) --}}
                                             <input type="hidden" name="komponen[]" value="{{ $comp }}">
                                         </li>
                                         @endif
-                                        {{-- MODIFIKASI BERAKHIR DI SINI --}}
                                     @endforeach
                                 </ul>
                             </div>
                         </div>
 
-                        {{-- Bagian terpisah untuk Uang Pangkal dan Cicilan --}}
-                        {{-- HANYA ditampilkan jika programnya 'Hikari Kidz Daycare' DAN uang pangkalnya ada dan > 0 --}}
-                         @if($registration_type === 'Hikari Kidz Daycare' && isset($komponenList['Uang Pangkal']) && $komponenList['Uang Pangkal'] > 0)
-                            <hr class="my-4">
-                            <h6 class="text-dark mb-3"><i class="fas fa-coins me-2"></i>Pembayaran Uang Pangkal (Cicilan)</h6>
-                            <div class="mb-3">
-                                <label for="cicilan_uang_pangkal" class="form-label text-dark">Pilih Opsi Pembayaran Uang Pangkal (Total Nominal: Rp{{ number_format($komponenList['Uang Pangkal'], 0, ',', '.') }})</label>
-                                <select class="form-select custom-select-green shadow-sm" id="cicilan_uang_pangkal" name="cicilan_uang_pangkal">
-                                    <option value="0">Tidak Membayar Uang Pangkal Saat Ini</option>
-                                    <option value="1">1x Pembayaran (Langsung Lunas)</option>
-                                    <option value="2">2x Pembayaran (Rp{{ number_format(ceil($komponenList['Uang Pangkal'] / 2), 0, ',', '.') }} per cicilan)</option>
-                                    <option value="3">3x Pembayaran (Rp{{ number_format(ceil($komponenList['Uang Pangkal'] / 3), 0, ',', '.') }} per cicilan)</option>
-                                </select>
-                                <div id="cicilanHelp" class="form-text">Jumlah yang akan dibayarkan untuk uang pangkal pada pembayaran ini akan ditambahkan ke total.</div>
-                            </div>
+                        @if($registration_type === 'Hikari Kidz Daycare' && $totalUangPangkal > 0)
+                            @if($uangPangkalRemaining > 0.01)
+                                <hr class="my-4">
+                                <h6 class="text-dark mb-3"><i class="fas fa-coins me-2"></i>Pembayaran Uang Pangkal</h6>
+                                
+                                <div class="alert alert-warning">
+                                    Total Uang Pangkal Awal: Rp{{ number_format($totalUangPangkal, 0, ',', '.') }}<br>
+                                    Sudah Dibayar: Rp{{ number_format($totalUangPangkalPaid, 0, ',', '.') }}<br>
+                                    <strong class="fs-6">Sisa Tagihan: Rp{{ number_format($uangPangkalRemaining, 0, ',', '.') }}</strong>
+                                </div>
+
+                                @if($originalCicilanPlan == 0)
+                                    <div class="mb-3">
+                                        <label for="cicilan_uang_pangkal" class="form-label text-dark">Pilih Opsi Pembayaran Uang Pangkal</label>
+                                        <select class="form-select custom-select-green shadow-sm" id="cicilan_uang_pangkal" name="cicilan_uang_pangkal">
+                                            <option value="0">Tidak Membayar Uang Pangkal Saat Ini</option>
+                                            <option value="1">1x Pembayaran (Langsung Lunas)</option>
+                                            <option value="2">2x Pembayaran (Rp{{ number_format(ceil($uangPangkalRemaining / 2), 0, ',', '.') }} per cicilan)</option>
+                                            <option value="3">3x Pembayaran (Rp{{ number_format(ceil($uangPangkalRemaining / 3), 0, ',', '.') }} per cicilan)</option>
+                                        </select>
+                                        <div class="form-text">Pilihan Anda di sini akan menentukan skema cicilan ke depannya.</div>
+                                    </div>
+                                @else
+                                    @php
+                                        $cicilanBerikutnya = $installmentsPaidCount + 1;
+                                        $nominalPerCicilan = ceil($totalUangPangkal / $originalCicilanPlan);
+                                    @endphp
+                                    <div class="card border-info shadow-sm">
+                                        <div class="card-header">
+                                            <i class="fas fa-file-invoice-dollar me-2"></i>
+                                            <strong>Tagihan Cicilan Lanjutan</strong>
+                                        </div>
+                                        <div class="card-body">
+                                            <p class="card-text text-dark">
+                                                Anda sedang dalam skema pembayaran <strong>{{ $originalCicilanPlan }}x cicilan</strong>. Berikut adalah tagihan untuk cicilan Anda berikutnya.
+                                            </p>
+                                            <div class="list-group">
+                                                <label for="payNextInstallment" class="list-group-item list-group-item-action d-flex justify-content-between align-items-center">
+                                                    <div class="form-check">
+                                                        <input class="form-check-input" type="checkbox" name="pay_next_installment" value="1" id="payNextInstallment" checked>
+                                                        <span class="ms-2 fw-bold text-dark">
+                                                            Bayar Cicilan ke-{{ $cicilanBerikutnya }} dari {{ $originalCicilanPlan }}
+                                                        </span>
+                                                    </div>
+                                                    <span class="fs-5 fw-bold text-success">
+                                                        Rp{{ number_format($nominalPerCicilan, 0, ',', '.') }}
+                                                    </span>
+                                                </label>
+                                            </div>
+                                        </div>
+                                    </div>
+                                    
+                                    <input type="hidden" id="next_installment_amount_val" value="{{ $nominalPerCicilan }}">
+                                    <input type="hidden" name="next_installment_amount" value="{{ $nominalPerCicilan }}">
+                                    <input type="hidden" name="cicilan_info_string" value="Uang Pangkal (Cicilan {{ $originalCicilanPlan }}x)">
+                                @endif
+
+                            @else
+                                <hr class="my-4">
+                                <div class="alert alert-success text-center">
+                                    <i class="fas fa-check-circle me-2"></i> <strong>Pembayaran Uang Pangkal sudah lunas.</strong>
+                                </div>
+                            @endif
                         @endif
                         <hr>
                         <div class="form-group mb-0 text-end">
@@ -152,13 +192,13 @@
                     </div>
                 </div>
 
+                {{-- Sisa form (Instruksi Pembayaran, Upload, Tombol Simpan) tetap sama --}}
                 <div class="card mt-4 mb-4 shadow-sm border-0">
                     <div class="card-header bg-success text-white py-3">
                         <h5 class="mb-0"><i class="fas fa-dollar-sign me-2"></i>Instruksi Pembayaran</h5>
                     </div>
-                    <div class="card-body">
-                        <p class="lead text-center mb-4">Silakan lakukan pembayaran sesuai Total Jumlah di atas melalui salah satu metode berikut:</p>
-
+                     <div class="card-body">
+                         <p class="lead text-center mb-4">Silakan lakukan pembayaran sesuai Total Jumlah di atas melalui salah satu metode berikut:</p>
                         <div class="row">
                             <div class="col-md-6 mb-4">
                                 <div class="card h-100 border-success shadow-sm">
@@ -190,7 +230,6 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="card mb-4 shadow-sm border-0">
                     <div class="card-header bg-success text-white">
                         <h5 class="mb-0"><i class="fas fa-upload me-2"></i>Upload Bukti Pembayaran</h5>
@@ -206,97 +245,90 @@
                         </div>
                     </div>
                 </div>
-
                 <div class="text-center mt-4">
                     <button type="submit" class="btn btn-success btn-lg px-5"><i class="fas fa-check-circle me-2"></i>Simpan Pembayaran</button>
                 </div>
+
             </form>
         </div>
     </div>
 </div>
 
-{{-- Custom CSS untuk mempercantik select --}}
+{{-- Custom CSS untuk select (tetap sama) --}}
 <style>
-    /* Mengatur ulang gaya default Bootstrap form-select untuk lebih bulat dan halus */
     .custom-select-green.form-select {
-        border-radius: 0.75rem; /* Sudut lebih bulat */
-        border-color: #28a745; /* Border hijau */
-        box-shadow: 0 0.25rem 0.5rem rgba(40, 167, 69, 0.15); /* Shadow lebih lembut dan sedikit lebih besar */
+        border-radius: 0.75rem; border-color: #28a745;
+        box-shadow: 0 0.25rem 0.5rem rgba(40, 167, 69, 0.15);
         transition: all 0.2s ease-in-out;
-        padding: 0.75rem 1.75rem 0.75rem 1rem; /* Padding disesuaikan */
-        height: auto; /* Biarkan tinggi menyesuaikan konten */
-        background-position: right 0.75rem center; /* Sesuaikan posisi arrow */
-        font-size: 1rem; /* Ukuran font standar */
+        padding: 0.75rem 1.75rem 0.75rem 1rem;
+        height: auto; background-position: right 0.75rem center; font-size: 1rem;
     }
     .custom-select-green.form-select:focus {
-        border-color: #218838; /* Border lebih gelap saat fokus */
-        box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.4); /* Glow hijau lebih menonjol saat fokus */
-        outline: 0; /* Hapus outline default browser */
+        border-color: #218838; box-shadow: 0 0 0 0.25rem rgba(40, 167, 69, 0.4); outline: 0;
     }
-    /* Untuk memastikan opsi dropdown mengikuti gaya yang sama jika browser mendukung */
-    .custom-select-green.form-select option {
-        padding: 0.5rem 1rem; /* Padding untuk setiap opsi */
-    }
+    .custom-select-green.form-select option { padding: 0.5rem 1rem; }
 </style>
 
+{{-- ======================================================= --}}
+{{--         BAGIAN JAVASCRIPT YANG DIPERBAIKI               --}}
+{{-- ======================================================= --}}
 <script>
     const jumlahField = document.getElementById('jumlah');
+    const cicilanUangPangkalSelect = document.getElementById('cicilan_uang_pangkal');
+    const payNextInstallmentCheckbox = document.getElementById('payNextInstallment');
+    const nextInstallmentAmountField = document.getElementById('next_installment_amount_val');
+
     const nominalKomponen = @json($komponenList);
     const registrationType = "{{ $registration_type }}";
-
     const mandatoryComponentsJs = @json($mandatoryComponents);
-
-    // Dapatkan elemen select cicilan uang pangkal jika ada
-    const cicilanUangPangkalSelect = document.getElementById('cicilan_uang_pangkal');
+    const paidComponentsJs = @json($paidComponents);
+    const uangPangkalRemainingJs = {{ $uangPangkalRemaining ?? 0 }};
+    const originalCicilanPlanJs = {{ $originalCicilanPlan ?? 0 }};
 
     function formatRupiah(angka) {
-        // Pembulatan ke bilangan bulat terdekat sebelum diformat
         let roundedAngka = Math.round(angka); 
-        
-        // Pastikan angka adalah string sebelum dioperasikan
         let integerPart = roundedAngka.toString();
-
         let reverse = integerPart.split('').reverse().join('');
         let ribuan = reverse.match(/\d{1,3}/g);
         ribuan = ribuan.join('.').split('').reverse().join('');
-        
         return 'Rp' + ribuan;
     }
 
     function hitungJumlah() {
         let total = 0;
-
-        // 1. Tambahkan komponen WAJIB yang nominalnya > 0
         mandatoryComponentsJs.forEach(komponen => {
-            // MODIFIKASI: Hanya tambahkan ke total jika nominalnya > 0
-            if (nominalKomponen[komponen] && nominalKomponen[komponen] > 0) {
+            if (!paidComponentsJs.includes(komponen) && nominalKomponen[komponen] && nominalKomponen[komponen] > 0) {
                 total += parseFloat(String(nominalKomponen[komponen]).replace(/[^\d]/g, '')) || 0;
             }
         });
-
-        // 2. Handle cicilan uang pangkal HANYA jika itu Hikari Kidz Daycare dan elemennya ada
-        if (registrationType === 'Hikari Kidz Daycare' && cicilanUangPangkalSelect) {
-            const cicilan = parseInt(cicilanUangPangkalSelect.value);
-            // Hanya tambahkan uang pangkal jika opsi selain "Tidak Membayar Uang Pangkal Saat Ini" dipilih
-            if (cicilan > 0 && nominalKomponen['Uang Pangkal']) {
-                let uangPangkalNominal = parseFloat(String(nominalKomponen['Uang Pangkal']).replace(/[^\d]/g, '')) || 0;
-                total += Math.round(uangPangkalNominal / cicilan); // Bulatkan hasil cicilan
+        if (registrationType === 'Hikari Kidz Daycare') {
+            if (originalCicilanPlanJs === 0 && cicilanUangPangkalSelect) {
+                const cicilan = parseInt(cicilanUangPangkalSelect.value);
+                if (cicilan > 0 && uangPangkalRemainingJs > 0) {
+                    total += Math.round(uangPangkalRemainingJs / cicilan);
+                }
+            } 
+            else if (originalCicilanPlanJs > 0 && payNextInstallmentCheckbox) {
+                if (payNextInstallmentCheckbox.checked) {
+                    total += parseFloat(nextInstallmentAmountField.value) || 0;
+                }
             }
         }
-
         jumlahField.value = formatRupiah(total);
     }
 
-    // Tambahkan event listener untuk cicilan uang pangkal HANYA jika elemennya ada
     if (cicilanUangPangkalSelect) {
         cicilanUangPangkalSelect.addEventListener('change', hitungJumlah);
     }
+    if (payNextInstallmentCheckbox) {
+        payNextInstallmentCheckbox.addEventListener('change', hitungJumlah);
+    }
 
-    // Selalu panggil hitungJumlah saat DOMContentLoaded untuk inisialisasi total
-    document.addEventListener('DOMContentLoaded', hitungJumlah);
-    
+    // --- PERUBAHAN DI SINI ---
+    // Hapus event listener DOMContentLoaded dan panggil fungsinya langsung.
+    // Ini memastikan total dihitung setelah semua elemen siap, tanpa perlu menunggu event.
+    hitungJumlah();
+
 </script>
 
-{{-- Pastikan Anda sudah menyertakan Font Awesome untuk ikon. Jika belum, tambahkan di layout master Anda: --}}
-{{-- <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.0.0-beta3/css/all.min.css"> --}}
 @endsection

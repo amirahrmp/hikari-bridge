@@ -51,4 +51,10 @@ class User extends Authenticatable
     {
         return $query->where('level', '!=', 1);
     }
+
+    // Relasi ke PesertaHikariKidz (satu user bisa punya banyak anak)
+    public function pesertaHikariKidz()
+    {
+        return $this->hasMany(PesertaHikariKidz::class, 'user_id', 'id');
+    }
 }

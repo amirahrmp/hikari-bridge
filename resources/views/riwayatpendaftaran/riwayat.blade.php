@@ -4,7 +4,6 @@
 @section('title', 'Riwayat Pendaftaran')
 
 @section('content')
-    <!-- Main Content -->
     <section class="content">
       <div class="container-fluid">
         <div class="row mt-3">
@@ -23,43 +22,50 @@
                             <table id="datatable" class="table table-bordered table-striped">
                               <thead>
                                 <tr>
-                                  <th><b>No</b></th>
-                                  <!-- <th><b>ID Pendaftaran</b></th> -->
+                                  <th class="text-center"><b>No</b></th>
                                   <th><b>Nama Lengkap</b></th>
                                   <th><b>Program</b></th>
-                                  <th><b>Tipe Kelas</b></th>
+                                  <th><b>Tipe Kelas / Paket</b></th>
                                   <th><b>Tanggal Pendaftaran</b></th>
-                                  <th><b>Status</b></th>
+                                  {{-- Kolom Status dihapus sesuai permintaan --}}
                                 </tr>
                               </thead>
                               <tbody>
                               @foreach($registrations as $index => $registration)
+                                {{-- ======================================================= --}}
+                                {{-- AWAL BLOK LOGIKA BARU UNTUK MENDAPATKAN NAMA PAKET --}}
+                                {{-- ======================================================= --}}
+                                @php
+                                    $programName = '-';
+                                    $paketName = '-';
+
+                                    if ($registration instanceof \App\Models\RegistrationHikariKidzClub) {
+                                        $programName = 'Hikari Kidz Club';
+                                        // Untuk Kidz Club, nama paket adalah gabungan member dan kelas
+                                        $paketName = $registration->member . ' - ' . $registration->kelas;
+                                    } elseif ($registration instanceof \App\Models\RegistrationHikariKidzDaycare) {
+                                        $programName = 'Hikari Kidz Daycare';
+                                        // Ambil dari relasi 'paket'
+                                        $paketName = optional($registration->paket)->nama_paket ?? '-';
+                                    //} elseif ($registration instanceof \App\Models\RegistrationHikariQuran) {
+                                        //$programName = 'Hikari Quran';
+                                        // Ambil dari relasi 'pakethq'
+                                        //$paketName = $registration->kelas ?? '-'; // atau optional($registration->pakethq)->nama_paket jika ada
+                                    //} elseif ($registration instanceof \App\Models\RegistrationProgramHkcw) {
+                                        //$programName = 'Program Lain HKC Weekend';
+                                        // Untuk HKCW, nama kegiatannya adalah nama paketnya  
+                                        //$paketName = $registration->nama_kegiatan;
+                                    }
+                                @endphp
+                                {{-- ======================================================= --}}
+                                {{-- AKHIR BLOK LOGIKA BARU                                --}}
+                                {{-- ======================================================= --}}
+
                                 <tr>
-                                  <td>{{ $index + 1 }}</td>
-                                  <!-- <td>{{ $registration->id }}</td> -->
+                                  <td class="text-center">{{ $index + 1 }}</td>
                                   <td>{{ $registration->full_name }}</td>
-                                  <td>
-                                    @if($registration instanceof \App\Models\RegistrationHikariKidzClub)
-                                      Hikari Kidz Club
-                                    @elseif($registration instanceof \App\Models\RegistrationHikariKidzDaycare)
-                                      Hikari Kidz Daycare
-                                    @elseif($registration instanceof \App\Models\RegistrationHikariQuran)
-                                      Hikari Quran
-                                    @elseif($registration instanceof \App\Models\RegistrationProgramHkcw)
-                                      Program Lain HKC Weekend
-                                    @endif
-                                  </td>
-                                  <td>
-                                    @if($registration instanceof \App\Models\RegistrationHikariKidzClub)
-                                      {{ $registration->kelas }}
-                                    @elseif($registration instanceof \App\Models\RegistrationHikariKidzDaycare)
-                                      {{ $registration->age_group }}
-                                    @elseif($registration instanceof \App\Models\RegistrationHikariQuran)
-                                      {{ $registration->kelas }}
-                                    @elseif($registration instanceof \App\Models\RegistrationProgramHkcw)
-                                      {{ $registration->nama_kegiatan }}
-                                    @endif
-                                  </td>
+                                  <td>{{ $programName }}</td>
+                                  <td>{{ $paketName }}</td>
                                   <td>
                                     @if($registration->created_at)
                                       {{ $registration->created_at->format('d-m-Y') }}
@@ -83,5 +89,4 @@
         </div>
       </div>
     </section>
-</div>
 @endsection

@@ -5,12 +5,14 @@ namespace App\Http\Controllers;
 use Illuminate\Http\Request;
 use App\Models\KegiatanTambahan;
 use App\Models\PesertaHikariKidz;
+use Illuminate\Support\Facades\Auth;
 use Illuminate\Support\Facades\Session;
 use Illuminate\Support\Facades\Storage; // Import Storage facade
 
 class KegiatanTambahanController extends Controller
 {
     // Menampilkan daftar semua kegiatan tambahan (Untuk Admin)
+    // ayang bututtttttttttttttttttttttttttt
     public function index()
     {
         $anak = PesertaHikariKidz::where('status', 'terverifikasi')
@@ -55,11 +57,12 @@ class KegiatanTambahanController extends Controller
         ]);
 
         // Jika status diubah menjadi 'belum' atau 'menunggu verifikasi', kosongkan bukti pembayaran dan tanggal
+        // Perhatikan di sini: pastikan menggunakan 'bukti_pembayaran_path'
         if (in_array($validatedData['status_pembayaran'], ['belum', 'menunggu verifikasi'])) {
-            if ($kegiatanTambahan->bukti_pembayaran) {
-                Storage::disk('public')->delete('proof_of_payments/' . $kegiatanTambahan->bukti_pembayaran);
+            if ($kegiatanTambahan->bukti_pembayaran) { // *** UBAH INI
+                Storage::disk('public')->delete('proof_of_payments/' . $kegiatanTambahan->bukti_pembayaran); // *** UBAH INI
             }
-            $validatedData['bukti_pembayaran'] = null;
+            $validatedData['bukti_pembayaran'] = null; // *** UBAH INI
             $validatedData['payment_method'] = null;
             $validatedData['payment_date'] = null;
         }
@@ -80,10 +83,11 @@ class KegiatanTambahanController extends Controller
         } else {
             $kegiatanTambahan->status_pembayaran = 'belum'; // Kembali ke 'belum'
             // Jika dikembalikan ke 'belum', hapus juga bukti pembayaran
-            if ($kegiatanTambahan->bukti_pembayaran) {
-                Storage::disk('public')->delete('proof_of_payments/' . $kegiatanTambahan->bukti_pembayaran);
+            // Perhatikan di sini: pastikan menggunakan 'bukti_pembayaran'
+            if ($kegiatanTambahan->bukti_pembayaran) { // *** UBAH INI
+                Storage::disk('public')->delete('proof_of_payments/' . $kegiatanTambahan->bukti_pembayaran); // *** UBAH INI
             }
-            $kegiatanTambahan->bukti_pembayaran = null;
+            $kegiatanTambahan->bukti_pembayaran = null; // *** UBAH INI
             $kegiatanTambahan->payment_method = null;
             $kegiatanTambahan->payment_date = null;
             $message = 'Status pembayaran berhasil diubah menjadi Belum Lunas.';
@@ -103,8 +107,9 @@ class KegiatanTambahanController extends Controller
     public function destroy(KegiatanTambahan $kegiatan_tambahan)
     {
         // Hapus juga bukti pembayaran jika ada
-        if ($kegiatan_tambahan->bukti_pembayaran) {
-            Storage::disk('public')->delete('proof_of_payments/' . $kegiatan_tambahan->bukti_pembayaran);
+        // Perhatikan di sini: pastikan menggunakan 'bukti_pembayaran_path'
+        if ($kegiatan_tambahan->bukti_pembayaran_path) { // *** UBAH INI
+            Storage::disk('public')->delete('proof_of_payments/' . $kegiatan_tambahan->bukti_pembayaran_path); // *** UBAH INI
         }
         $kegiatan_tambahan->delete();
         $notification = [
@@ -120,21 +125,45 @@ class KegiatanTambahanController extends Controller
         return redirect()->route('kegiatan_tambahan.index')->with('error', 'Fungsi impor Excel belum diimplementasikan sepenuhnya.');
     }
 
-    public function userIndex($id_anak)
-    {
-        $kegiatan_tambahan_user = KegiatanTambahan::where('id_anak', $id_anak)
-                                                  ->with('anak')
-                                                  ->get();
+    public function userIndex()
+{
+    $user = Auth::user();
+    
+    // Step 1: Log data user
+    \Log::info('USER LOGIN:', [
+        'id' => $user->id,
+        'name' => $user->name
+    ]);
 
-        $total_tagihan_belum_lunas = $kegiatan_tambahan_user->whereIn('status_pembayaran', ['belum', 'menunggu verifikasi'])->sum('biaya');
+    // Step 2: Ambil relasi anak
+    $pesertaAnakDariUser = $user->pesertaHikariKidz;
+    \Log::info('Anak dari user:', $pesertaAnakDariUser->pluck('id_anak')->toArray());
 
-        // PERBAIKAN DI SINI: Sesuaikan path view
-        return view('pembayaran_kegiatan_tambahan_user.index', compact('kegiatan_tambahan_user', 'id_anak', 'total_tagihan_belum_lunas'));
+    $id_anak_list = $pesertaAnakDariUser->pluck('id_anak')->toArray();
+
+    if (empty($id_anak_list)) {
+        \Log::warning('User tidak punya anak terhubung.');
+        $kegiatan_tambahan_user = collect();
+        $total_tagihan_belum_lunas = 0;
+        return view('pembayaran_kegiatan_tambahan_user.index', compact('kegiatan_tambahan_user', 'total_tagihan_belum_lunas'));
     }
 
-    /**
-     * Metode untuk mengunggah bukti pembayaran oleh pengguna.
-     */
+    // Step 3: Ambil tagihan
+    $kegiatan_tambahan_user = KegiatanTambahan::whereIn('id_anak', $id_anak_list)
+        ->with('anak')
+        ->get();
+
+    \Log::info('Tagihan ditemukan:', $kegiatan_tambahan_user->pluck('id_anak')->toArray());
+
+    $total_tagihan_belum_lunas = $kegiatan_tambahan_user
+        ->whereIn('status_pembayaran', ['belum', 'menunggu verifikasi'])
+        ->sum('biaya');
+
+    return view('pembayaran_kegiatan_tambahan_user.index', compact('kegiatan_tambahan_user', 'total_tagihan_belum_lunas'));
+}
+
+
+    
     public function uploadBuktiPembayaran(Request $request, KegiatanTambahan $kegiatanTambahan)
     {
         $request->validate([
@@ -150,18 +179,19 @@ class KegiatanTambahanController extends Controller
         ]);
 
         if ($request->hasFile('bukti_pembayaran')) {
+            // Hapus bukti pembayaran lama jika ada sebelum mengunggah yang baru
             if ($kegiatanTambahan->bukti_pembayaran_path && Storage::disk('public')->exists('proof_of_payments/' . $kegiatanTambahan->bukti_pembayaran_path)) {
                 Storage::disk('public')->delete('proof_of_payments/' . $kegiatanTambahan->bukti_pembayaran_path);
             }
 
             $image = $request->file('bukti_pembayaran');
             $fileName = 'bukti_' . $kegiatanTambahan->id . '_' . time() . '.' . $image->getClientOriginalExtension();
-            $path = $image->storeAs('proof_of_payments', $fileName, 'public');
+            $path = $image->storeAs('proof_of_payments', $fileName, 'public'); // Store the file and get its relative path
 
-            $kegiatanTambahan->bukti_pembayaran_path = $fileName;
+            $kegiatanTambahan->bukti_pembayaran_path = $fileName; // Simpan nama file ke kolom bukti_pembayaran_path
             $kegiatanTambahan->payment_method = $request->payment_method;
             $kegiatanTambahan->payment_date = now();
-            $kegiatanTambahan->status_pembayaran = 'menunggu verifikasi';
+            $kegiatanTambahan->status_pembayaran = 'menunggu verifikasi'; // Ubah status setelah upload
 
             $kegiatanTambahan->save();
 
