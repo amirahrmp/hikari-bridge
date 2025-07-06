@@ -77,6 +77,7 @@
           <p>Riwayat Pendaftaran</p>
         </a>
       </li>
+
       <li class="nav-item">
         <a class="nav-link" data-toggle="collapse" href="#pembayaran" aria-expanded="false">
           <i class="fa fa-clipboard"></i>
@@ -93,21 +94,26 @@
               </a>
             </li>
            <li class="nav-item">
-                <a href="{{ route('spp.bulanan.index') }}" class="nav-link @yield('pembayaran_spp_select')">
+                <a href="{{ route('spp.customer.index') }}" class="nav-link @yield('pembayaran_spp_select')">
                   <i class="far fa-circle nav-icon"></i>
                   <p>SPP Bulanan</p>
                 </a>
               </li>
-            <li class="nav-item @if(Request::routeIs('pembayaran_kegiatan_tambahan_user.index')) active @endif">
-              <a class="nav-link" href="{{ route('pembayaran_kegiatan_tambahan_user.index') }}">
-                  <i class="material-icons">money</i>
-                  <p>Kegiatan Tambahan</p>
-              </a>
-            </li>
+         <li class="nav-item">
+          <a href="{{ route('overtime.customer.index') }}" class="nav-link @yield('overtime_bill_customer_select')">
+            <i class="nav-icon fas fa-hourglass-half"></i>
+            <p>Tagihan Overtime</p>
+          </a>
+        </li>
+        <li class="nav-item"> {{-- Tambahkan ini --}}
+          <a href="{{ route('meal.customer.index') }}" class="nav-link @yield('meal_bill_customer_select')">
+            <i class="nav-icon fas fa-utensils"></i>
+            <p>Tagihan Uang Makan</p>
+          </a>
+        </li>
           </ul>
         </div>
       </li>
-
 
       <li class="nav-item @yield('riwayat_pembayaran_select')">
         <a class="nav-link" href="{{ route('payment.index') }}">
@@ -115,24 +121,63 @@
           <p>Riwayat Pembayaran</p>
         </a>
       </li>
-      <li class="nav-item @yield('jadwal_makan_daycare_user_select')">
-        <a class="nav-link" href="{{ route('jadwal_makan_daycare_user') }}">
-            <i class="material-icons">library_books</i>
-            <p>Jadwal Makan Daycare</p>
+
+      <!-- <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#daycare" aria-expanded="false">
+          <i class="fa fa-clipboard"></i>
+          <p>Daycare
+            <b class="caret"></b>
+          </p>
         </a>
-      </li>
-      <li class="nav-item @yield('jadwal_hkc_user_select')">
-        <a class="nav-link" href="{{ route('jadwal_hkc_user') }}">
-            <i class="material-icons">library_books</i>
-            <p>Jadwal Kegiatan HKC</p>
+        <div class="collapse" id="daycare">
+          <ul class="nav pl-4"> -->
+            <li class="nav-item @yield('jadwal_makan_daycare_user_select')">
+              <a class="nav-link" href="{{ route('jadwal_makan_daycare_user') }}">
+                  <i class="material-icons">library_books</i>
+                  <p>Jadwal Makan Daycare</p>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a href="{{ url('laporan_kegiatan_daycare.blade') }}" class="nav-link @yield('laporan_kegiatan_daycare_select')">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Laporan Kegiatan</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li> -->
+
+      <!-- <li class="nav-item">
+        <a class="nav-link" data-toggle="collapse" href="#kidzclub" aria-expanded="false">
+          <i class="fa fa-clipboard"></i>
+          <p>HKC
+            <b class="caret"></b>
+          </p>
         </a>
-      </li>
-      <li class="nav-item ">
+        <div class="collapse" id="kidzclub">
+          <ul class="nav pl-4"> -->
+            <li class="nav-item @yield('jadwal_hkc_user_select')">
+              <a class="nav-link" href="{{ route('jadwal_hkc_user') }}">
+                  <i class="material-icons">library_books</i>
+                  <p>Jadwal Kegiatan HKC</p>
+              </a>
+            </li>
+            <!-- <li class="nav-item">
+              <a href="{{ url('laporan_kegiatan_hkc.blade') }}" class="nav-link @yield('laporan_kegiatan_hkc_select')">
+                <i class="far fa-circle nav-icon"></i>
+                <p>Laporan Kegiatan</p>
+              </a>
+            </li>
+          </ul>
+        </div>
+      </li> -->
+
+      <!-- <li class="nav-item ">
         <a class="nav-link" href="./notifications.html">
           <i class="material-icons">library_books</i>
           <p>E-Learning</p>
         </a>
-      </li>
+      </li> -->
       @endif
     </ul>
   </div>

@@ -19,10 +19,19 @@
                       <h5>Daftar Jadwal Kegiatan Hikari Kidz Club</h5>
                     </div>
                     <div class="card-body p-4">
-                      @if($jadwal_hkc_user->isEmpty())
+                      {{-- ========== CEK BELUM DAFTAR HKC ========== --}}
+                      @if(isset($belumDaftar) && $belumDaftar)
+                        <div class="alert alert-danger text-center" style="background-color: #EF5350; color: white;">
+                          Anda belum daftar Hikari Kidz Club. Silakan daftar terlebih dahulu untuk melihat jadwal kegiatan.
+                        </div>
+
+                      {{-- ========== CEK TIDAK ADA JADWAL ========== --}}
+                      @elseif($jadwal_hkc_user->isEmpty())
                         <div class="alert alert-warning text-center" style="background-color: #FFA726; color: white;">
                           Anda belum memiliki Jadwal Kegiatan Hikari Kidz Club. Ayo daftar sekarang!
                         </div>
+
+                      {{-- ========== TAMPILKAN TABEL JADWAL ========== --}}
                       @else
                         <div class="table-responsive">
                           <table id="datatable" class="table table-bordered table-striped">

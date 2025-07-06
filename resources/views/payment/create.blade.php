@@ -39,7 +39,7 @@
                     <div class="row">
                         <div class="col-md-6">
                             <p class="mb-1"><strong>Nama Peserta:</strong> <span class="fw-normal">{{ $peserta->full_name ?? ($peserta->name ?? '-') }}</span></p>
-                            <p class="mb-0"><strong>Jenis Pendaftaran:</strong> <span class="badge bg-success">{{ $registration_type }}</span></p>
+                            <p class="mb-0"><strong>Jenis Pendaftaran:</strong> <span class="badge bg-success">{{ $registration_type_string }}</span></p>
                         </div>
                         <div class="col-md-6">
                             <p class="mb-0"><strong>Nama Paket:</strong> <span class="fw-normal">{{ $paket->nama_paket ?? $paket->member ?? $paket->kelas ?? '-' }}</span></p>
@@ -135,7 +135,6 @@
                                     <div class="mb-3">
                                         <label for="cicilan_uang_pangkal" class="form-label text-dark">Pilih Opsi Pembayaran Uang Pangkal</label>
                                         <select class="form-select custom-select-green shadow-sm" id="cicilan_uang_pangkal" name="cicilan_uang_pangkal">
-                                            <option value="0">Tidak Membayar Uang Pangkal Saat Ini</option>
                                             <option value="1">1x Pembayaran (Langsung Lunas)</option>
                                             <option value="2">2x Pembayaran (Rp{{ number_format(ceil($uangPangkalRemaining / 2), 0, ',', '.') }} per cicilan)</option>
                                             <option value="3">3x Pembayaran (Rp{{ number_format(ceil($uangPangkalRemaining / 3), 0, ',', '.') }} per cicilan)</option>

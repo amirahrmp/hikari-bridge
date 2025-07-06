@@ -13,19 +13,29 @@ use Illuminate\Http\Request;
 class RiwayatPendaftaranController extends Controller
 {
     public function index()
-    {
+{
+    $userId = Auth::id();
 
-         $userId = Auth::id(); // Ambil ID user yang sedang login
+    // Ambil ID anak yang sudah diverifikasi oleh admin
+    $idAnakTerverifikasi = \App\Models\PesertaHikariKidz::where('status', 'Terverifikasi')
+        ->pluck('id_anak')
+        ->toArray();
 
-        // Ambil hanya data milik user yang sedang login
-        $registrations = collect()
-            ->merge(RegistrationHikariKidzClub::where('user_id', $userId)->get())
-            ->merge(RegistrationHikariKidzDaycare::where('user_id', $userId)->get());
-            //->merge(RegistrationHikariQuran::where('user_id', $userId)->get())
-            //->merge(RegistrationProgramHkcw::where('user_id', $userId)->get());
+    // Ambil hanya pendaftar dari user yang login dan anaknya sudah diverifikasi
+    $registrations = collect()
+        ->merge(
+            RegistrationHikariKidzClub::where('user_id', $userId)
+                ->whereIn('id_anak', $idAnakTerverifikasi)
+                ->get()
+        )
+        ->merge(
+            RegistrationHikariKidzDaycare::where('user_id', $userId)
+                ->whereIn('id_anak', $idAnakTerverifikasi)
+                ->get()
+        );
 
-        // Mengirim data ke view di folder riwayatpendaftaran
-        return view('riwayatpendaftaran.riwayat', compact('registrations'));
-    }
+    return view('riwayatpendaftaran.riwayat', compact('registrations'));
+}
+
 
 }

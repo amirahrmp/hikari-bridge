@@ -61,7 +61,7 @@
           </a>
         </li>
 
-        <li class="nav-header">KURSUS</li>
+        <!-- <li class="nav-header">KURSUS</li>
 
         <li class="nav-item">
           <a href="{{ url('teacher') }}" class="nav-link @yield('teacher_select')">
@@ -92,7 +92,7 @@
             <i class="nav-icon far fa-calendar-alt"></i>
             <p>Jadwal Kursus</p>
           </a>
-        </li>
+        </li> -->
 
         <li class="nav-header">HIKARI KIDZ</li>
 
@@ -108,12 +108,12 @@
             <p>Paket HKC</p>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="{{ url('kegiatan_tambahan') }}" class="nav-link @yield('kegiatan_tambahan_select')">
             <i class="nav-icon fas fa-tasks"></i>
             <p>Kegiatan Tambahan</p>
           </a>
-        </li>
+        </li> -->
 
         <li class="nav-header">LAPORAN KEGIATAN</li>
         
@@ -141,7 +141,7 @@
             <p>Jadwal Makan Daycare</p>
           </a>
         </li>
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="{{ route('laporan_kegiatan.daycare.index')}}" class="nav-link @yield('laporan_kegiatan_daycare_select')"> 
             <i class="nav-icon far fa-calendar-alt"></i>    
             <p>Laporan Kegiatan Daycare</p>
@@ -152,7 +152,7 @@
             <i class="nav-icon far fa-calendar-alt"></i>    
             <p>Laporan Kegiatan HKC</p>
           </a>
-        </li>
+        </li> -->
 
         <li class="nav-header">PRESENSI</li>
         <li class="nav-item">
@@ -183,7 +183,29 @@
               </a>
             </li>
           </ul>
-        </li>
+
+          <li class="nav-item">
+          <a href="#" class="nav-link @yield('jam_datang_select') @yield('jam_pulang_select') @yield('riwayat_absensi_select')">
+            <i class="nav-icon fas fa-users"></i>
+            <p>
+              KIDZ CLUB
+              <i class="right fas fa-angle-left"></i>
+            </p>
+          </a>
+          <ul class="nav nav-treeview">
+            <li class="nav-item">
+              <a href="{{ url('absensi_hkc') }}" class="nav-link @yield('absensi_hkc_select')">
+                <i class="nav-icon fas fa-table"></i>
+                <p>Absensi HKC</p>
+              </a>
+            </li>
+            <li class="nav-item">
+    <a href="{{ route('absensi_hkc.riwayat') }}" class="nav-link @yield('riwayat_absensi_hkc_select')">
+        <i class="nav-icon fas fa-table"></i>
+        <p>Riwayat Absensi HKC</p>
+    </a>
+</li>
+          </ul>
         
         <li class="nav-header">PENCATATAN</li>
         <li class="nav-item">
@@ -204,15 +226,28 @@
             <p>Verifikasi Pembayaran</p>
           </a>
         </li>
-             <li class="nav-item">
-    <a href="{{ route('spp.generator.index') }}" class="nav-link @yield('spp_generator_select')">
-        <i class="nav-icon fas fa-cogs"></i>
-        <p>Generator SPP</p>
-    </a>
-</li>
+        <li class="nav-item">
+          <a href="{{ route('spp.generator.index') }}" class="nav-link @yield('spp_generator_select')">
+            <i class="nav-icon fas fa-cogs"></i>
+              <p>Tagihan SPP</p>
+          </a>
+        </li>
+         <li class="nav-item">
+  <a href="{{ route('admin.additional_bills.index') }}" class="nav-link @yield('additional_bill_select')">
+    <i class="nav-icon fas fa-money-bill-wave"></i>
+      <p>Tagihan Overtime</p>
+  </a>
+</li>{{-- Ubah teks menjadi lebih jelas jika perlu --}}
+        
+        <li class="nav-item"> {{-- Tambahkan ini --}}
+          <a href="{{ route('meal.generator.index') }}" class="nav-link @yield('meal_bill_admin_select')">
+            <i class="nav-icon fas fa-utensils"></i>
+              <p>Tagihan Uang Makan</p>
+          </a>
+        </li>
 
         
-        <li class="nav-item">
+        <!-- <li class="nav-item">
           <a href="{{ url('presensi_staf') }}" class="nav-link @yield('presensi_staf_select')">
             <i class="nav-icon fas fa-table"></i>
             <p>Presensi Staf</p>
@@ -247,13 +282,19 @@
               </a>
             </li>
           </ul>
-        </li>
+        </li> -->
 
         <li class="nav-header">BUKU BESAR</li>
         <li class="nav-item">
           <a href="{{ url('coa') }}" class="nav-link @yield('coa_select')">
             <i class="nav-icon fas fa-book"></i>
             <p>COA</p>
+          </a>
+        </li>
+        <li class="nav-item">
+          <a href="{{ route('laporan.pemasukan.index') }}" class="nav-link @yield('laporan_pemasukan_select')">
+            <i class="nav-icon fas fa-table"></i>
+            <p>Laporan Pemasukan</p>
           </a>
         </li>
         <li class="nav-item">

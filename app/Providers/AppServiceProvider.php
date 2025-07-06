@@ -2,9 +2,12 @@
 
 namespace App\Providers;
 
-use Carbon\Carbon;
-use Illuminate\Support\Facades\Schema;
 use Illuminate\Support\ServiceProvider;
+use Illuminate\Support\Facades\Schema;
+use Illuminate\Support\Facades\View;
+use Illuminate\Support\Facades\Auth;
+use App\Models\Notification;
+use Carbon\Carbon;
 
 class AppServiceProvider extends ServiceProvider
 {
@@ -24,12 +27,14 @@ class AppServiceProvider extends ServiceProvider
      * @return void
      */
     public function boot()
-    {
-        // Set default string length (opsional)
-        Schema::defaultStringLength(191);
-
-        // Set locale Carbon ke Bahasa Indonesia
-        Carbon::setLocale('id');
-        setlocale(LC_TIME, 'id_ID.utf8'); // untuk server berbasis Linux
-    }
+{
+    View::composer('*', function ($view) {
+        if (Auth::check()) {
+            $unreadNotifications = Auth::user()->unreadNotifications; // atau sesuai relasi Anda
+            $view->with('unreadNotifications', $unreadNotifications);
+        } else {
+            $view->with('unreadNotifications', collect()); // kosongkan jika tidak login
+        }
+    });
+}
 }

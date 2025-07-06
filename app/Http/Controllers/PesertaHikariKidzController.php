@@ -8,6 +8,7 @@ use Illuminate\Support\Facades\Storage;
 use App\Models\PesertaHikariKidz;
 use App\Models\ProgramLain;
 use App\Imports\PesertaHikariKidzImport;
+//use App\Models\Notification;
 use Maatwebsite\Excel\Facades\Excel;
 use Illuminate\Support\Facades\Log;
 use Illuminate\Support\Str;
@@ -24,9 +25,21 @@ class PesertaHikariKidzController extends Controller
     {
         $peserta = PesertaHikariKidz::where('id_anak', $id)->firstOrFail();
 
-        // Toggle status antara Menunggu ↔ Terverifikasi
+        // Simpan status sebelumnya
+        $statusLama = $peserta->status;
+
+        // Toggle status
         $peserta->status = ($peserta->status === 'Terverifikasi') ? 'Menunggu' : 'Terverifikasi';
         $peserta->save();
+
+        // // Hanya buat notifikasi jika status menjadi "Terverifikasi"
+        // if ($statusLama !== 'Terverifikasi' && $peserta->status === 'Terverifikasi') {
+        //     Notification::create([
+        //         'user_id' => 1, // Ganti sesuai ID admin yang login jika perlu
+        //         'type' => 'pendaftaran_baru',
+        //         'message' => 'Peserta atas nama <strong>' . $peserta->full_name . '</strong> telah diverifikasi.',
+        //     ]);
+        // }
 
         return redirect()->back()->with('success', 'Status peserta berhasil diperbarui.');
     }
@@ -234,4 +247,5 @@ class PesertaHikariKidzController extends Controller
     {
         return $this->hasMany(ProgramLain::class, 'peserta_id');
     }
+
 }

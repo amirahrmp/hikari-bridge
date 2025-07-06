@@ -5,6 +5,7 @@ namespace App\Models;
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
 
+
 class RegistrationHikariKidzClub extends Model
 {
     use HasFactory;
@@ -43,4 +44,10 @@ class RegistrationHikariKidzClub extends Model
         return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id_anak');
     }
 
+    public function user()
+    {
+        return $this->belongsTo(Users::class, 'user_id', 'id');
+    }
 }
+
+

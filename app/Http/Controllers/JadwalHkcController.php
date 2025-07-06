@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use App\Models\JadwalHkc;
 use App\Models\TemaHkc;
+use Illuminate\Support\Facades\Auth;
+use App\Models\RegistrationHikariKidzClub;
 use Illuminate\Http\Request;
 use Carbon\Carbon;
 
@@ -87,8 +89,22 @@ class JadwalHkcController extends Controller
 
     public function userView()
     {
-        $jadwalhkc = JadwalHkc::all();
+        $userId = Auth::id();
+
+        // Cek apakah user sudah mendaftar Hikari Kidz Club
+        $sudahDaftar = RegistrationHikariKidzClub::where('user_id', $userId)->exists();
+
+        if (!$sudahDaftar) {
+            return view('jadwal_hkc_user.index', [
+                'belumDaftar' => true,
+                'jadwal_hkc_user' => collect()
+            ]);
+        }
+
+        $jadwalhkc = JadwalHkc::with('tema')->get();
+
         return view('jadwal_hkc_user.index', [
+            'belumDaftar' => false,
             'jadwal_hkc_user' => $jadwalhkc
         ]);
     }

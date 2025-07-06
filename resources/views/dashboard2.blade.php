@@ -27,7 +27,7 @@
                                 </div>
                                 <div class="media-body pl-2">
                                     <h4 class="mt-0 mb-0"><strong>{{ number_format((float)($revenuetoday ?? 0), 2, ',', '.') }}</strong></h4>
-                                    <p><small class="text-muted bc-description">Kursus Terdaftar</small></p>
+                                    <p><small class="text-muted bc-description">Program Terdaftar</small></p>
                                 </div>
                             </div>
                         </div>
@@ -57,7 +57,7 @@
                                 </div>
                                 <div class="media-body pl-2">
                                     <h4 class="mt-0 mb-0"><strong>{{ number_format((float)($revenuetoday ?? 0), 2, ',', '.') }}</strong></h4>
-                                    <p><small class="text-muted bc-description">Kursus Saya</small></p>
+                                    <p><small class="text-muted bc-description">Program Saya</small></p>
                                 </div>
                             </div>
                         </div>

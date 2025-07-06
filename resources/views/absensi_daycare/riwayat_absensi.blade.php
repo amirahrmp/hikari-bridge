@@ -1,7 +1,7 @@
 @extends('layouts.master')
 
 @section('riwayat_absensi_select','active')
-@section('title', 'Riwayat Absensi')
+@section('title', 'Riwayat Absensi Daycare')
 
 @section('content')
 <div class="container">
@@ -14,30 +14,47 @@
     @endif
 
     <div class="mb-3">
-    <form method="GET" action="{{ route('absensi_daycare.riwayat') }}" class="form-inline">
-        <label class="mr-2">Filter Tanggal:</label>
-        <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="form-control mr-3">
+        <form method="GET" action="{{ route('absensi_daycare.riwayat') }}" class="form-inline d-flex align-items-center">
+            <label class="mr-2">Filter Tanggal:</label>
+            <input type="date" name="tanggal" value="{{ request('tanggal') }}" class="form-control mr-3">
 
-        <label class="mr-2">atau Bulan:</label>
-        <input type="month" name="bulan" value="{{ request('bulan') }}" class="form-control mr-3">
+            <label class="mr-2">atau Bulan:</label>
+            <input type="month" name="bulan" value="{{ request('bulan') }}" class="form-control mr-3">
 
-        <button type="submit" class="btn btn-primary mr-2">Tampilkan</button>
-        <a href="{{ route('absensi_daycare.riwayat') }}" class="btn btn-secondary">Reset</a>
-    </form>
-</div>
+            <button type="submit" class="btn btn-primary mr-2">Tampilkan</button>
+            <a href="{{ route('absensi_daycare.riwayat') }}" class="btn btn-secondary mr-2">Reset</a>
+
+            {{-- NEW: Cetak PDF Button for Daycare --}}
+            {{-- Pass current filters to the PDF export route --}}
+            <a href="{{ route('absensi_daycare.exportPdf', ['tanggal' => request('tanggal'), 'bulan' => request('bulan')]) }}" class="btn btn-info" target="_blank">
+                <i class="fas fa-print"></i> Cetak PDF
+            </a>
+        </form>
+    </div>
+
+    {{-- Display the current filter context --}}
+    @php
+        $displayPeriod = 'Hari Ini';
+        if (request('tanggal')) {
+            $displayPeriod = 'Tanggal: ' . \Carbon\Carbon::parse(request('tanggal'))->format('d-m-Y');
+        } elseif (request('bulan')) {
+            $displayPeriod = 'Bulan: ' . \Carbon\Carbon::parse(request('bulan'))->isoFormat('MMMM YYYY', 'id');
+        }
+    @endphp
+    <h3 class="mb-3">Daftar Absensi untuk {{ $displayPeriod }}</h3>
 
 
     <table class="table table-bordered table-striped">
         <thead class="thead-dark">
             <tr>
-        <th>Tanggal</th>
-        <th>Nama Anak</th>
-        <th>Jam Datang</th>
-        <th>Jam Pulang</th>
-        <th>Durasi Hadir</th>
-        <th>Overtime</th>
-        <th>Total Denda</th>
-    </tr>
+                <th>Tanggal</th>
+                <th>Nama Anak</th>
+                <th>Jam Datang</th>
+                <th>Jam Pulang</th>
+                <th>Durasi Hadir</th>
+                <th>Overtime</th>
+                <th>Total Denda</th>
+            </tr>
         </thead>
         <tbody>
             @forelse ($riwayat as $absen)
@@ -58,11 +75,10 @@
                 </tr>
             @empty
                 <tr>
-                    <td colspan="8" class="text-center">Belum ada data absensi.</td>
+                    <td colspan="7" class="text-center">Belum ada data absensi.</td>
                 </tr>
             @endforelse
         </tbody>
-
     </table>
 </div>
 @endsection

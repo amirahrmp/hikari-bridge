@@ -80,7 +80,7 @@
     <!-- Parent Information -->
     <div class="mb-3">
       <label for="parent_name" class="form-label" style="color: black;">Nama Orang Tua</label>
-      <input type="text" class="form-control" id="parent_name" name="parent_name" placeholder="Masukkan nama ayah" maxlength="255">
+      <input type="text" class="form-control" id="parent_name" name="parent_name" placeholder="Masukkan nama orang tua" maxlength="255">
     </div>
 
     <!-- Pekerjaan Ayah -->
@@ -126,7 +126,7 @@
     <!-- WhatsApp Numbers -->
     <div class="mb-3">
       <label for="whatsapp_number" class="form-label"style="color: black;">Nomor WhatsApp</label>
-      <input type="number" class="form-control" id="whatsapp_number" name="whatsapp_number" placeholder="Masukkan nomor WhatsApp ayah" maxlength="15">
+      <input type="number" class="form-control" id="whatsapp_number" name="whatsapp_number" placeholder="Masukkan nomor WhatsApp" maxlength="15">
     </div>
 
     <div class="mb-3">

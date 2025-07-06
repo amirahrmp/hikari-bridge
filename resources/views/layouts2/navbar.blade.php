@@ -22,15 +22,15 @@
           </div>
         </form>
         <ul class="navbar-nav">
-          <li class="nav-item">
+          <!-- <li class="nav-item">
             <a class="nav-link" href="javascript:;">
               <i class="material-icons">dashboard</i>
               <p class="d-lg-none d-md-block">
                 Stats
               </p>
             </a>
-          </li>
-          <li class="nav-item dropdown">
+          </li> -->
+          <!-- <li class="nav-item dropdown">
             <a class="nav-link" href="http://example.com" id="navbarDropdownMenuLink" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i class="material-icons">notifications</i>
               <span class="notification">5</span>
@@ -45,7 +45,7 @@
               <a class="dropdown-item" href="#">Another Notification</a>
               <a class="dropdown-item" href="#">Another One</a>
             </div>
-          </li>
+          </li> -->
           <li class="nav-item dropdown">
             <a class="nav-link" href="javascript:;" id="navbarDropdownProfile" data-toggle="dropdown" aria-haspopup="true" aria-expanded="false">
               <i> <img src="{{ url(auth()->user()->foto ?? '') }}" alt="{{ Auth::user()->name }}" class="rounded-circle" width="30px" height="30px"></i>

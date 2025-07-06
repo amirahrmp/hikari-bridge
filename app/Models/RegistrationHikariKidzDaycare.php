@@ -4,6 +4,7 @@ namespace App\Models;
 
 use Illuminate\Database\Eloquent\Factories\HasFactory;
 use Illuminate\Database\Eloquent\Model;
+use App\Models\User;
 
 class RegistrationHikariKidzDaycare extends Model
 {
@@ -51,4 +52,10 @@ class RegistrationHikariKidzDaycare extends Model
     {
         return $this->hasOne(PesertaHikariKidz::class, 'id_anak', 'id_anak');
     }
+
+        public function user()
+    {
+        return $this->belongsTo(User::class, 'user_id', 'id');
+    }
+
 }

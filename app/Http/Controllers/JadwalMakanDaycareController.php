@@ -4,6 +4,8 @@ namespace App\Http\Controllers;
 
 use Illuminate\Http\Request;
 use App\Models\JadwalMakanDaycare;
+use Illuminate\Support\Facades\Auth;
+use App\Models\RegistrationHikariKidzDaycare;
 use DateTime; // Pastikan DateTime di-use jika belum
 
 class JadwalMakanDaycareController extends Controller
@@ -127,19 +129,30 @@ class JadwalMakanDaycareController extends Controller
      */
     // app/Http/Controllers/JadwalMakanDaycareController.php
     public function userView()
-    {
-        // Ambil semua jadwal, urutkan agar rapih
-        $jadwal = JadwalMakanDaycare::orderBy('bulan')
+{
+    $userId = Auth::id();
+
+    $sudahDaftar = RegistrationHikariKidzDaycare::where('user_id', $userId)->exists();
+
+    if (!$sudahDaftar) {
+        return view('jadwal_makan_daycare_user.index', [
+            'belumDaftar' => true,
+            'jadwalGrouped' => collect()
+        ]);
+    }
+
+    $jadwal = JadwalMakanDaycare::orderBy('bulan')
                 ->orderBy('pekan')
                 ->orderByRaw("FIELD(hari,'Senin','Selasa','Rabu','Kamis','Jumat')")
                 ->get();
 
-        // Kelompokkan: $grouped[bulan][pekan] = collection
-        $grouped = $jadwal->groupBy(['bulan','pekan']);
+    $grouped = $jadwal->groupBy(['bulan','pekan']);
 
-        return view('jadwal_makan_daycare_user.index', [
-            'jadwalGrouped' => $grouped   // ← kita kirim yg sudah dikelompokkan
-        ]);
-    }
+    return view('jadwal_makan_daycare_user.index', [
+        'jadwalGrouped' => $grouped,
+        'belumDaftar' => false
+    ]);
+}
+
 
 }

@@ -138,3 +138,31 @@
 </section>
 </div>
 @endsection
+
+@push('scripts')
+<script>
+    $(function () {
+        // Cek apakah DataTables sudah diinisialisasi pada elemen #datatable
+        // Menggunakan $.fn.DataTable.isDataTable() adalah cara yang disarankan
+        if ($.fn.DataTable.isDataTable('#datatable')) {
+            // Jika sudah, hancurkan instans DataTables yang ada
+            $('#datatable').DataTable().destroy();
+        }
+
+        // Kemudian, inisialisasi DataTables
+        $('#datatable').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            // Tambahkan opsi-opsi lain jika ada, contoh:
+            // "language": {
+            //     "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+            // }
+        });
+    });
+</script>
+@endpush

@@ -68,4 +68,53 @@
     </div>
 </div>
 
+<script>
+document.addEventListener('DOMContentLoaded', function () {
+    const form = document.getElementById('form-registrasi');
+
+    form.addEventListener('submit', function (e) {
+        let isValid = true;
+        const requiredFields = [
+            'full_name', 'nickname', 'birth_date', 'file_upload', 
+            'parent_name', 'whatsapp_number', 'address', 'promotor'
+        ];
+
+        // Cek input teks biasa
+        requiredFields.forEach(function (fieldId) {
+            const field = document.getElementById(fieldId);
+            if (!field.value.trim()) {
+                field.classList.add('is-invalid');
+                isValid = false;
+            } else {
+                field.classList.remove('is-invalid');
+            }
+        });
+
+        // Cek radio button untuk agama
+        if (!document.querySelector('input[name="agama"]:checked')) {
+            isValid = false;
+            alert('Silakan pilih salah satu agama.');
+        }
+
+        // Cek radio button member
+        if (!document.querySelector('input[name="member"]:checked')) {
+            isValid = false;
+            alert('Silakan pilih tipe member.');
+        }
+
+        // Cek radio button kelas
+        if (!document.querySelector('input[name="kelas"]:checked')) {
+            isValid = false;
+            alert('Silakan pilih tipe kelas.');
+        }
+
+        // Jika tidak valid, cegah submit
+        if (!isValid) {
+            e.preventDefault();
+        }
+    });
+});
+</script>
+
+
 @endsection

@@ -47,14 +47,6 @@
                                         $programName = 'Hikari Kidz Daycare';
                                         // Ambil dari relasi 'paket'
                                         $paketName = optional($registration->paket)->nama_paket ?? '-';
-                                    //} elseif ($registration instanceof \App\Models\RegistrationHikariQuran) {
-                                        //$programName = 'Hikari Quran';
-                                        // Ambil dari relasi 'pakethq'
-                                        //$paketName = $registration->kelas ?? '-'; // atau optional($registration->pakethq)->nama_paket jika ada
-                                    //} elseif ($registration instanceof \App\Models\RegistrationProgramHkcw) {
-                                        //$programName = 'Program Lain HKC Weekend';
-                                        // Untuk HKCW, nama kegiatannya adalah nama paketnya  
-                                        //$paketName = $registration->nama_kegiatan;
                                     }
                                 @endphp
                                 {{-- ======================================================= --}}

@@ -74,7 +74,7 @@
                                         <th>Kegiatan Tambahan</th>
                                         <th>Catatan</th>
                                         <th>Foto</th>
-                                        <!-- <th>Aksi</th> -->
+                                        <th>Aksi</th>
                                     </tr>
                                 </thead>
                                 <tbody>
@@ -104,14 +104,16 @@
                                                 @if(is_array($laporan->foto) && count($laporan->foto) > 0)
                                                     <div class="d-flex flex-wrap" style="max-width: 150px;">
                                                     @foreach($laporan->foto as $foto_name)
-                                                        <img src="{{ asset('uploads/laporankegiatanhkd/' . $foto_name) }}" alt="foto" width="50" class="m-1 border">
+                                                        <a href="{{ asset('uploads/laporankegiatanhkd/' . $foto_name) }}" target="_blank">
+                                                            <img src="{{ asset('uploads/laporankegiatanhkd/' . $foto_name) }}" alt="foto" width="50" class="m-1 border">
+                                                        </a>
                                                     @endforeach
                                                     </div>
                                                 @else
                                                     -
                                                 @endif
                                             </td>
-                                            <!-- <td>
+                                            <td>
                                                 <div class="d-flex">
                                                     {{-- Tombol Edit: Memanggil modal dan mengisi data via Ajax --}}
                                                     <button class="btn btn-sm btn-info me-1" data-toggle="modal" data-target="#modalLaporanKegiatan"
@@ -119,13 +121,13 @@
                                                         <i class="fa fa-edit"></i>
                                                     </button>
                                                     {{-- Form Hapus --}}
-                                                    <form action="{{ route('laporan_kegiatan.daycare.destroy', $laporan->id) }}" method="POST" onsubmit="return confirm('Hapus laporan ini?')">
+                                                    <form action="{{ route('laporan_kegiatan.daycare.destroy', $laporan->id) }}" method="POST" class="d-inline" onsubmit="return confirm('Hapus laporan ini?')">
                                                         @csrf
                                                         @method('DELETE')
                                                         <button type="submit" class="btn btn-sm btn-danger"><i class="fa fa-trash"></i></button>
                                                     </form>
                                                 </div>
-                                            </td> -->
+                                            </td>
                                         </tr>
                                     @empty
                                         <tr>
@@ -149,15 +151,15 @@
                                     {{-- Form: action dan method akan diatur oleh JavaScript --}}
                                     <form id="formLaporanKegiatan" action="{{ route('laporan_kegiatan.daycare.store') }}" method="POST" enctype="multipart/form-data">
                                         @csrf
-                                        {{-- Hidden input untuk menyimpan ID laporan saat edit --}}
+                                        {{-- Hidden input untuk ID laporan saat edit --}}
                                         <input type="hidden" id="laporan_id_hidden" name="laporan_id">
-                                        {{-- Hidden input untuk spoofing method PUT/PATCH saat edit --}}
+                                        {{-- Hidden input untuk spoofing method PUT/POST --}}
                                         <input type="hidden" name="_method" id="form_method_spoofing_laporan" value="POST">
 
                                         <div class="modal-body">
                                             <div class="row">
                                                 <div class="col-md-6">
-                                                    <div class="mb-3"> {{-- Gunakan mb-3 untuk konsistensi form-group --}}
+                                                    <div class="mb-3">
                                                         <label for="peserta_id_form" class="form-label">Nama Anak:</label>
                                                         <select class="form-control @error('peserta_id') is-invalid @enderror" id="peserta_id_form" name="peserta_id" required>
                                                             <option value="">-- Pilih Anak --</option>
@@ -221,10 +223,10 @@
                                             </div>
                                             <div class="mb-3">
                                                 <label for="foto_form" class="form-label">Foto (Bisa pilih lebih dari 1):</label>
-                                                <input type="file" class="form-control @error('foto.*') is-invalid @enderror" id="foto_form" name="foto[]" multiple accept="image/*"> {{-- name="foto[]" dan multiple --}}
+                                                <input type="file" class="form-control @error('foto.*') is-invalid @enderror" id="foto_form" name="foto[]" multiple accept="image/*">
                                                 <small class="form-text text-muted">Format: jpeg, png, jpg, gif, svg. Maksimal 2MB per file.</small>
-                                                @error('foto.*') {{-- Validasi error untuk multiple files --}}
-                                                    <div class="invalid-feedback d-block">{{ $message }}</div> {{-- d-block agar pesan langsung terlihat --}}
+                                                @error('foto.*')
+                                                    <div class="invalid-feedback d-block">{{ $message }}</div>
                                                 @enderror
 
                                                 {{-- Area untuk menampilkan foto lama dan tombol hapus --}}
@@ -269,7 +271,7 @@
         });
 
         // ====================================================================
-        // FUNGSI UNTUK MODAL TAMBAH/EDIT LAPORAN KEGIATAN
+        // FUNGSI UNTUK MODAL TAMBAH/EDIT LAPORAN KEGIATAN HKD
         // ====================================================================
 
         // Fungsi untuk mereset form modal ke kondisi 'Tambah'
@@ -289,9 +291,14 @@
 
             // Reset preview foto dan input file
             $('#foto_form').val(''); // Reset input file
-            $('.custom-file-label[for="foto_form"]').text('Pilih file'); // Reset label input file
+            // Jika Anda menggunakan custom file input, reset labelnya
+            $('.custom-file-label[for="foto_form"]').text('Pilih file');
             $('#existing_photos_container').hide(); // Sembunyikan container foto lama
             $('#existing_photos_preview').empty(); // Kosongkan preview foto lama
+            
+            // Bersihkan hidden input untuk foto lama dan yang dihapus
+            $('input[name="old_foto_names[]"]').remove();
+            $('input[name="deleted_foto_names[]"]').remove();
             
             // Bersihkan pesan error validasi jika ada
             $('.is-invalid').removeClass('is-invalid');
@@ -302,7 +309,7 @@
         };
 
         // Ketika tombol "Tambah Laporan" diklik
-        window.openAddModalLaporan = function() { // Ubah nama fungsi untuk spesifikasi
+        window.openAddModalLaporan = function() {
             resetLaporanForm();
         };
 
@@ -312,7 +319,7 @@
         });
 
         // Fungsi untuk membuka modal dalam mode Edit dan mengisi data via Ajax
-        window.openEditModalLaporan = function(id) { // Ubah nama fungsi untuk spesifikasi
+        window.openEditModalLaporan = function(id) {
             resetLaporanForm(); // Reset form terlebih dahulu
 
             $('#modalLaporanKegiatanLabel').text('Edit Laporan Kegiatan'); // Ubah judul modal
@@ -347,7 +354,7 @@
                     if (response.foto && response.foto.length > 0) {
                         $('#existing_photos_container').show();
                         $.each(response.foto, function(index, url) {
-                            const fileName = url.split('/').pop(); // Ambil nama file dari URL
+                            const fileName = response.old_foto_names[index]; // Gunakan nama file dari old_foto_names
                             const photoItem = `
                                 <div class="position-relative d-inline-block m-1 border p-1" style="width: 100px; height: 100px;">
                                     <img src="${url}" class="img-thumbnail" style="width: 100%; height: 100%; object-fit: cover;">
@@ -395,78 +402,49 @@
 
         // Menangani submit form modal via Ajax
         $('#formLaporanKegiatan').submit(function(e) {
-            e.preventDefault();
+            e.preventDefault(); // Mencegah submit form default
             const form = $(this);
             const actionUrl = form.attr('action');
             const formData = new FormData(this);
 
-            // Tambahkan _method untuk spoofing PUT/DELETE (sudah ada di hidden input)
+            // Tambahkan _method manual untuk spoofing (PUT atau POST)
+            formData.append('_method', $('#form_method_spoofing_laporan').val());
 
             $.ajax({
-                type: 'POST', // Method selalu POST karena FormData dan _method spoofing
+                type: 'POST', // method AJAX tetap POST karena spoofing
                 url: actionUrl,
                 data: formData,
                 cache: false,
                 contentType: false,
                 processData: false,
                 success: function(response) {
-                    $('#modalLaporanKegiatan').modal('hide');
-
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Berhasil!',
-                            text: response.message || 'Data berhasil disimpan.',
-                            icon: 'success',
-                            timer: 1500,
-                            showConfirmButton: false
-                        }).then(() => {
-                            location.reload();
-                        });
-                    } else {
-                        alert(response.message || 'Data berhasil disimpan.');
-                        location.reload();
-                    }
+                    $('#modalLaporanKegiatan').modal('hide'); // Tutup modal
+                    alert(response.message || 'Data berhasil disimpan.'); // Tampilkan pesan sukses
+                    location.reload(); // Reload halaman untuk menampilkan data terbaru
                 },
                 error: function(xhr) {
                     let errors = xhr.responseJSON.errors;
-                    // Bersihkan pesan error sebelumnya
+                    // Bersihkan error sebelumnya
                     $('.is-invalid').removeClass('is-invalid');
                     $('.invalid-feedback').remove();
 
-                    // Tampilkan pesan error validasi di form
+                    // Tampilkan error validasi baru
                     $.each(errors, function(key, value) {
-                        // Sesuaikan ID elemen form agar sesuai dengan ID di modal
-                        // Contoh: peserta_id -> peserta_id_form, tanggal -> tanggal_form
-                        // kegiatan -> kegiatan_form, catatan -> catatan_form, foto -> foto_form
-                        let formElementId = key.replace(/([a-z])([A-Z])/g, '$1_$2').toLowerCase() + '_form'; // konversi camelCase ke snake_case dan tambah _form
-                        
-                        // Periksa apakah elemen form ada sebelum menambahkan kelas
-                        if ($('#' + formElementId).length) {
-                             $('#' + formElementId).addClass('is-invalid').after('<div class="invalid-feedback">' + value + '</div>');
+                        let fieldId = key + '_form'; // Asumsi ID input adalah nama_field + '_form'
+                        if ($('#' + fieldId).length) {
+                            $('#' + fieldId).addClass('is-invalid').after('<div class="invalid-feedback">' + value + '</div>');
                         } else {
-                            // Ini mungkin untuk checkbox (snack_pagi dll) yang tidak punya _form di ID nya
-                            // Atau error yang tidak terkait langsung dengan input yang punya ID *_form
-                            // Coba tambahkan pesan error di elemen terkait jika ada, atau di bawah form
-                            $(`[name="${key}"], [name="${key}[]"]`).addClass('is-invalid').after('<div class="invalid-feedback">' + value + '</div>');
+                            // Jika ID tidak ditemukan, coba cari berdasarkan nama (untuk multiple files seperti foto.*)
+                            $('[name="' + key + '"], [name="' + key + '[]"]').addClass('is-invalid').after('<div class="invalid-feedback">' + value + '</div>');
                         }
                     });
 
-                    // Tampilkan modal lagi jika ada error validasi
-                    $('#modalLaporanKegiatan').modal('show');
-
-                    // Tampilkan SweetAlert error
-                    if (typeof Swal !== 'undefined') {
-                        Swal.fire({
-                            title: 'Error!',
-                            text: 'Terjadi kesalahan validasi. Mohon periksa kembali input Anda.',
-                            icon: 'error',
-                        });
-                    } else {
-                        alert('Terjadi kesalahan validasi. Mohon periksa kembali input Anda.');
-                    }
+                    $('#modalLaporanKegiatan').modal('show'); // Pastikan modal tetap terbuka
+                    alert('Terjadi kesalahan validasi. Mohon periksa input.'); // Pesan error umum
                 }
             });
         });
+
 
         // Menangani label custom file input saat memilih file
         $('#foto_form').on('change', function() {
@@ -515,7 +493,6 @@
                     $('#btnSimpanLaporan').text('Update Laporan');
 
                     // Mengisi kembali foto lama (jika ada error validasi setelah edit submit)
-                    // Ini bergantung pada bagaimana `old('old_foto_names')` dikirim kembali dari controller
                     let oldFotoNamesOnValidationError = [];
                     @if(is_array(old('old_foto_names')))
                         oldFotoNamesOnValidationError = {!! json_encode(old('old_foto_names')) !!};

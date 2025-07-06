@@ -1,7 +1,7 @@
 @extends('layouts.master') {{-- Sesuaikan dengan layout master admin Anda --}}
 
-@section('title', 'Verifikasi Pembayaran Admin') {{-- Judul section --}}
-@section('pembayaran_admin_select','active') {{-- Contoh untuk mengaktifkan menu sidebar admin --}}
+@section('title', 'Verifikasi Pembayaran Admin')
+@section('pembayaran_admin_select','active')
 
 @section('content')
 <div class="content-wrapper">
@@ -70,29 +70,70 @@
                                                             <tbody>
                                                                 @foreach ($payments as $payment)
                                                                 <tr>
-                                                                    {{-- Nomor urut terbalik --}}
                                                                     <td>{{ $loop->count - $loop->index }}</td>
-                                                                    
+
                                                                     <td>
-                                                                        @php
-                                                                            $peserta = $payment->peserta;
-                                                                            $childName = '-';
-                                                                            if ($peserta) {
-                                                                                $childName = $peserta->full_name ?? $peserta->name ?? '-';
-                                                                            }
-                                                                            echo $childName;
-                                                                        @endphp
+                                                                        {{-- AKSES NAMA ANAK DARI AKESOR getPesertaAttribute --}}
+                                                                        {{ $payment->peserta->full_name ?? '-' }}
                                                                     </td>
-                                                                    <td>{{ ucfirst($payment->registration_type) }}</td>
                                                                     <td>
-                                                                        @if ($payment->components->isNotEmpty())
+    @php
+        $paket = null;
+        switch ($payment->registration_type) {
+            case \App\Models\RegistrationHikariKidzClub::class:
+                $paket = $payment->registration->getPaketHkc()->kelas ?? '-';
+                break;
+            case \App\Models\RegistrationHikariKidzDaycare::class:
+                $paket = $payment->registration->paket->nama_paket ?? '-';
+                break;
+            case \App\Models\RegistrationHikariQuran::class:
+                $paket = $payment->registration->pakethq->nama_paket ?? '-';
+                break;
+            default:
+                $paket = '-';
+        }
+    @endphp
+    {{ $paket }}
+</td>
+                                                                    <td>
+                                                                        @if ($payment->sppBulanan)
                                                                             <ul class="list-unstyled text-start mb-0 small">
-                                                                                @foreach ($payment->components as $component)
-                                                                                    <li><i class="fas fa-check-circle text-success me-1"></i>{{ $component->komponen }} (Rp{{ number_format($component->jumlah, 0, ',', '.') }})</li>
-                                                                                @endforeach
+                                                                                <li><i class="fas fa-check-circle text-success me-1"></i>SPP Bulanan ({{ $payment->sppBulanan->paket ?? $payment->sppBulanan->program }})</li>
+                                                                                <li class="mt-2 pt-2 border-top">
+                                                                                    <strong>SPP Tagihan:</strong> {{ \Carbon\Carbon::create()->month($payment->sppBulanan->bulan)->format('F Y') }} <br>
+                                                                                    Nominal: Rp{{ number_format($payment->sppBulanan->nominal, 0, ',', '.') }}
+                                                                                    <span class="badge bg-secondary ml-1">{{ ucfirst(str_replace('_', ' ', $payment->sppBulanan->status)) }}</span>
+                                                                                </li>
+                                                                            </ul>
+                                                                        @elseif ($payment->overtimeBill)
+                                                                            <ul class="list-unstyled text-start mb-0 small">
+                                                                                <li><i class="fas fa-check-circle text-success me-1"></i>Denda Overtime ({{ $payment->overtimeBill->package_name ?? $payment->overtimeBill->program }})</li>
+                                                                                <li class="mt-2 pt-2 border-top">
+                                                                                    <strong>Denda Overtime:</strong> {{ \Carbon\Carbon::create()->month($payment->overtimeBill->bulan)->format('F Y') }} <br>
+                                                                                    Nominal: Rp{{ number_format($payment->overtimeBill->total_denda, 0, ',', '.') }}
+                                                                                    <span class="badge bg-secondary ml-1">{{ ucfirst(str_replace('_', ' ', $payment->overtimeBill->status)) }}</span>
+                                                                                </li>
+                                                                            </ul>
+                                                                        @elseif ($payment->mealBill)
+                                                                            <ul class="list-unstyled text-start mb-0 small">
+                                                                                <li><i class="fas fa-check-circle text-success me-1"></i>Uang Makan ({{ $payment->mealBill->package_name ?? $payment->mealBill->program }})</li>
+                                                                                <li class="mt-2 pt-2 border-top">
+                                                                                    <strong>Uang Makan:</strong> {{ \Carbon\Carbon::create()->month($payment->mealBill->bulan)->format('F Y') }} <br>
+                                                                                    Nominal: Rp{{ number_format($payment->mealBill->nominal_uang_makan, 0, ',', '.') }}
+                                                                                    <span class="badge bg-secondary ml-1">{{ ucfirst(str_replace('_', ' ', $payment->mealBill->status)) }}</span>
+                                                                                </li>
                                                                             </ul>
                                                                         @else
-                                                                            <span class="text-muted">-</span>
+                                                                            {{-- Untuk pembayaran pendaftaran awal yang memiliki banyak komponen --}}
+                                                                            @if ($payment->components->isNotEmpty())
+                                                                                <ul class="list-unstyled text-start mb-0 small">
+                                                                                    @foreach ($payment->components as $component)
+                                                                                        <li><i class="fas fa-check-circle text-success me-1"></i>{{ $component->komponen }} (Rp{{ number_format($component->jumlah, 0, ',', '.') }})</li>
+                                                                                    @endforeach
+                                                                                </ul>
+                                                                            @else
+                                                                                <span class="text-muted">Pembayaran Awal</span>
+                                                                            @endif
                                                                         @endif
                                                                     </td>
                                                                     <td><strong class="text-dark">Rp{{ number_format($payment->jumlah, 0, ',', '.') }}</strong></td>
@@ -108,16 +149,58 @@
                                                                     </td>
                                                                     <td>
                                                                         @if ($payment->status === 'menunggu_verifikasi')
-                                                                            <form action="{{ route('admin.pembayaran.approve', $payment->id) }}" method="POST">
+                                                                            <form action="{{ route('admin.pembayaran.approve', $payment->id) }}" method="POST" class="d-inline">
                                                                                 @csrf
                                                                                 @method('PATCH')
-                                                                                <button type="submit" class="btn btn-success btn-sm" onclick="return confirm('Apakah Anda yakin ingin menyetujui pembayaran ini?')">
+                                                                                <button type="submit" class="btn btn-success btn-sm mb-1" onclick="return confirm('Apakah Anda yakin ingin menyetujui pembayaran ini?')">
                                                                                     <i class="fas fa-check-circle me-1"></i> Verifikasi
                                                                                 </button>
                                                                             </form>
-                                                                        @else
+                                                                            {{-- Tombol Tolak dengan Modal --}}
+                                                                            <button type="button" class="btn btn-danger btn-sm" data-toggle="modal" data-target="#rejectPaymentModal{{ $payment->id }}">
+                                                                                <i class="fas fa-times-circle me-1"></i> Tolak
+                                                                            </button>
+
+                                                                            <div class="modal fade" id="rejectPaymentModal{{ $payment->id }}" tabindex="-1" role="dialog" aria-labelledby="rejectPaymentModalLabel{{ $payment->id }}" aria-hidden="true">
+                                                                                <div class="modal-dialog" role="document">
+                                                                                    <div class="modal-content">
+                                                                                        <div class="modal-header bg-danger text-white">
+                                                                                            <h5 class="modal-title" id="rejectPaymentModalLabel{{ $payment->id }}">Tolak Pembayaran #{{ $payment->id }}</h5>
+                                                                                            <button type="button" class="close" data-dismiss="modal" aria-label="Close">
+                                                                                                <span aria-hidden="true">&times;</span>
+                                                                                            </button>
+                                                                                        </div>
+                                                                                        <form action="{{ route('admin.pembayaran.reject', $payment->id) }}" method="POST">
+                                                                                            @csrf
+                                                                                            @method('PATCH')
+                                                                                            <div class="modal-body">
+                                                                                                <div class="form-group">
+                                                                                                    <label for="reason{{ $payment->id }}">Alasan Penolakan:</label>
+                                                                                                    <textarea class="form-control" id="reason{{ $payment->id }}" name="reason" rows="3" required></textarea>
+                                                                                                </div>
+                                                                                            </div>
+                                                                                            <div class="modal-footer">
+                                                                                                <button type="button" class="btn btn-secondary" data-dismiss="modal">Batal</button>
+                                                                                                <button type="submit" class="btn btn-danger">Tolak Pembayaran</button>
+                                                                                            </div>
+                                                                                        </form>
+                                                                                    </div>
+                                                                                </div>
+                                                                            </div>
+                                                                        @elseif ($payment->status === 'terverifikasi')
                                                                             <span class="badge badge-success px-3 py-2 rounded-pill">
                                                                                 <i class="fas fa-check"></i> Terverifikasi
+                                                                            </span>
+                                                                        @elseif ($payment->status === 'ditolak')
+                                                                            <span class="badge badge-danger px-3 py-2 rounded-pill">
+                                                                                <i class="fas fa-times"></i> Ditolak
+                                                                            </span>
+                                                                            @if($payment->notes)
+                                                                                <small class="d-block mt-1 text-danger">{{ $payment->notes }}</small>
+                                                                            @endif
+                                                                        @else
+                                                                            <span class="badge badge-secondary px-3 py-2 rounded-pill">
+                                                                                <i class="fas fa-question"></i> Tidak Diketahui
                                                                             </span>
                                                                         @endif
                                                                     </td>
@@ -149,6 +232,10 @@
     }
     .badge-secondary {
         background-color: #6c757d;
+        color: #fff;
+    }
+    .badge-danger { /* Added for 'ditolak' status */
+        background-color: #dc3545;
         color: #fff;
     }
     .rounded-pill {
@@ -224,3 +311,31 @@
     }
 </style>
 @endsection
+
+@push('scripts')
+<script>
+    $(function () {
+        // Cek apakah DataTables sudah diinisialisasi pada elemen #datatable
+        // Menggunakan $.fn.DataTable.isDataTable() adalah cara yang disarankan
+        if ($.fn.DataTable.isDataTable('#datatable')) {
+            // Jika sudah, hancurkan instans DataTables yang ada
+            $('#datatable').DataTable().destroy();
+        }
+
+        // Kemudian, inisialisasi DataTables
+        $('#datatable').DataTable({
+            "paging": true,
+            "lengthChange": false,
+            "searching": true,
+            "ordering": true,
+            "info": true,
+            "autoWidth": false,
+            "responsive": true,
+            // Tambahkan opsi-opsi lain jika ada, contoh:
+            // "language": {
+            //     "url": "//cdn.datatables.net/plug-ins/1.10.25/i18n/Indonesian.json"
+            // }
+        });
+    });
+</script>
+@endpush
