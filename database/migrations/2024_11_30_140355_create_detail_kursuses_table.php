@@ -14,13 +14,18 @@ class CreateDetailKursusesTable extends Migration
     public function up()
     {
         Schema::create('detail_kursus', function (Blueprint $table) {
-            $table->Increments('id');
-            $table->foreignId('id_peserta')->constrained('peserta_kursus')->onDelete('cascade');
-            $table->foreignId('id_kursus')->constrained('kursus')->onDelete('cascade');
-            $table->timestamps();
+            $table->increments('id');
+            
+            $table->unsignedInteger('id_peserta');
+            $table->unsignedInteger('id_kursus');
 
+            $table->foreign('id_peserta')->references('id')->on('peserta_kursus')->onDelete('cascade');
+            $table->foreign('id_kursus')->references('id')->on('kursus')->onDelete('cascade');
+
+            $table->timestamps();
             $table->unique(['id_peserta', 'id_kursus'], 'unique_participant_course');
         });
+
     }
 
     /**

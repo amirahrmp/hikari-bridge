@@ -77,24 +77,23 @@
                                                                         {{ $payment->peserta->full_name ?? '-' }}
                                                                     </td>
                                                                     <td>
-    @php
-        $paket = null;
-        switch ($payment->registration_type) {
-            case \App\Models\RegistrationHikariKidzClub::class:
-                $paket = $payment->registration->getPaketHkc()->kelas ?? '-';
-                break;
-            case \App\Models\RegistrationHikariKidzDaycare::class:
-                $paket = $payment->registration->paket->nama_paket ?? '-';
-                break;
-            case \App\Models\RegistrationHikariQuran::class:
-                $paket = $payment->registration->pakethq->nama_paket ?? '-';
-                break;
-            default:
-                $paket = '-';
-        }
-    @endphp
-    {{ $paket }}
-</td>
+                                                                        @php
+                                                                            $paket = '-';
+
+                                                                            if ($payment->registration) {
+                                                                                switch ($payment->registration_type) {
+                                                                                    case \App\Models\RegistrationHikariKidzClub::class:
+                                                                                        $paket = optional($payment->registration->getPaketHkc())->kelas ?? '-';
+                                                                                        break;
+
+                                                                                    case \App\Models\RegistrationHikariKidzDaycare::class:
+                                                                                        $paket = optional($payment->registration->paket)->nama_paket ?? '-';
+                                                                                        break;
+                                                                                }
+                                                                            }
+                                                                        @endphp
+                                                                        {{ $paket }}
+                                                                    </td>
                                                                     <td>
                                                                         @if ($payment->sppBulanan)
                                                                             <ul class="list-unstyled text-start mb-0 small">

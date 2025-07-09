@@ -84,9 +84,13 @@
                                                             <button class="btn-sm btn-warning d-inline-block" data-toggle="modal" data-target="#editModal{{ $item->id }}">
                                                                 <i class="fa fa-edit"></i>
                                                             </button>
-                                                            <button href="{{ URL::to('delete-jadwal_hikari_kidz/'.$item->id) }}" class="btn-sm btn-danger" id="delete">
-                                                                <i class="fa fa-trash"></i>
-                                                            </button>                                                      
+                                                            <form action="{{ route('jadwal_hikari_kidz.destroy', $item->id) }}" method="POST" style="display:inline;">
+                                                                @csrf
+                                                                @method('DELETE')
+                                                                <button type="submit" class="btn-sm btn-danger" onclick="return confirm('Yakin ingin menghapus jadwal ini?')">
+                                                                    <i class="fa fa-trash"></i>
+                                                                </button>
+                                                            </form>                                                     
                                                         </td>
                                                     </tr>
                                                     <!-- Modal untuk Ubah Data -->

@@ -8,7 +8,7 @@
         .header { text-align: center; margin-bottom: 20px; }
         .status-paid { background-color: green; color: white; padding: 2px 8px; border-radius: 4px; }
         table { width: 100%; margin-top: 10px; }
-        th, td { padding: 6px; text-align: left; }
+        th, td { padding: 6px; text-align: left; vertical-align: top; }
         .right { text-align: right; }
         .footer { margin-top: 40px; text-align: right; }
 
@@ -28,10 +28,28 @@
             Jl Cikoneng Bojongsoang, Ruko Komplek Dewadaru Residence No R-4 Kab.Bandung</p>
         </div>
 
+        @php
+            $type = class_basename($payment->registration_type);
+            $programDisplay = match($type) {
+                'RegistrationHikariKidzClub' => 'Registrasi Kidz Club',
+                'RegistrationHikariKidzDaycare' => 'Registrasi Kidz Daycare',
+                'RegistrationHikariQuran' => 'Registrasi Quran',
+                default => '-'
+            };
+
+            $paketName = match($type) {
+                'RegistrationHikariKidzClub' => $payment->registration?->getPaketHkc()?->nama_paket ?? '-',
+                'RegistrationHikariKidzDaycare' => $payment->registration?->paket?->nama_paket ?? '-',
+                'RegistrationHikariQuran' => $payment->registration?->pakethq?->nama_paket ?? '-',
+                default => '-'
+            };
+        @endphp
+
         <table>
             <tr><td><strong>Nama Anak</strong></td><td>: {{ $childName }}</td></tr>
             <tr><td><strong>Email</strong></td><td>: {{ $payment->user->email ?? '-' }}</td></tr>
-            <tr><td><strong>Program</strong></td><td>: {{ $payment->program_name ?? $payment->registration_type }}</td></tr>
+            <tr><td><strong>Program</strong></td><td>: {{ $programDisplay }}</td></tr>
+            <tr><td><strong>Paket</strong></td><td>: {{ $paketName }}</td></tr>
             <tr><td><strong>Status Pembayaran</strong></td>
                 <td>: <span class="status-paid">{{ strtoupper($payment->status ?? 'Belum Bayar') }}</span></td></tr>
             <tr><td><strong>Tanggal Pembayaran</strong></td>
@@ -59,7 +77,8 @@
         </table>
 
         <div class="footer">
-            <strong>Finance Hikari Bridge <p>{{ $payment->user->name ?? 'Hikari Bridge' }}</strong><br>
+            <strong>Finance Hikari Bridge</strong><br>
+            {{ $payment->user->name ?? 'Hikari Bridge' }}
         </div>
 
         <div style="margin-top: 20px; text-align: center;">

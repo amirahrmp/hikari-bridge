@@ -13,4 +13,9 @@ class DetailKursus extends Model
     protected $fillable = ['id','id_kursus', 'id_peserta','status','tgl_masuk_kursus'];
 
     // Tentukan relasi jika ada
+    public function kursus()
+{
+    return $this->belongsTo(Kursus::class, 'id_kursus');
+}
+
 }

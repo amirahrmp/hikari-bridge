@@ -18,4 +18,9 @@ class Kursus extends Model
                     ->withPivot('id','status','tgl_masuk_kursus')
                     ->withTimestamps(); // Menyertakan timestamps
     }
+
+    public function detailKursus()
+{
+    return $this->hasMany(DetailKursus::class, 'id_peserta');
+}
 }
