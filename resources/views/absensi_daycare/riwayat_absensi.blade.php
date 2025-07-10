@@ -32,6 +32,7 @@
         </form>
     </div>
 
+    
     {{-- Display the current filter context --}}
     @php
         $displayPeriod = 'Hari Ini';

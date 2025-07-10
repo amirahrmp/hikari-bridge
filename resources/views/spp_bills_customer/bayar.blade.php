@@ -1,5 +1,6 @@
 @extends('layouts2.master') {{-- Adjust to your customer layout --}}
 
+@section('pembayaran_spp_select','active')
 @section('title', 'Formulir Pembayaran SPP')
 
 @section('content')

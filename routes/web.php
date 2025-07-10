@@ -5,6 +5,7 @@ use Illuminate\Support\Facades\Route;
 use Illuminate\Support\Facades\Auth;
 use App\Http\Controllers\UsersController;
 use App\Http\Controllers\DashboardController;
+use App\Http\Controllers\Dashboard2Controller;
 use App\Http\Controllers\LoginController;
 use App\Http\Controllers\UserController;
 use App\Http\Controllers\CoaController;
@@ -69,6 +70,8 @@ Route::get('/', function () {
 });
 
 Route::get('/dashboard', [DashboardController::class, 'index'])->middleware(['auth']);
+//
+Route::get('/dashboard2', [Dashboard2Controller::class, 'index'])->name('dashboard')->middleware('auth');
 
 // Notifikasi
 Route::get('/notification/read/{id}', [App\Http\Controllers\NotificationController::class, 'markAsRead'])->name('notifications.read');
@@ -143,7 +146,7 @@ Route::middleware(['auth'])->group(function () {
 
     // Jurnal dan Buku Besar
     Route::get('jurnal/umum', [JurnalController::class,'jurnalumum'])->middleware(['auth']);
-    Route::get('jurnal/viewdatajurnalumum/{periode}', [JurnalController::class,'viewdatajurnalumum'])->middleware(['auth']);
+    Route::get('jurnal/viewdatajurnalumum/{periode}', [JurnalController::class,'viewdatajurnalumum']);
     Route::get('/jurnal/bukubesar', [JurnalController::class, 'bukubesar']);
     Route::get('/jurnal/viewdatabukubesar/{periode}/{kode_akun}', [JurnalController::class, 'viewdatabukubesar']);
 

@@ -185,7 +185,7 @@
           </ul>
 
           <li class="nav-item">
-          <a href="#" class="nav-link @yield('jam_datang_select') @yield('jam_pulang_select') @yield('riwayat_absensi_select')">
+          <a href="#" class="nav-link @yield('absensi_hkc_select') @yield('riwayat_absensi_hkc_select') @yield('riwayat_absensi_hkc_select')">
             <i class="nav-icon fas fa-users"></i>
             <p>
               KIDZ CLUB

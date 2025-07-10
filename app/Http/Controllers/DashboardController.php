@@ -16,29 +16,11 @@ class DashboardController extends Controller
     public function index()
 {
     $role = Session::get('role');
-    $user_id = Session::get('loginId');
 
-    // Jika customer (bukan admin/staf/guru)
     if (!in_array($role, ['admin', 'keuangan', 'staf', 'daycare', 'teacher'])) {
-        // Jumlah program terdaftar: dari HKC + Daycare
-        $programHkc = \App\Models\RegistrationHikariKidzClub::where('user_id', $user_id)->count();
-        $programDaycare = \App\Models\RegistrationHikariKidzDaycare::where('user_id', $user_id)->count();
-        $revenuetoday = $programHkc + $programDaycare;
-
-        // Jumlah total tagihan dari komponen pembayaran (belum lunas)
-        $transaction = \App\Models\Payment::where('user_id', $user_id)
-            ->where('status', 'Belum Lunas')
-            ->with('components')
-            ->get()
-            ->flatMap(function ($payment) {
-                return $payment->components;
-            })
-            ->sum('jumlah');
-
-        return view('dashboard2', compact('revenuetoday', 'transaction'));
+        abort(403, 'Akses hanya untuk admin/staf');
     }
 
-    // Jika bukan customer, redirect ke dashboard khusus
     return view('dashboard', [
         'pesertaAktif' => \App\Models\PesertaKursus::whereHas('kursus', function ($query) {
             $query->where('status', 'Aktif');

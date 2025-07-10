@@ -61,8 +61,8 @@ class JurnalController extends Controller
         $jurnal = [];
 
         foreach ($payments as $payment) {
-            $total = $payment->components->sum('jumlah');
-            if ($total <= 0) continue; // skip jika tidak ada komponen atau 0 semua
+            $total = $payment->components->sum('jumlah'); // Hitung total dari komponen
+if ($total <= 0) continue;; // skip jika tidak ada komponen atau 0 semua
 
             $tanggal = date('Y-m-d', strtotime($payment->tanggal));
             $jrId = 'JR-' . sprintf('%04d', $payment->id);

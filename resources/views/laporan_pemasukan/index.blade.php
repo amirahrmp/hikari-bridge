@@ -1,156 +1,75 @@
-<?php
+@extends('layouts.master')
 
-namespace App\Models;
+@section('laporan_pemasukan_select','active')
+@section('title', 'Laporan Pemasukan')
 
-use Illuminate\Database\Eloquent\Model;
-use App\Models\PaymentComponent;
-use App\Models\RegistrationHikariKidzClub;
-use App\Models\RegistrationHikariKidzDaycare;
-use App\Models\SppBill;
-use App\Models\OvertimeBill;
-use App\Models\MealBill;
+@section('content')
+<div class="container mt-4">
+    <h4 class="mb-3">Laporan Pemasukan</h4>
 
-class LaporanPemasukan extends Model
-{
-    // Gunakan tabel 'payments' (read-only untuk laporan)
-    protected $table = 'payments';
+    <form method="GET" class="row g-3 mb-4">
+        <div class="col-md-3">
+            <label>Bulan</label>
+            <input type="month" name="bulan" class="form-control" value="{{ request('bulan') }}">
+        </div>
+        <div class="col-md-3">
+            <label>Tanggal Mulai</label>
+            <input type="date" name="tanggal_awal" class="form-control" value="{{ request('tanggal_awal') }}">
+        </div>
+        <div class="col-md-3">
+            <label>Tanggal Akhir</label>
+            <input type="date" name="tanggal_akhir" class="form-control" value="{{ request('tanggal_akhir') }}">
+        </div>
+        <div class="col-md-3">
+    <label>Program</label>
+    <select name="program" class="form-control">
+        <option value="">Semua Program</option>
+        <option value="Hikari Kidz Daycare" {{ request('program') == 'Hikari Kidz Daycare' ? 'selected' : '' }}>Hikari Kidz Daycare</option>
+        <option value="Hikari Kidz Club" {{ request('program') == 'Hikari Kidz Club' ? 'selected' : '' }}>Hikari Kidz Club</option>
+    </select>
+</div>
+        <div class="col-md-12">
+            <button type="submit" class="btn btn-success">Filter</button>
+            <a href="{{ route('laporan.pemasukan.index') }}" class="btn btn-secondary">Reset</a>
+            <a href="{{ route('laporan.pemasukan.print', request()->all()) }}" target="_blank" class="btn btn-primary">
+                <i class="fas fa-print"></i> Cetak
+            </a>
+        </div>
+    </form>
 
-    // Tidak pakai timestamps karena ini untuk keperluan laporan
-    public $timestamps = false;
-
-    // Tidak perlu fillable karena model hanya digunakan untuk baca data
-    protected $guarded = [];
-
-    /**
-     * Tambahkan casting untuk kolom tanggal agar otomatis menjadi objek Carbon
-     */
-    protected $casts = [
-        'created_at' => 'datetime',
-        'updated_at' => 'datetime', // Tambahkan juga jika ada kolom updated_at di tabel payments
-    ];
-
-    /**
-     * Relasi ke komponen pembayaran manual
-     */
-    public function components()
-    {
-        return $this->hasMany(PaymentComponent::class, 'payment_id');
-    }
-
-    /**
-     * Relasi ke tagihan SPP bulanan (jika pembayaran berasal dari tagihan spp)
-     */
-    public function sppBulanan()
-    {
-        return $this->belongsTo(SppBill::class, 'spp_bulanan_id');
-    }
-
-    /**
-     * Relasi ke tagihan overtime (jika pembayaran berasal dari denda overtime)
-     */
-    public function overtimeBill()
-    {
-        return $this->belongsTo(OvertimeBill::class, 'overtime_bill_id');
-    }
-
-    /**
-     * Relasi ke tagihan uang makan (jika pembayaran berasal dari meal bill)
-     */
-    public function mealBill()
-    {
-        return $this->belongsTo(MealBill::class, 'meal_bill_id');
-    }
-
-    /**
-     * Scope untuk ambil pembayaran yang sudah diverifikasi
-     */
-    public function scopeTerverifikasi($query)
-    {
-        return $query->where('status', 'terverifikasi');
-    }
-
-    /**
-     * Scope untuk filter berdasarkan range tanggal
-     */
-    public function scopeFilterTanggal($query, $start, $end)
-    {
-        return $query->whereBetween('created_at', [$start, $end]);
-    }
-
-    /**
-     * Akses data peserta berdasarkan jenis program & user_id
-     * Ini adalah accessor yang akan mengambil detail peserta dari tabel registrasi
-     */
-    public function getPesertaAttribute()
-    {
-        $userId = $this->user_id;
-
-        switch ($this->registration_type) {
-            case RegistrationHikariKidzClub::class: // Menggunakan FQCN
-                return RegistrationHikariKidzClub::where('id', $this->registration_id)
-                                                 ->where('user_id', $userId)
-                                                 ->first();
-
-            case RegistrationHikariKidzDaycare::class: // Menggunakan FQCN
-                return RegistrationHikariKidzDaycare::where('id', $this->registration_id)
-                                                     ->where('user_id', $userId)
-                                                     ->first();
-            // Tambahkan case untuk Hikari Quran jika ada
-            // case RegistrationHikariQuran::class:
-            //     return RegistrationHikariQuran::where('id', $this->registration_id)
-            //                                    ->where('user_id', $userId)
-            //                                    ->first();
-
-            default:
-                return null;
-        }
-    }
-
-    /**
-     * Accessor untuk mendapatkan nama program yang lebih user-friendly
-     * Ini akan mengubah FQCN menjadi string yang diinginkan
-     */
-    public function getProgramDisplayNameAttribute()
-    {
-        switch ($this->registration_type) {
-            case RegistrationHikariKidzClub::class:
-                return 'Hikari Kidz Club';
-            case RegistrationHikariKidzDaycare::class:
-                return 'Hikari Kidz Daycare';
-            // Tambahkan case untuk Hikari Quran jika ada
-            // case RegistrationHikariQuran::class:
-            //     return 'Hikari Quran';
-            default:
-                return '-';
-        }
-    }
-
-    /**
-     * Accessor untuk mendapatkan nama paket
-     * Ini akan mencoba mendapatkan nama paket dari relasi peserta yang sesuai
-     */
-    public function getNamaPaketAttribute()
-    {
-        $peserta = $this->peserta; // Menggunakan accessor peserta yang sudah ada
-
-        if ($peserta) {
-            switch ($this->registration_type) {
-                case RegistrationHikariKidzClub::class:
-                    // Memanggil method getPaketHkc() dari model RegistrationHikariKidzClub
-                    // Pastikan method ini mengembalikan objek PaketHkc atau null
-                    $paket = $peserta->getPaketHkc();
-                    return $paket->nama_paket ?? '-'; // Menggunakan null coalescing operator untuk nilai default
-                case RegistrationHikariKidzDaycare::class:
-                    // Asumsi ada relasi 'paket' di model RegistrationHikariKidzDaycare
-                    // Pastikan relasi ini sudah didefinisikan di model RegistrationHikariKidzDaycare
-                    return $peserta->paket->nama_paket ?? '-'; // Ganti 'nama_paket' jika nama kolomnya berbeda
-                // Tambahkan case untuk Hikari Quran jika ada
-                // case RegistrationHikariQuran::class:
-                //     return $peserta->pakethq->nama_paket ?? '-'; // Ganti 'nama_paket' jika nama kolomnya berbeda
-                default:
-                    return '-';
-            }
-        }
-        return '-';
-    }
-}
+    <table class="table table-bordered">
+        <thead class="table-light">
+            <tr>
+                <th>No</th>
+                <th>Tanggal</th>
+                <th>Nama Anak</th>
+                <th>Program</th>
+                <th>Nama Paket</th>
+                <th>Keterangan</th>
+                <th>Nominal</th>
+            </tr>
+        </thead>
+        <tbody>
+            @php $grandTotal = 0; @endphp
+            @foreach($laporan as $index => $row)
+                @php $grandTotal += $row['total']; @endphp
+                <tr>
+                    <td>{{ $index + 1 }}</td>
+                    <td>{{ $row['tanggal'] }}</td>
+                    <td>{{ $row['nama'] }}</td>
+                    <td>{{ $row['program'] }}</td>
+                    <td>{{ $row['paket'] }}</td>
+                    <td style="white-space: pre-line;">{{ $row['keterangan'] }}</td>
+                    <td>Rp{{ number_format($row['total'], 0, ',', '.') }}</td>
+                </tr>
+            @endforeach
+        </tbody>
+        <tfoot>
+            <tr>
+                <td colspan="6" class="text-end"><strong>Total</strong></td>
+                <td><strong>Rp{{ number_format($grandTotal, 0, ',', '.') }}</strong></td>
+            </tr>
+        </tfoot>
+    </table>
+</div>
+@endsection

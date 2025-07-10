@@ -9,6 +9,7 @@ use App\Models\RegistrationHikariKidzDaycare;
 use App\Models\SppBill;
 use App\Models\OvertimeBill;
 use App\Models\MealBill;
+// use App\Models\RegistrationHikariQuran; // <-- DIHAPUS
 
 class LaporanPemasukan extends Model
 {
@@ -19,6 +20,7 @@ class LaporanPemasukan extends Model
     protected $casts = [
         'created_at' => 'datetime',
         'updated_at' => 'datetime',
+        'tanggal' => 'datetime', // PENTING: Tambahkan ini jika kolom 'tanggal' ada di tabel 'payments' dan digunakan untuk filter
     ];
 
     public function components()
@@ -31,7 +33,8 @@ class LaporanPemasukan extends Model
     public function mealBill() { return $this->belongsTo(MealBill::class, 'meal_bill_id'); }
 
     public function scopeTerverifikasi($query) { return $query->where('status', 'terverifikasi'); }
-    public function scopeFilterTanggal($query, $start, $end) { return $query->whereBetween('created_at', [$start, $end]); }
+    // Asumsi 'tanggal' adalah kolom yang digunakan untuk filter tanggal, sesuaikan jika Anda menggunakan 'created_at'
+    public function scopeFilterTanggal($query, $start, $end) { return $query->whereBetween('tanggal', [$start, $end]); }
 
     public function getPesertaAttribute()
     {
@@ -41,6 +44,8 @@ class LaporanPemasukan extends Model
                 return RegistrationHikariKidzClub::where('id', $this->registration_id)->where('user_id', $userId)->first();
             case RegistrationHikariKidzDaycare::class:
                 return RegistrationHikariKidzDaycare::where('id', $this->registration_id)->where('user_id', $userId)->first();
+            // case RegistrationHikariQuran::class: // <-- DIHAPUS
+            //     return RegistrationHikariQuran::where('id', $this->registration_id)->where('user_id', $userId)->first();
             default:
                 return null;
         }
@@ -51,6 +56,7 @@ class LaporanPemasukan extends Model
         switch ($this->registration_type) {
             case RegistrationHikariKidzClub::class: return 'Hikari Kidz Club';
             case RegistrationHikariKidzDaycare::class: return 'Hikari Kidz Daycare';
+            // case RegistrationHikariQuran::class: return 'Hikari Quran'; // <-- DIHAPUS
             default: return '-';
         }
     }
@@ -61,13 +67,40 @@ class LaporanPemasukan extends Model
         if ($peserta) {
             switch ($this->registration_type) {
                 case RegistrationHikariKidzClub::class:
-                    return $peserta->getPaketHkc()?->nama_paket ?? '-';
+                    $paket = $peserta->getPaketHkc(); // panggil sebagai fungsi
+                    $member = $paket?->member ?? '-';
+                    $kelas = $paket?->kelas ?? '-';
+                    return $member . ' - ' . $kelas;
                 case RegistrationHikariKidzDaycare::class:
                     return $peserta->paket->nama_paket ?? '-';
+                // case RegistrationHikariQuran::class: // <-- DIHAPUS
+                //     return $peserta->paket->nama_paket ?? '-';
                 default:
                     return '-';
             }
         }
         return '-';
+    }
+
+    /**
+     * Accessor untuk menentukan apakah pembayaran ini adalah pendaftaran baru.
+     * Asumsi: Pendaftaran baru tidak memiliki spp_bulanan_id, overtime_bill_id, atau meal_bill_id yang terisi.
+     * @return bool
+     */
+    public function isNewRegistration(): bool
+    {
+        // Mendapatkan FQCN dari model registrasi yang valid
+        $validRegistrationTypes = [
+            RegistrationHikariKidzDaycare::class,
+            RegistrationHikariKidzClub::class,
+            // RegistrationHikariQuran::class, // <-- DIHAPUS
+        ];
+
+        return (
+            in_array($this->registration_type, $validRegistrationTypes) &&
+            is_null($this->spp_bulanan_id) &&
+            is_null($this->overtime_bill_id) &&
+            is_null($this->meal_bill_id)
+        );
     }
 }

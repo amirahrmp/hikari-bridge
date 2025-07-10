@@ -39,15 +39,17 @@ class LaporanPemasukanController extends Controller
             }
         }
 
-        if ($request->filled('bulan')) {
-            $bulan = Carbon::parse($request->bulan);
-            $query->whereMonth('created_at', $bulan->month)
-                  ->whereYear('created_at', $bulan->year);
-        }
+       // Ubah di LaporanPemasukanController.php -> getFilteredPayments
+if ($request->filled('bulan')) {
+    $bulan = Carbon::parse($request->bulan);
+    $query->whereMonth('tanggal', $bulan->month) // <-- UBAH KE 'tanggal'
+          ->whereYear('tanggal', $bulan->year);   // <-- UBAH KE 'tanggal'
+}
 
-        if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
-            $query->whereBetween('created_at', [$request->tanggal_awal, $request->tanggal_akhir]);
-        }
+if ($request->filled('tanggal_awal') && $request->filled('tanggal_akhir')) {
+    $query->whereBetween('tanggal', [$request->tanggal_awal, $request->tanggal_akhir]); // <-- UBAH KE 'tanggal'
+}
+
 
         return $query->orderBy('created_at')->get();
     }
@@ -55,6 +57,7 @@ class LaporanPemasukanController extends Controller
     private function transformLaporan($payments)
     {
         $transformedData = collect();
+        
 
         foreach ($payments as $payment) {
             $transformedData->push([
