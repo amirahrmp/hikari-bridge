@@ -74,7 +74,7 @@
                               <td class="text-center">
                                 @if(!$data->is_fully_paid)
                                    {{-- Tombol hanya muncul jika belum lunas --}}
-                                   <a href="{{ route('payment.create', ['registration_id' => $data->id, 'registration_type' => $data->program_name_display]) }}" class="btn btn-success btn-sm">
+                                   <a href="{{ route('paymenthkc.create', ['registration_id' => $data->id, 'registration_type' => $data->program_name_display]) }}" class="btn btn-success btn-sm">
                                      Bayar Sekarang
                                    </a>
                                 @else

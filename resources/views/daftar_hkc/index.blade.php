@@ -1,5 +1,6 @@
 @extends('layouts2.master')
 
+@section('daftar_hkc_select','active')
 @section('title', 'Pendaftaran Program Hikari Kidz')
 
 @section('content')

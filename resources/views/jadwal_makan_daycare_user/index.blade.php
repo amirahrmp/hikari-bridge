@@ -1,90 +1,58 @@
-@extends('layouts2.master')
+@extends('layouts.master')
 
 @section('jadwal_makan_daycare_user_select','active')
 @section('title', 'Jadwal Makan Daycare')
 
-@php
-  $bulanMap = [
-      1=>'Januari',2=>'Februari',3=>'Maret',4=>'April',
-      5=>'Mei',6=>'Juni',7=>'Juli',8=>'Agustus',
-      9=>'September',10=>'Oktober',11=>'November',12=>'Desember'
-  ];
-@endphp
-
 @section('content')
-<section class="content">
-  <div class="container-fluid">
-    <div class="row mt-3">
-      <div class="col-sm-12">
-        <div class="mt-1 mb-3 p-3 button-container bg-white border shadow-sm">
-          <div class="container-fluid">
-            <div class="row">
-              <div class="col-lg-12">
-                <div class="card">
-                  <div class="card-header bg-success text-white">
-                    <h5 class="mb-0">Jadwal Makan Daycare</h5>
-                  </div>
-                  <div class="card-body p-4">
+<div class="content-wrapper">
+    <div class="content-header">
+        <div class="container-fluid">
+            <div class="row mb-2">
+                <div class="col-sm-6"><h1 class="m-0">Jadwal Makan Daycare</h1></div>
+                <div class="col-sm-6">
+                    <ol class="breadcrumb float-sm-right">
+                        <li class="breadcrumb-item">Informasi</li>
+                        <li class="breadcrumb-item active">Jadwal Makan Daycare</li>
+                    </ol>
+                </div>
+            </div>
+        </div>
+    </div>
 
-                    {{-- ALERT BELUM DAFTAR --}}
-                    @if(isset($belumDaftar) && $belumDaftar)
-                      <div class="alert text-white text-center" style="background-color: #66BB6A;">
-                        Anda belum daftar daycare. Silakan daftar terlebih dahulu untuk melihat jadwal makan.
-                      </div>
+    <!-- MAIN -->
+    <section class="content">
+        <div class="container-fluid">
+            <div class="card p-3">
+                {{-- TIDAK ADA TOMBOL TAMBAH --}}
 
-                    {{-- ALERT JADWAL KOSONG --}}
-                    @elseif($jadwalGrouped->isEmpty())
-                      <div class="alert text-white text-center" style="background-color: #A5D6A7;">
-                        Anda belum memiliki jadwal makan daycare. Ayo daftar sekarang!
-                      </div>
-
-                    {{-- TAMPILKAN TABEL --}}
-                    @else
-                      @foreach($jadwalGrouped as $bulan => $pekanGroup)
-                        @foreach($pekanGroup as $pekan => $rows)
-                          <div class="mb-4">
-                            <div class="card border">
-                              <div class="card-header bg-success text-white d-flex justify-content-between align-items-center">
-                                <h6 class="mb-0"><b>{{ $bulanMap[$bulan] ?? '-' }} - Pekan {{ $pekan }}</b></h6>
-                              </div>
-                              <div class="card-body p-3">
-                                <div class="table-responsive">
-                                  <table class="table table-bordered table-striped">
-                                    <thead class="bg-light">
-                                      <tr>
-                                        <th>Hari</th>
-                                        <th>Snack Pagi</th>
-                                        <th>Makan Siang</th>
-                                        <th>Snack Sore</th>
-                                      </tr>
-                                    </thead>
-                                    <tbody>
-                                      @foreach($rows as $r)
-                                        <tr>
-                                          <td>{{ $r->hari }}</td>
-                                          <td>{{ $r->snack_pagi }}</td>
-                                          <td>{{ $r->makan_siang }}</td>
-                                          <td>{{ $r->snack_sore }}</td>
-                                        </tr>
-                                      @endforeach
-                                    </tbody>
-                                  </table>
-                                </div>
-                              </div>
-                            </div>
-                          </div>
-                        @endforeach
-                      @endforeach
-                    @endif
-
-                  </div> <!-- card-body -->
-                </div> <!-- card -->
-              </div> <!-- col -->
-            </div> <!-- row -->
-          </div> <!-- container-fluid -->
-        </div> <!-- button-container -->
-      </div> <!-- col -->
-    </div> <!-- row -->
-  </div> <!-- container-fluid -->
-</section>
+                <div class="table-responsive">
+                    <table id="datatable" class="table table-bordered table-striped">
+                        <thead class="bg-success text-white text-center">
+                            <tr>
+                                <th>Bulan</th>
+                                <th>Pekan</th>
+                                <th>Hari</th>
+                                <th>Snack Pagi</th>
+                                <th>Makan Siang</th>
+                                <th>Snack Sore</th>
+                            </tr>
+                        </thead>
+                        <tbody>
+                            @foreach($jadwalMakan as $item)
+                                <tr>
+                                    <td>{{ $item->bulan }}</td>
+                                    <td>Pekan {{ $item->pekan }}</td>
+                                    <td>{{ $item->hari }}</td>
+                                    <td>{{ $item->snack_pagi }}</td>
+                                    <td>{{ $item->makan_siang }}</td>
+                                    <td>{{ $item->snack_sore }}</td>
+                                </tr>
+                            @endforeach
+                        </tbody>
+                    </table>
+                </div>
+            </div>
+        </div>
+    </section>
+</div>
 @endsection

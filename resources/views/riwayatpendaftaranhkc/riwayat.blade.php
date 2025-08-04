@@ -1,6 +1,6 @@
 @extends('layouts2.master')
 
-@section('riwayat_select','active')
+@section('riwayat_hkc_select','active')
 @section('title', 'Riwayat Pendaftaran')
 
 @section('content')

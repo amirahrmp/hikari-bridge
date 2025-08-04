@@ -65,8 +65,8 @@
       </li>
       @else
       {{-- Tampilan untuk selain Teacher (misal: Customer/Admin) --}}
-      <li class="nav-item @yield('daftar_kursus_select')">
-        <a class="nav-link" href="{{ route('daftarkursus.index') }}">
+      <li class="nav-item @yield('daftar_hkc_select')">
+        <a class="nav-link" href="{{ route('daftar_hkc.index') }}">
           <i class="material-icons">person</i>
           <p>Daftar Program Hikari Kidz</p>
         </a>
@@ -116,7 +116,7 @@
       </li>
 
       <li class="nav-item @yield('riwayat_pembayaran_select')">
-        <a class="nav-link" href="{{ route('payment.index') }}">
+        <a class="nav-link" href="{{ route('paymenthkc.index') }}">
           <i class="material-icons">library_books</i>
           <p>Riwayat Pembayaran</p>
         </a>

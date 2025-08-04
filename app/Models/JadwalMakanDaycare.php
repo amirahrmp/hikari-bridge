@@ -20,7 +20,4 @@ class JadwalMakanDaycare extends Model
         'snack_sore'
     ];
 
-     protected $casts = [
-        'is_libur' => 'boolean',
-    ];
 }

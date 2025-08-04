@@ -18,7 +18,7 @@ use Illuminate\Support\Facades\DB;
 use Illuminate\Support\Str;
 use Carbon\Carbon;
 
-class PaymentController extends Controller
+class PaymentHkcController extends Controller
 {
     /**
      * Tampilkan daftar riwayat pembayaran (untuk customer/frontend).
@@ -46,7 +46,7 @@ class PaymentController extends Controller
             ])
             ->get();
 
-        return view('payment.index', compact('payments'));
+        return view('paymenthkc.index', compact('payments'));
     }
 
     /**
@@ -168,7 +168,7 @@ class PaymentController extends Controller
             $uangPangkalRemaining = ($paket->u_pangkal ?? 0) - $totalUangPangkalPaid;
         }
 
-        return view('payment.create', compact(
+        return view('paymenthkc.create', compact(
             'registration_id',
             'registration_type_string',
             'registration_type_class',
@@ -348,7 +348,7 @@ class PaymentController extends Controller
             }
         });
 
-        return redirect()->route('payment.index')->with('success', 'Pembayaran berhasil disimpan dan menunggu verifikasi admin.');
+        return redirect()->route('paymenthkc.index')->with('success', 'Pembayaran berhasil disimpan dan menunggu verifikasi admin.');
     }
 
     private function getMandatoryComponentsList($registrationTypeString)
@@ -454,6 +454,6 @@ class PaymentController extends Controller
         $childName = $payment->peserta->full_name ?? '-'; // Asumsikan accessor sudah ada
         $print = request()->query('print') === '1';
 
-        return view('payment.receipt', compact('payment', 'childName', 'print'));
+        return view('paymenthkc.receipt', compact('payment', 'childName', 'print'));
     }
 }

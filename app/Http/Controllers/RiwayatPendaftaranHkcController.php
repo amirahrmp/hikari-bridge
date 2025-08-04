@@ -10,7 +10,7 @@ use App\Models\RegistrationProgramHkcw;
 use App\Models\Paket;
 use Illuminate\Http\Request;
 
-class RiwayatPendaftaranController extends Controller
+class RiwayatPendaftaranHkcController extends Controller
 {
     public function index()
 {
@@ -34,7 +34,7 @@ class RiwayatPendaftaranController extends Controller
                 ->get()
         );
 
-    return view('riwayatpendaftaran.riwayat', compact('registrations'));
+    return view('riwayatpendaftaranhkc.riwayat', compact('registrations'));
 }
 
 

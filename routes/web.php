@@ -195,9 +195,9 @@ Route::middleware(['auth'])->group(function () {
     Route::get('/get-paket-by-tipe/{tipe}', [PaketController::class, 'getByTipe']);
     Route::get('/paket/{id}', [PaketController::class, 'getPaketById']);
 
-    // Daftar Kursus (Customer facing, tapi logicnya di controller)
-    Route::get('/daftarkursus', [DaftarKursusController::class, 'create'])->name('daftarkursus.index');
-    Route::post('/daftarkursus', [DaftarKursusController::class, 'store'])->name('daftarkursus.store');
+    // Daftar HKC (Customer facing, tapi logicnya di controller)
+    Route::get('/daftarhkc', [DaftarHkcController::class, 'create'])->name('daftar_hkc.index');
+    Route::post('/daftarhkc', [DaftarHkcController::class, 'store'])->name('daftar_hkc.store');
 
     // Riwayat Pendaftaran (Customer facing)
     Route::get('/riwayatpendaftaran', [RiwayatPendaftaranController::class, 'index'])->name('riwayat.pendaftaran');
@@ -250,6 +250,7 @@ Route::middleware(['auth'])->group(function () {
     Route::delete('/jadwal-hikari-kidz/{jadwalId}/remove-peserta/{pesertaId}', [JadwalHikariKidzController::class, 'removePeserta'])->name('jadwal_hikari_kidz.removePeserta');
     Route::post('/jadwal-hikari-kidz', [JadwalHikariKidzController::class, 'showByEmail'])->name('jadwal_hikari_kidz.peserta'); // Jadwal peserta
     Route::post('jadwal-hikari-kidz-pengasuh', [JadwalHikariKidzController::class, 'showPengasuhSchedule']); // Jadwal pengasuh
+    Route::get('/jadwal_hikari_kidz_user', [JadwalHikariKidzController::class, 'userView'])->name('jadwal_hikari_kidz_user');
 
     // Jadwal Hikari Kidz Club
     Route::resource('jadwal_hkc', JadwalHkcController::class);
@@ -343,12 +344,12 @@ require __DIR__.'/auth.php'; // Ini akan berisi rute login, register, dll.
 Route::middleware(['auth'])->group(function () {
 
     // route pembayaran (untuk customer)
-    Route::prefix('payment')->middleware('auth')->name('payment.')->group(function () {
-        Route::get('/', [PaymentController::class, 'index'])->name('index');
-        Route::get('/create', [PaymentController::class, 'create'])->name('create');
-        Route::post('/', [PaymentController::class, 'store'])->name('store');
-        Route::get('/{payment}/receipt', [PaymentController::class, 'receipt'])->name('receipt');
-    });
+Route::prefix('paymenthkc')->middleware('auth')->name('paymenthkc.')->group(function () {
+    Route::get('/', [PaymentHkcController::class, 'index'])->name('index');
+    Route::get('/create', [PaymentHkcController::class, 'create'])->name('create');
+    Route::post('/', [PaymentHkcController::class, 'store'])->name('store');
+    Route::get('/{payment}/receipt', [PaymentHkcController::class, 'receipt'])->name('receipt');
+});
 
     // SPP Bulanan Routes (Customer Facing)
     Route::prefix('spp-bulanan')->name('spp.customer.')->group(function () {

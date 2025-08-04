@@ -112,10 +112,10 @@
                                 </td>
                                 <td>
                                     @if ($payment->status === 'terverifikasi')
-                                        <a href="{{ route('payment.receipt', $payment->id) }}" class="btn btn-sm btn-outline-primary" target="_blank">
+                                        <a href="{{ route('paymenthkc.receipt', $payment->id) }}" class="btn btn-sm btn-outline-primary" target="_blank">
                                             <i class="fas fa-file-invoice"></i> Lihat
                                         </a>
-                                        <a href="{{ route('payment.receipt', $payment->id) }}?print=1" class="btn btn-sm btn-outline-secondary" target="_blank">
+                                        <a href="{{ route('paymenthkc.receipt', $payment->id) }}?print=1" class="btn btn-sm btn-outline-secondary" target="_blank">
                                             <i class="fas fa-print"></i> Cetak
                                         </a>
                                     @else
